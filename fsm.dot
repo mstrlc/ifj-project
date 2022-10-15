@@ -1,0 +1,29 @@
+digraph fsm {
+	node [fontname="monospace"]
+	edge [fontname="monospace"]
+	rankdir=LR;
+	node [shape = doublecircle, width=1.5, height=1.5]
+	    int, l_par, r_par, float2, whitespace;
+	node [shape = circle, width=1.5, height=1.5];
+    
+    // Whitespace
+    START -> whitespace [label = "whitespace"]
+    whitespace -> whitespace [label = "whitespace"]
+
+    // Numbers
+    START -> int [label = "1-9"]
+    int -> int [label = "0-9"]
+    START -> float0 [label = "0"]
+    float0 -> float1 [label = "."]
+    float1 -> float2 [label = "0-9"]
+    float2 -> float2 [label = "0-9"]
+
+
+    // Identifiers
+    START -> id1 [label = "a-z, A-Z, _"]
+    id1 -> id2 [label = "0-9, a-z, A-Z, _"]
+    
+    // Parantheses
+    START -> l_par [label = "("]
+    START -> r_par [label = ")"]   
+}
