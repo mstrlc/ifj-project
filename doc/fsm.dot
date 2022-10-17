@@ -58,6 +58,7 @@ digraph fsm {
     
     node [shape = doublecircle] Whitespace;
     
+    node [shape = doublecircle] Comma;
     node [shape = doublecircle] Semicolon;
     
     // Identifier
@@ -141,6 +142,7 @@ digraph fsm {
     // Whitespace
     Start -> Whitespace [label = "(space)"];
     
-    // Semicolon
+    // Comma and semicolon
+    Start -> Comma [label = ","];
     Start -> Semicolon [label = ";"];
 }
