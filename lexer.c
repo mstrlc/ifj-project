@@ -13,6 +13,7 @@ char *stateToString(int state)
         case Identifier: return "Identifier";
         case Var_prefix: return "Var_prefix";
         case Type_prefix: return "Type_prefix";
+        case Start_opening: return "Start_opening";
         case End_closing: return "End_closing";
         case Assign: return "Assign";
         case Eq_in: return "Eq_in";
@@ -139,6 +140,7 @@ int main()
                     nextState = End_closing;
                 else
                     nextState = END;
+                break;
             case Assign:
                 if (c == '=')
                     nextState = Eq_in;
@@ -175,6 +177,8 @@ int main()
             case Smaller:
                 if (c == '=')
                     nextState = Smaller_eq;
+                else if (c == '?')
+                    nextState = Start_opening;
                 else
                     nextState = END;
                 break;
@@ -332,6 +336,9 @@ int main()
                 nextState = END;
                 break;
             case Semicolon:
+                nextState = END;
+                break;
+            case Start_opening:
                 nextState = END;
                 break;
             case End_closing:

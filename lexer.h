@@ -5,6 +5,7 @@ typedef enum
     Var_prefix,
     Type_prefix,
     End_closing,
+    Start_opening,
     Assign,
     Eq_in,
     Eq_end,
