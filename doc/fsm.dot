@@ -12,6 +12,7 @@ digraph fsm {
     node [shape = doublecircle] Type_prefix;
 
     node [shape = doublecircle] End_closing;
+    node [shape = doublecircle] Start_opening;
 
     node [shape = doublecircle] Assign;
     node [shape = circle] Eq_in;
@@ -59,6 +60,7 @@ digraph fsm {
     node [shape = doublecircle] Whitespace;
     
     node [shape = doublecircle] Comma;
+    node [shape = doublecircle] Colon;
     node [shape = doublecircle] Semicolon;
     
     // Identifier
@@ -112,6 +114,8 @@ digraph fsm {
     Smaller -> Smaller_eq [label = "="];
     Larger -> Larger_eq [label = "="];
 
+    Smaller -> Start_opening [label = "?"]
+
     Start -> Plus [label = "+"];
     Start -> Minus [label = "-"];
     Start -> Mul [label = "*"];
@@ -142,7 +146,8 @@ digraph fsm {
     // Whitespace
     Start -> Whitespace [label = "(space)"];
     
-    // Comma and semicolon
+    // Interpunction
     Start -> Comma [label = ","];
+    Start -> Colon [label = ":"];
     Start -> Semicolon [label = ";"];
 }
