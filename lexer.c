@@ -212,12 +212,10 @@ int main()
                     nextState = END;
                 break;
             case Comment_l_in:
-                if (c != '\n' || c != EOF)
-                    nextState = Comment_l_in;
-                else if (c == '\n' || c == EOF)
+                if (c == '\n' || c == EOF)
                     nextState = Comment_l_end;
                 else
-                    nextState = ERROR;
+                    nextState = Comment_l_in;
                 break;
             case Comment_l_end:
                 nextState = END;
@@ -347,7 +345,7 @@ int main()
             }
         }
   
-        // printf("\t[%s]\t'%c'\n",stateToString(currentState), c);
+        // printf("\t[%s]\t--\t'%c'\n",stateToString(currentState), c);
   
         if (nextState == END)
         {
