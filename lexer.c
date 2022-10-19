@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+#include "symtable.h"
 #include "lexer.h"
 
 int currentLine = 1;
@@ -183,6 +184,8 @@ char *typeToString(token_type_t type)
         return "T_End_closing";
     case T_File_end:
         return "T_File_end";
+    default:
+        return "UNKNOWN";
     }
 }
 
@@ -588,6 +591,11 @@ int main()
         }
         i++;
     }
+    printf("\nImprovised symbol table:\n");
+    symtable_t *table = symtable_init();
+    symtable_set(table, tokens[0]);
+    symtable_print(table);
+    //symtable_print(table); */
 
     return 0;
 }

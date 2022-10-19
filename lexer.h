@@ -1,3 +1,5 @@
+#ifndef LEXER_H
+#define LEXER_H 
 typedef enum fsm_state
 {
     Start,
@@ -93,3 +95,7 @@ typedef struct token_t
     char *token;
     int line;
 } token_t;
+
+int getNextToken(token_t *token);
+
+#endif
