@@ -264,32 +264,22 @@ int getNextToken(token_t *token)
             if (isalnum(c) || c == '_')
                 nextState = Identifier;
             else
-            {
                 token->type = T_Identifier;
-                nextState = END;
-            }
             break;
         case Var_prefix:
             token->type = T_Var_prefix;
-            nextState = END;
             break;
         case Type_prefix:
             if (c == '>')
                 nextState = End_closing;
             else
-            {
                 token->type = T_Type_prefix;
-                nextState = END;
-            }
             break;
         case Assign:
             if (c == '=')
                 nextState = Eq_in;
             else
-            {
                 token->type = T_Assign;
-                nextState = END;
-            }
             break;
         case Eq_in:
             if (c == '=')
@@ -299,7 +289,6 @@ int getNextToken(token_t *token)
             break;
         case Eq_end:
             token->type = T_Equal;
-            nextState = END;
             break;
         case Noteq_begin:
             if (c == '=')
@@ -315,11 +304,9 @@ int getNextToken(token_t *token)
             break;
         case Noteq_end:
             token->type = T_Not_equal;
-            nextState = END;
             break;
         case Concat:
             token->type = T_Concat;
-            nextState = END;
             break;
         case Smaller:
             if (c == '=')
@@ -327,39 +314,29 @@ int getNextToken(token_t *token)
             else if (c == '?')
                 nextState = Start_opening;
             else
-            {
                 token->type = T_Smaller;
-                nextState = END;
-            }
             break;
         case Smaller_eq:
             token->type = T_Smaller_eq;
-            nextState = END;
             break;
         case Larger:
             if (c == '=')
                 nextState = Larger_eq;
             else
-            {
                 token->type = T_Larger;
-                nextState = END;
-            }
             break;
         case Larger_eq:
             token->type = T_Larger_eq;
-            nextState = END;
             break;
         case Plus:
             token->type = T_Plus;
-            nextState = END;
+
             break;
         case Minus:
             token->type = T_Minus;
-            nextState = END;
             break;
         case Mul:
             token->type = T_Mul;
-            nextState = END;
             break;
         case Div:
             if (c == '*')
@@ -367,10 +344,7 @@ int getNextToken(token_t *token)
             else if (c == '/')
                 nextState = Comment_l_in;
             else
-            {
                 token->type = T_Div;
-                nextState = END;
-            }
             break;
         case Comment_l_in:
             if (c == '\n' || c == EOF)
@@ -380,7 +354,6 @@ int getNextToken(token_t *token)
             break;
         case Comment_l_end:
             token->type = T_Line_comment;
-            nextState = END;
             break;
         case Comment_b_in:
             if (c != '*')
@@ -400,7 +373,6 @@ int getNextToken(token_t *token)
             break;
         case Comment_b_end_2:
             token->type = T_Block_comment;
-            nextState = END;
             break;
         case String_begin:
             if (c == '"')
@@ -424,7 +396,6 @@ int getNextToken(token_t *token)
             break;
         case String_end:
             token->type = T_String;
-            nextState = END;
             break;
         case String_esc:
             nextState = String_in;
@@ -437,10 +408,7 @@ int getNextToken(token_t *token)
             else if (c == 'e' || c == 'E')
                 nextState = Exp_begin;
             else
-            {
                 token->type = T_Int;
-                nextState = END;
-            }
             break;
         case Float_begin:
             if (isdigit(c))
@@ -454,10 +422,7 @@ int getNextToken(token_t *token)
             else if (c == 'e' || c == 'E')
                 nextState = Exp_begin;
             else
-            {
                 token->type = T_Float;
-                nextState = END;
-            }
             break;
         case Exp_begin:
             if (c == '+' || c == '-')
@@ -477,59 +442,44 @@ int getNextToken(token_t *token)
             if (isdigit(c))
                 nextState = Exp_in;
             else
-            {
                 token->type = T_Exp;
-                nextState = END;
-            }
             break;
         case Whitespace:
             if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
                 nextState = Whitespace;
             else
-            {
                 token->type = T_Whitespace;
-                nextState = END;
-            }
             break;
         case L_r_par:
             token->type = T_L_r_par;
-            nextState = END;
             break;
         case R_r_par:
             token->type = T_R_r_par;
-            nextState = END;
             break;
         case L_c_par:
             token->type = T_L_c_par;
-            nextState = END;
             break;
         case R_c_par:
             token->type = T_R_c_par;
-            nextState = END;
             break;
         case Comma:
             token->type = T_Comma;
-            nextState = END;
             break;
         case Colon:
             token->type = T_Colon;
-            nextState = END;
             break;
         case Semicolon:
             token->type = T_Semicolon;
-            nextState = END;
             break;
         case Start_opening:
             token->type = T_Start_opening;
-            nextState = END;
+
             break;
         case End_closing:
             token->type = T_End_closing;
-            nextState = END;
             break;
         case File_end:
             token->type = T_File_end;
-            nextState = END;
             break;
         default:
             token->type = T_Unknown;
@@ -537,7 +487,7 @@ int getNextToken(token_t *token)
             break;
         }
 
-        if (nextState == END)
+        if (token->type != T_Unknown)
         {
             token->token[tokenPosition - 1] = '\0';
             token->line = currentLine;
