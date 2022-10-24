@@ -8,28 +8,27 @@ To search for a name we use a hash function that will result in an integer betwe
 Insertion and lookup can be made very fast – O(1).
 The advantage is quick to search is possible and the disadvantage is that hashing is complicated to implement. */
 
-typedef struct symtable_t symtable_t;
+typedef struct hash_table_t hash_table_t;
 
-typedef struct symbol_item_t {
+typedef struct symbol_t {
     int line;
     char *name;
     char *type;
-    size_t size;
-    symtable_t *scope;
-    bool declared;
-    bool defined;
-    bool used;
-} symbol_item_t;
+} symbol_t;
 
-struct symtable_t {
-    symbol_item_t *entries;
+struct hash_table_t {
+    int size;
     int count;
+    symbol_t **entries;
 };
 
-symtable_t* symtable_init();
-void symtable_dispose(symtable_t *table);
-symbol_item_t* symtable_set(symtable_t *table, token_t *token);
-symbol_item_t* symtable_get(symtable_t *table, char *name);
-void symtable_print(symtable_t *table);
+unsigned int hash(char *name, int size);
+
+hash_table_t *hash_table_init(int size);
+void hash_table_free(hash_table_t *table);
+void hash_table_insert(hash_table_t *table, symbol_t *symbol);
+hash_table_t *resize(hash_table_t *table);
+symbol_t *hash_table_lookup(hash_table_t *table, char *name);
+void hash_table_print(hash_table_t *table);
 
 #endif

@@ -542,10 +542,6 @@ int main()
         i++;
     }
     printf("\nImprovised symbol table:\n");
-    symtable_t *table = symtable_init();
-    symtable_set(table, tokens[0]);
-    symtable_print(table);
-    //symtable_print(table); */
 
     return 0;
 }
