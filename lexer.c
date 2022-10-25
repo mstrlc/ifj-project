@@ -542,6 +542,19 @@ int main()
         i++;
     }
     printf("\nImprovised symbol table:\n");
-
+    hash_table_t *table = hash_table_init(101);
+    for (int j = 0; j < i; j++)
+    {
+        if (tokens[j]->type == T_Identifier)
+        {
+            hash_table_insert(table, token_to_symbol(tokens[j]));
+        }
+    }
+    hash_table_print(table);
+    hash_table_free(table);
+    for (int i = 0; i < 1000; i++)
+    {
+        free(tokens[i]);
+    }
     return 0;
 }
