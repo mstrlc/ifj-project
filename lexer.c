@@ -189,15 +189,27 @@ char *typeToString(token_type_t type)
     }
 }
 
+bool char_to_token(char c, token_t *token)
+{
+    token->lenght++;
+    token->token = realloc(token->token, token->lenght*sizeof(char));
+    if(token->token != NULL)
+    {
+        token->token[token->lenght-1] = c;    
+        return 1;
+    }
+    return 0;
+}
+
 /// @brief
 /// @param token
 /// @return Error code
 int getNextToken(token_t *token)
 {
     // TODO: realoc when reached over 100 length
-    token->token = (char *)malloc(100 * sizeof(char));
+    token->lenght = 0;
+    token->token = NULL;
     token->type = T_Unknown;
-    int tokenPosition = 0;
     fsm_state currentState = Start;
     fsm_state nextState;
 
@@ -205,9 +217,7 @@ int getNextToken(token_t *token)
     do
     {
         c = getchar();
-        token->token[tokenPosition] = c;
-        tokenPosition++;
-
+        char_to_token(c,token);
         switch (currentState)
         {
         case Start:
@@ -489,7 +499,7 @@ int getNextToken(token_t *token)
 
         if (token->type != T_Unknown)
         {
-            token->token[tokenPosition - 1] = '\0';
+            char_to_token('\0',token);
             token->line = currentLine;
             ungetc(c, stdin);
             return 0;
@@ -497,7 +507,7 @@ int getNextToken(token_t *token)
         else if (nextState == ERROR)
         {
             printf("err\n");
-            token->token[tokenPosition - 1] = '\0';
+            char_to_token('\0',token);
             ungetc(c, stdin);
             return 1;
         }
@@ -510,7 +520,6 @@ int getNextToken(token_t *token)
         currentState = nextState;
 
     } while (token->type == T_Unknown);
-
     return 0;
 }
 
@@ -542,19 +551,21 @@ int main()
         i++;
     }
     printf("\nImprovised symbol table:\n");
-    hash_table_t *table = hash_table_init(101);
+    hash_table_t *table = hash_table_init(10);
     for (int j = 0; j < i; j++)
     {
         if (tokens[j]->type == T_Identifier)
         {
+            double lf = (double)table->count / table->size;
+            if(lf > 0.6)
+            {
+                //int nsize = table->size * 2;
+                table = resize(table);
+            }
             hash_table_insert(table, token_to_symbol(tokens[j]));
         }
     }
     hash_table_print(table);
     hash_table_free(table);
-    for (int i = 0; i < 1000; i++)
-    {
-        free(tokens[i]);
-    }
     return 0;
 }

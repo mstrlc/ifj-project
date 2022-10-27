@@ -94,6 +94,7 @@ typedef struct token_t
     token_type_t type;
     char *token;
     int line;
+    size_t lenght;
 } token_t;
 
 int getNextToken(token_t *token);

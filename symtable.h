@@ -8,6 +8,7 @@ To search for a name we use a hash function that will result in an integer betwe
 Insertion and lookup can be made very fast – O(1).
 The advantage is quick to search is possible and the disadvantage is that hashing is complicated to implement. */
 
+
 typedef struct symbol symbol_t;
 
 typedef struct symbol {

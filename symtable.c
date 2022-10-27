@@ -45,12 +45,12 @@ void hash_table_free(hash_table_t *table) {
 
 hash_table_t* resize(hash_table_t *table) {
     hash_table_t *new_table = hash_table_init(table->size * 2);
-    for (int i = 0; i < table->size; i++) {
+    /*for (int i = 0; i < table->size; i++) {
         symbol_t *symbol = table->symbols[i];
         if (symbol != NULL) {
             hash_table_insert(new_table, symbol);
         }
-    }
+    } */
     hash_table_free(table);
     return new_table;
 }
@@ -67,10 +67,6 @@ void hash_table_insert(hash_table_t *table, symbol_t *symbol) {
         }
         current->next = symbol;
     }
-    float lf = (float)table->count / (float)table->size;	
-    if (lf >= 0.75) {
-        table = resize(table);
-    }
 }
 
 symbol_t *hash_table_lookup(hash_table_t *table, char *name) {
@@ -86,13 +82,15 @@ symbol_t *hash_table_lookup(hash_table_t *table, char *name) {
 }
 
 void hash_table_print(hash_table_t *table) {
+    printf("size: %d", table->size);
+    printf("%s\t%s\n","Index", "Name");
     for (int i = 0; i < table->size; i++) {
         symbol_t *symbol = table->symbols[i];
         if (symbol != NULL) {
-            printf("%d: %s, line %d ", i, symbol->name, symbol->line);
+            printf("%d\t%s l:%d\t", i, symbol->name, symbol->line);
             symbol = symbol->next;
             while (symbol != NULL) {
-                printf("-> %s, line %d ", symbol->name, symbol->line);
+                printf("%s l:%d\t", symbol->name, symbol->line);
                 symbol = symbol->next;
             }
             printf(" -> NULL \n");
