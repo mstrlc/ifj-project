@@ -184,6 +184,26 @@ char *typeToString(token_type_t type)
         return "T_End_closing";
     case T_File_end:
         return "T_File_end";
+    case T_Keyword_Else:
+        return "T_Keyword_Else";
+    case T_Keyword_Float:
+        return "T_Keyword_Float";
+    case T_Keyword_Function:
+        return "T_Keyword_Function";
+    case T_Keyword_If:
+        return "T_Keyword_If";
+    case T_Keyword_Int:
+        return "T_Keyword_Int";
+    case T_Keyword_Null:
+        return "T_Keyword_Null";
+    case T_Keyword_Return:
+        return "T_Keyword_Return";
+    case T_Keyword_String:
+        return "T_Keyword_String";
+    case T_Keyword_Void:
+        return "T_Keyword_Void";
+    case T_Keyword_While:
+        return "T_Keyword_While";
     default:
         return "UNKNOWN";
     }
@@ -484,7 +504,6 @@ int getNextToken(token_t *token)
             break;
         case Start_opening:
             token->type = T_Start_opening;
-
             break;
         case End_closing:
             token->type = T_End_closing;
@@ -503,25 +522,65 @@ int getNextToken(token_t *token)
             char_to_token('\0', token);
             token->line = currentLine;
             ungetc(c, stdin);
-            return 0;
+            break;
         }
-        else if (nextState == ERROR)
-        {
-            printf("err\n");
-            char_to_token('\0', token);
-            ungetc(c, stdin);
-            return 1;
-        }
+        // else if (nextState == ERROR)
+        // {
+        //     printf("err\n");
+        //     char_to_token('\0', token);
+        //     ungetc(c, stdin);
+        //     return 1;
+        // }
         if (c == '\n')
         {
             currentLine++;
         }
         currentState = nextState;
         char_to_token(c, token);
-
+        
     } while (token->type == T_Unknown);
-
+    
     // Recognize token type
+    if (strcmp(token->data, "else") == 0)
+        token->type = T_Keyword_Else;
+    else if (strcmp(token->data, "float") == 0)
+        token->type = T_Keyword_Float;
+    else if (strcmp(token->data, "function") == 0)
+        token->type = T_Keyword_Function;
+    else if (strcmp(token->data, "if") == 0)
+        token->type = T_Keyword_If;
+    else if (strcmp(token->data, "int") == 0)
+        token->type = T_Keyword_Int;
+    else if (strcmp(token->data, "null") == 0)
+        token->type = T_Keyword_Null;
+    else if (strcmp(token->data, "return") == 0)
+        token->type = T_Keyword_Return;
+    else if (strcmp(token->data, "string") == 0)
+        token->type = T_Keyword_String;
+    else if (strcmp(token->data, "void") == 0)
+        token->type = T_Keyword_Void;
+    else if (strcmp(token->data, "while") == 0)
+        token->type = T_Keyword_While;
+
+    // Remove data from token if it is not needed
+    if (token->type != T_Identifier && token->type != T_Int && token->type != T_Float && token->type != T_Exp && token->type != T_String)
+    {
+        free(token->data);
+        token->data = NULL;
+    }
+
+    // Remove parantheses from string
+    if (token->type == T_String)
+    {
+        char *string = malloc(sizeof(char) * (strlen(token->data) - 1));
+        for (int i = 0; i < strlen(token->data) - 2; i++)
+        {
+            string[i] = token->data[i + 1];
+        }
+        string[strlen(token->data) - 2] = '\0';
+        free(token->data);
+        token->data = string;
+    }
 
     return 0;
 }
@@ -540,13 +599,40 @@ int main()
     while (true)
     {
         getNextToken(tokens[i]);
-        if (tokens[i]->type != T_Whitespace)
+        printf("%d:\t", tokens[i]->line);
+        printf("%s\t", typeToString(tokens[i]->type));
+        if(strlen(typeToString(tokens[i]->type))>7)
+            printf("\t");
+        switch (tokens[i]->type)
         {
-            printf("%d)\t%s", currentLine, tokens[i]->data);
-            if (strlen(tokens[i]->data) < 8)
-                printf("\t");
-            printf("\t%s\n", typeToString(tokens[i]->type));
+            case T_Identifier:
+                printf("Identifier: %s\n", tokens[i]->data);
+                break;
+            case T_Int:
+                printf("Int: %s\n", tokens[i]->data);
+                break;
+            case T_Float:
+                printf("Float: %s\n", tokens[i]->data);
+                break;
+            case T_Exp:
+                printf("Exp: %s\n", tokens[i]->data);
+                break;
+            case T_String:
+                printf("String: %s\n", tokens[i]->data);
+                break;
+            default:
+                printf("\n");
+                break;
         }
+
+        // if (tokens[i]->type != T_Whitespace)
+        // {
+        //     printf("%d)\t%s", currentLine, tokens[i]->data);
+
+        //     printf("\t%s\n", typeToString(tokens[i]->type));
+        //     if (strlen(tokens[i]->data) < 8)
+        //         printf("\t");
+        // }
         if (tokens[i]->type == T_File_end)
         {
             i++;
@@ -554,24 +640,24 @@ int main()
         }
         i++;
     }
-    printf("\nImprovised symbol table:\n");
-    hash_table_t *table = hash_table_init(100);
-    for (int j = 0; j < i; j++)
-    {
-        double lf = (double)table->count / table->size;
-        if (lf > 0.6)
-        {
-            // int nsize = table->size * 2;
-            table = resize(table);
-        }
-        hash_table_insert(table, token_to_symbol(tokens[j]));
-    }
-    hash_table_lookup(table, "strict_types");
-    hash_table_print(table);
-    for (int i = 0; i < 1000; i++)
-    {
-        free(tokens[i]);
-    }
-    hash_table_free(table);
+    // printf("\nImprovised symbol table:\n");
+    // hash_table_t *table = hash_table_init(100);
+    // for (int j = 0; j < i; j++)
+    // {
+    //     double lf = (double)table->count / table->size;
+    //     if (lf > 0.6)
+    //     {
+    //         // int nsize = table->size * 2;
+    //         table = resize(table);
+    //     }
+    //     hash_table_insert(table, token_to_symbol(tokens[j]));
+    // }
+    // hash_table_lookup(table, "strict_types");
+    // // hash_table_print(table);
+    // for (int i = 0; i < 1000; i++)
+    // {
+    //     free(tokens[i]);
+    // }
+    // hash_table_free(table);
     return 0;
 }
