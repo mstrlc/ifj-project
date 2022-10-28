@@ -86,13 +86,24 @@ typedef enum
     T_Semicolon,
     T_Start_opening,
     T_End_closing,
-    T_File_end
+    T_File_end,
+    T_Keyword_Else,
+    T_Keyword_Float,
+    T_Keyword_Function,
+    T_Keyword_If,
+    T_Keyword_Int,
+    T_Keyword_Null,
+    T_Keyword_Return,
+    T_Keyword_String,
+    T_Keyword_Void,
+    T_Keyword_While
 } token_type_t;
+
 
 typedef struct token_t
 {
     token_type_t type;
-    char *token;
+    char *data;
     int line;
     size_t lenght;
 } token_t;

@@ -18,10 +18,10 @@ symbol_t *token_to_symbol(token_t *token) {
     symbol_t *symbol = malloc(sizeof(symbol_t));
     symbol->line = token->line;
     symbol->name = malloc(sizeof(char) * (token->lenght));
-    strcpy(symbol->name,token->token);
+    strcpy(symbol->name,token->data);
     //symbol->type = (char*)token->type;
     symbol->next = NULL;
-    free(token->token);
+    free(token->data);
     return symbol;
 }
 
@@ -109,6 +109,3 @@ void hash_table_print(hash_table_t *table) {
         }
     }
 }
-
-
-
