@@ -191,17 +191,14 @@ char *typeToString(token_type_t type)
 
 bool char_to_token(char c, token_t *token)
 {
+    if(c != EOF){
     token->lenght++;
     token->token = realloc(token->token, token->lenght*sizeof(char));
     if(token->token != NULL)
     {
-        if(c == '\0'){
-            token->token[token->lenght-2] = '\0';
-        }
-        else{
         token->token[token->lenght-1] = c;
-        }
         return 1;
+    }
     }
     return 0;
 }
@@ -222,7 +219,6 @@ int getNextToken(token_t *token)
     do
     {
         c = getchar();
-        char_to_token(c,token);
         switch (currentState)
         {
         case Start:
@@ -523,7 +519,7 @@ int getNextToken(token_t *token)
 
         // printf("Current state: %s -> Char %c (%d) -> Next state: %s\n", stateToString(currentState), c, c, stateToString(nextState));
         currentState = nextState;
-
+        char_to_token(c,token);
     } while (token->type == T_Unknown);
     return 0;
 }
@@ -551,16 +547,15 @@ int main()
         }
         if (tokens[i]->type == T_File_end)
         {
+            i++;
             break;
         }
         i++;
     }
     printf("\nImprovised symbol table:\n");
-    hash_table_t *table = hash_table_init(10);
+    hash_table_t *table = hash_table_init(100);
     for (int j = 0; j < i; j++)
     {
-        if (tokens[j]->type == T_Identifier)
-        {
             double lf = (double)table->count / table->size;
             if(lf > 0.6)
             {
@@ -568,9 +563,13 @@ int main()
                 table = resize(table);
             }
             hash_table_insert(table, token_to_symbol(tokens[j]));
-        }
     }
+    hash_table_lookup(table, "strict_types");
     hash_table_print(table);
+    for (int i = 0; i < 1000; i++)
+    {
+        free(tokens[i]);
+    }
     hash_table_free(table);
     return 0;
 }

@@ -14,11 +14,14 @@ unsigned int hash(char *name, int size) {
 }
 
 symbol_t *token_to_symbol(token_t *token) {
+
     symbol_t *symbol = malloc(sizeof(symbol_t));
     symbol->line = token->line;
-    symbol->name = token->token;
+    symbol->name = malloc(sizeof(char) * (token->lenght));
+    strcpy(symbol->name,token->token);
     //symbol->type = (char*)token->type;
     symbol->next = NULL;
+    free(token->token);
     return symbol;
 }
 
@@ -36,7 +39,16 @@ hash_table_t *hash_table_init(int size) {
 void hash_table_free(hash_table_t *table) {
     for (int i = 0; i < table->size; i++) {
         if (table->symbols[i] != NULL) {
+            symbol_t *symbol = table->symbols[i]->next;
+            while (symbol != NULL) {
+                symbol_t *temp = symbol;
+                symbol = symbol->next;
+                free(temp->name);
+                free(temp);
+            }
+            free(table->symbols[i]->name);
             free(table->symbols[i]);
+
         }
     }
     free(table->symbols);
