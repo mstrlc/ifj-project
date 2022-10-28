@@ -82,7 +82,7 @@ symbol_t *hash_table_lookup(hash_table_t *table, char *name) {
 }
 
 void hash_table_print(hash_table_t *table) {
-    printf("size: %d", table->size);
+    printf("size: %d\n", table->size);
     printf("%s\t%s\n","Index", "Name");
     for (int i = 0; i < table->size; i++) {
         symbol_t *symbol = table->symbols[i];

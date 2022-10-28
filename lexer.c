@@ -195,7 +195,12 @@ bool char_to_token(char c, token_t *token)
     token->token = realloc(token->token, token->lenght*sizeof(char));
     if(token->token != NULL)
     {
-        token->token[token->lenght-1] = c;    
+        if(c == '\0'){
+            token->token[token->lenght-2] = '\0';
+        }
+        else{
+        token->token[token->lenght-1] = c;
+        }
         return 1;
     }
     return 0;
