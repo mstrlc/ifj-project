@@ -8,7 +8,7 @@
 
 int currentLine = 1;
 
-char *stateToString(int state)
+char *stateToString(fsm_state_t state)
 {
     switch (state)
     {
@@ -231,8 +231,8 @@ int getNextToken(token_t *token)
     token->lenght = 0;
     token->data = NULL;
     token->type = T_Unknown;
-    fsm_state currentState = Start;
-    fsm_state nextState;
+    fsm_state_t currentState = Start;
+    fsm_state_t nextState;
 
     int c;
     do

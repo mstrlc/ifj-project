@@ -1,6 +1,7 @@
 #ifndef LEXER_H
 #define LEXER_H 
-typedef enum fsm_state
+
+typedef enum fsm_state_t
 {
     Start,
     Identifier,
@@ -49,9 +50,9 @@ typedef enum fsm_state
     File_end,
     ERROR,
     END
-} fsm_state;
+} fsm_state_t;
 
-typedef enum
+typedef enum token_type_t
 {
     T_Unknown,
     T_Identifier,
@@ -107,6 +108,10 @@ typedef struct token_t
     int line;
     size_t lenght;
 } token_t;
+
+char *stateToString(fsm_state_t state);
+
+char *typeToString(token_type_t type);
 
 int getNextToken(token_t *token);
 
