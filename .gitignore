@@ -1,3 +1,4 @@
+# Source https://github.com/github/gitignore
 # Prerequisites
 *.d
 
@@ -41,6 +42,7 @@
 *.su
 *.idb
 *.pdb
+*.DS_Store
 
 # Kernel Module Compile Results
 *.mod*
@@ -50,3 +52,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# VSCode config
+.vscode/
+*.json
