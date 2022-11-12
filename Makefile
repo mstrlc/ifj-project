@@ -25,6 +25,7 @@ parser.o: parser.c parser.h
 symtable.o: symtable.c symtable.h
 	$(CC) $(CFLAGS) -c symtable.c
 
-clean: 
+clean:
+	@rm -f *.o main lexer
 	@rm -f  *.o
 	@rm -f a.out
