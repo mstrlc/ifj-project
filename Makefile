@@ -12,8 +12,8 @@ debug: lexer.o symtable.o
 lexer.o: lexer.c lexer.h
 	$(CC) $(CFLAGS) -c lexer.c
 
-
-
 symtable.o: symtable.c symtable.h
+	$(CC) $(CFLAGS) -c symtable.c
+
 clean: 
 	@rm -f lexer *.o
