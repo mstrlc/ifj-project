@@ -562,11 +562,11 @@ int getNextToken(token_t *token)
         token->type = T_Keyword_While;
 
     // Remove data from token if it is not needed
-    if (token->type != T_Identifier && token->type != T_Int && token->type != T_Float && token->type != T_Exp && token->type != T_String)
-    {
-        free(token->data);
-        token->data = NULL;
-    }
+    // if (token->type != T_Identifier && token->type != T_Int && token->type != T_Float && token->type != T_Exp && token->type != T_String)
+    // {
+    //     free(token->data);
+    //     token->data = NULL;
+    // }
 
     // Remove parantheses from string
     if (token->type == T_String)
