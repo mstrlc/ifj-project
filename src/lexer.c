@@ -277,7 +277,7 @@ int getNextToken(token_t *token)
                 nextState = L_c_par;
             else if (c == '}')
                 nextState = R_c_par;
-            else if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
+            else if (isspace(c))
                 nextState = Whitespace;
             else if (c == ',')
                 nextState = Comma;
