@@ -64,24 +64,24 @@ int main()
         }
         i++;
     }
-    // printf("\nImprovised symbol table:\n");
-    // hash_table_t *table = hash_table_init(100);
-    // for (int j = 0; j < i; j++)
-    // {
-    //     double lf = (double)table->count / table->size;
-    //     if (lf > 0.6)
-    //     {
-    //         // int nsize = table->size * 2;
-    //         table = resize(table);
-    //     }
-    //     hash_table_insert(table, token_to_symbol(tokens[j]));
-    // }
-    // hash_table_lookup(table, "strict_types");
-    // // hash_table_print(table);
-    // for (int i = 0; i < 1000; i++)
-    // {
-    //     free(tokens[i]);
-    // }
-    // hash_table_free(table);
+    printf("\nImprovised symbol table:\n");
+    hash_table_t *table = hash_table_init(100);
+    for (int j = 0; j < i; j++)
+    {
+        double lf = (double)table->count / table->size;
+        if (lf > 0.6)
+        {
+            // int nsize = table->size * 2;
+            table = resize(table);
+        }
+        hash_table_insert(table, token_to_symbol(tokens[j]));
+    }
+    hash_table_lookup(table, "strict_types");
+    // hash_table_print(table);
+    for (int i = 0; i < 1000; i++)
+    {
+        free(tokens[i]);
+    }
+    hash_table_free(table);
     return 0;
 }

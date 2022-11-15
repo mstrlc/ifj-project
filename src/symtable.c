@@ -20,9 +20,13 @@ symbol_t *token_to_symbol(token_t *token) {
 
     symbol_t *symbol = malloc(sizeof(symbol_t));
     symbol->line = token->line;
-    symbol->name = malloc(sizeof(char) * (token->lenght));
-    strcpy(symbol->name,token->data);
+    if(token->type != NULL){}
+    printf("token->data: %s\n", token->data);
+    symbol->name = malloc(strlen(token->data) + 1);
+    
+    strcpy(symbol->name, token->data);
     //symbol->type = (char*)token->type;
+    //symbol->type = token->type;
     symbol->next = NULL;
     free(token->data);
     return symbol;

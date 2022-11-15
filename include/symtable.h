@@ -2,19 +2,12 @@
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 
-/* In hashing scheme, two tables are maintained – a hash table and symbol table and are the most commonly used method to implement symbol tables.
-A hash table is an array with an index range: 0 to table size – 1. These entries are pointers pointing to the names of the symbol table.
-To search for a name we use a hash function that will result in an integer between 0 to table size – 1.
-Insertion and lookup can be made very fast – O(1).
-The advantage is quick to search is possible and the disadvantage is that hashing is complicated to implement. */
-
-
 typedef struct symbol symbol_t;
 
 typedef struct symbol {
     int line;
     char *name;
-    char *type;
+    token_type_t type;
     symbol_t *next;
 }symbol;
 
