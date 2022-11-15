@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "parser.h"
-#include "symtable.h"
-#include "lexer.h"
+#include "../include/parser.h"
+#include "../include/symtable.h"
+#include "../include/lexer.h"
 
 
 unsigned int hash(char *name, int size) {

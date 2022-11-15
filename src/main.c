@@ -4,9 +4,9 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-#include "parser.h"
-#include "symtable.h"
-#include "lexer.h"
+#include "../include/parser.h"
+#include "../include/symtable.h"
+#include "../include/lexer.h"
 
 
 int main()

@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-#include "lexer.h"
+#include "../include/lexer.h"
 
 int currentLine = 1;
 

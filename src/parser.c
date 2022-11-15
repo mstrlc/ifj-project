@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-#include "parser.h"
+#include "../include/parser.h"
 
 
 // err_type next_check(token_t* t){

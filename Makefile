@@ -3,29 +3,24 @@ CFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon
 #debug flags
 DBFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon -g -fsanitize=address
 
-#Use this to compile the program
-all: main.o lexer.o symtable.o parser.o
-	$(CC) $(CFLAGS) -o main main.o lexer.o symtable.o parser.o
-	
-lexer: lexer.o symtable.o
-	$(CC) $(CFLAGS) -o lexer lexer.o symtable.o
-#Use this for debugging
-debug: lexer.o symtable.o
-	$(CC) $(DBFLAGS) -o lexer lexer.o symtable.o
+SRC_DIR := src
+INC_DIR := include
 
-main.o: main.c
-	$(CC) $(CFLAGS) -c main.c
+EXE := main
+SRC := $(wildcard $(SRC_DIR)/*.c)
+OBJ := $(SRC:.c=.o)
 
-lexer.o: lexer.c lexer.h
-	$(CC) $(CFLAGS) -c lexer.c
+.PHONY: all clean
 
-parser.o: parser.c parser.h
-	$(CC) $(CFLAGS) -c parser.c
+all: $(EXE)
 
-symtable.o: symtable.c symtable.h
-	$(CC) $(CFLAGS) -c symtable.c
+$(EXE): $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^
 
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+#debug
+debug: $(OBJ)
+	$(CC) $(DBFLAGS) -o $@ $^
 clean:
-	@rm -f *.o main lexer
-	@rm -f  *.o
-	@rm -f a.out
+	rm -f ../$(OBJ) $(EXE)
