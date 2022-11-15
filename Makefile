@@ -24,3 +24,4 @@ debug: $(OBJ)
 	$(CC) $(DBFLAGS) -o $@ $^
 clean:
 	rm -f ../$(OBJ) $(EXE)
+	rm */*.o
