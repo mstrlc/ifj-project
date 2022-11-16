@@ -16,8 +16,10 @@ char *stateToString(fsm_state_t state)
         return "Start";
     case Identifier:
         return "Identifier";
-    case Var_prefix:
-        return "Var_prefix";
+    case Var_id_prefix:
+        return "Var_id_prefix";
+    case Var_id:
+        return "Var_id";
     case Type_prefix:
         return "Type_prefix";
     case Start_opening:
@@ -119,6 +121,8 @@ char *typeToString(token_type_t type)
         return "T_Unknown";
     case T_Identifier:
         return "T_Identifier";
+    case T_Var_id:
+        return "T_Var_id";
     case T_Keyword:
         return "T_Keyword";
     case T_String:
@@ -203,6 +207,8 @@ char *typeToString(token_type_t type)
         return "T_Keyword_Void";
     case T_Keyword_While:
         return "T_Keyword_While";
+    case T_Error:
+        return "T_Error";
     default:
         return "UNKNOWN";
     }
@@ -244,7 +250,7 @@ int getNextToken(token_t *token)
             if (isalpha(c) || c == '_')
                 nextState = Identifier;
             else if (c == '$')
-                nextState = Var_prefix;
+                nextState = Var_id_prefix;
             else if (c == '?')
                 nextState = Type_prefix;
             else if (c == '"')
@@ -296,8 +302,17 @@ int getNextToken(token_t *token)
             else
                 token->type = T_Identifier;
             break;
-        case Var_prefix:
-            token->type = T_Var_prefix;
+        case Var_id_prefix:
+            if (isalnum(c) || c == '_')
+                nextState = Var_id;
+            if (isspace(c))
+                nextState = ERROR;
+            break;
+        case Var_id:
+            if (isalnum(c) || c == '_')
+                nextState = Var_id;
+            else
+                token->type = T_Var_id;
             break;
         case Type_prefix:
             if (c == '>')
@@ -510,6 +525,9 @@ int getNextToken(token_t *token)
         case File_end:
             token->type = T_File_end;
             break;
+        case ERROR:
+            token->type = T_Error;
+            break;
         default:
             token->type = T_Unknown;
             nextState = Start;
@@ -536,9 +554,9 @@ int getNextToken(token_t *token)
         }
         currentState = nextState;
         char_to_token(c, token);
-        
+
     } while (token->type == T_Unknown);
-    
+
     // Recognize token type
     if (strcmp(token->data, "else") == 0)
         token->type = T_Keyword_Else;
