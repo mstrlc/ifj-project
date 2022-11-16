@@ -6,10 +6,9 @@ digraph fsm {
     
     // Nodes definition
     node [shape = circle] Start;
-    
     node [shape = doublecircle] Identifier;
-    node [shape = doublecircle] Var_prefix;
-    node [shape = doublecircle] Type_prefix;
+    node [shape = circle] Var_id_prefix;
+    node [shape = doublecircle] Var_id;
 
     node [shape = doublecircle] End_closing;
     node [shape = doublecircle] Start_opening;
@@ -68,7 +67,9 @@ digraph fsm {
     Identifier -> Identifier [label="  _, 0-9, a-z, A-Z  "];
     
     // Var and type prefixes
-    Start -> Var_prefix [label="$"];
+    Start -> Var_id_prefix [label="$"];
+    Var_id_prefix -> Var_id [label="  _, 0-9, a-z, A-Z  "];
+
     Start -> Type_prefix [label="?"];
     
     // Optional closing sign
