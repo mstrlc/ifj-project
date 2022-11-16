@@ -9,12 +9,13 @@ typedef struct symbol {
     char *name;
     token_type_t type;
     symbol_t *next;
+    symbol_t *prev;
 }symbol;
 
 typedef struct hash_table hash_table_t;
 struct hash_table {
-    int size;
-    int count;
+    size_t size;
+    size_t count;
     symbol_t **symbols;
 };
 

@@ -3,11 +3,13 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "../include/parser.h"
 #include "../include/symtable.h"
 #include "../include/lexer.h"
 
+#define MAX_HTAB_LD 0.75f
 
 int main()
 {
@@ -65,19 +67,24 @@ int main()
         i++;
     }
     printf("\nImprovised symbol table:\n");
-    hash_table_t *table = hash_table_init(100);
+    hash_table_t *table = hash_table_init(101);
     for (int j = 0; j < i; j++)
     {
-        double lf = (double)table->count / table->size;
-        if (lf > 0.6)
+        float lf = (float)table->count / table->size;
+        int alf = (int)roundf(lf * 100);
+        printf("\n**LOAD FACTOR IS %d \n", alf);
+        printf("count :%ld size: %ld", table->count, table->size);
+        if (alf >= 75)
         {
             // int nsize = table->size * 2;
+            //printf("sex");
             table = resize(table);
         }
+        
         hash_table_insert(table, token_to_symbol(tokens[j]));
     }
     hash_table_lookup(table, "strict_types");
-    // hash_table_print(table);
+    hash_table_print(table);
     for (int i = 0; i < 1000; i++)
     {
         free(tokens[i]);

@@ -20,14 +20,11 @@ symbol_t *token_to_symbol(token_t *token) {
 
     symbol_t *symbol = malloc(sizeof(symbol_t));
     symbol->line = token->line;
-    if(token->type != NULL){}
-    printf("token->data: %s\n", token->data);
     symbol->name = malloc(strlen(token->data) + 1);
-    
     strcpy(symbol->name, token->data);
-    //symbol->type = (char*)token->type;
-    //symbol->type = token->type;
+    symbol->type = token->type;
     symbol->next = NULL;
+    symbol->prev = NULL;
     free(token->data);
     return symbol;
 }
@@ -44,7 +41,7 @@ hash_table_t *hash_table_init(int size) {
 }
 
 void hash_table_free(hash_table_t *table) {
-    for (int i = 0; i < table->size; i++) {
+    for (size_t i = 0; i < table->size; i++) {
         if (table->symbols[i] != NULL) {
             symbol_t *symbol = table->symbols[i]->next;
             while (symbol != NULL) {
@@ -63,14 +60,21 @@ void hash_table_free(hash_table_t *table) {
 }
 
 hash_table_t* resize(hash_table_t *table) {
+    printf("sex");
     hash_table_t *new_table = hash_table_init(table->size * 2);
-    /*for (int i = 0; i < table->size; i++) {
+    for (size_t i = 0; i < table->size; i++) {
         symbol_t *symbol = table->symbols[i];
         if (symbol != NULL) {
             hash_table_insert(new_table, symbol);
+            symbol_t *next = symbol->next;
+            while (next != NULL) {
+                printf("sex");
+                hash_table_insert(new_table, next);
+                next = next->next;
+            }
         }
-    } */
-    hash_table_free(table);
+    }
+    //hash_table_free(table);
     return new_table;
 }
 
@@ -85,6 +89,8 @@ void hash_table_insert(hash_table_t *table, symbol_t *symbol) {
             current = current->next;
         }
         current->next = symbol;
+        symbol->prev = current;
+        table->count++;
     }
 }
 
@@ -101,12 +107,12 @@ symbol_t *hash_table_lookup(hash_table_t *table, char *name) {
 }
 
 void hash_table_print(hash_table_t *table) {
-    printf("size: %d\n", table->size);
+    printf("size: %ld\n", table->size);
     printf("%s\t%s\n","Index", "Name");
-    for (int i = 0; i < table->size; i++) {
+    for (size_t i = 0; i < table->size; i++) {
         symbol_t *symbol = table->symbols[i];
         if (symbol != NULL) {
-            printf("%d\t%s l:%d\t", i, symbol->name, symbol->line);
+            printf("%ld\t%s l:%d\t", i, symbol->name, symbol->line);
             symbol = symbol->next;
             while (symbol != NULL) {
                 printf("%s l:%d\t", symbol->name, symbol->line);

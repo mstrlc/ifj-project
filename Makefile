@@ -21,6 +21,6 @@ $(EXE): $(OBJ)
 	$(CC) $(CFLAGS) -c -o $@ $<
 #debug
 debug: $(OBJ)
-	$(CC) $(DBFLAGS) -o $@ $^
+	$(CC) $(DBFLAGS) -o $(EXE) $^
 clean:
-	rm -f $(OBJ) $(EXE) debug
+	rm -f $(OBJ) $(EXE)
