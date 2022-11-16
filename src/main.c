@@ -49,14 +49,6 @@ int main()
                 break;
         }
 
-        // if (tokens[i]->type != T_Whitespace)
-        // {
-        //     printf("%d)\t%s", currentLine, tokens[i]->data);
-
-        //     printf("\t%s\n", typeToString(tokens[i]->type));
-        //     if (strlen(tokens[i]->data) < 8)
-        //         printf("\t");
-        // }
         if (tokens[i]->type == T_File_end)
         {
             i++;
@@ -77,7 +69,7 @@ int main()
     //     hash_table_insert(table, token_to_symbol(tokens[j]));
     // }
     // hash_table_lookup(table, "strict_types");
-    // // hash_table_print(table);
+    //    // hash_table_print(table);
     // for (int i = 0; i < 1000; i++)
     // {
     //     free(tokens[i]);

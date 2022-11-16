@@ -5,7 +5,8 @@ typedef enum fsm_state_t
 {
     Start,
     Identifier,
-    Var_prefix,
+    Var_id_prefix,
+    Var_id,
     Type_prefix,
     End_closing,
     Start_opening,
@@ -56,6 +57,7 @@ typedef enum token_type_t
 {
     T_Unknown,
     T_Identifier,
+    T_Var_id,
     T_Keyword,
     T_String,
     T_Int,
@@ -97,7 +99,8 @@ typedef enum token_type_t
     T_Keyword_Return,
     T_Keyword_String,
     T_Keyword_Void,
-    T_Keyword_While
+    T_Keyword_While,
+    T_Error
 } token_type_t;
 
 
