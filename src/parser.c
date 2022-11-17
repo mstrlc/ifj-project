@@ -6,9 +6,6 @@
 
 #include "../include/parser.h"
 
-
-//KONEC BRACKET ZASOBNIKU
-
 int prog (token_t *token, b_stack* stack){
 
     ERR_CODE error_code = (ERR_CODE) malloc(sizeof(ERR_CODE)); // zatim nikde nevyuzivam
@@ -105,7 +102,7 @@ int prog (token_t *token, b_stack* stack){
         
         case T_Keyword_If:
             getNextToken(token);
-            int max_expression_lenght = 100;
+            int max_expression_lenght = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
             int exp_count = 0;
             if (token -> type == T_L_r_par){
                 do {
@@ -121,35 +118,53 @@ int prog (token_t *token, b_stack* stack){
                 getNextToken(token);
                 if(token -> type == T_L_c_par){
                     //vytvori se nejaky label, pak se printne JUMP label a ten stejne pojmenovany label se printe az se narazi na '}' 
-                    b_stack_push(stack, "LABEL"); // nefunguje pushovani stringu actually se pushne jen NULL ale do code genu neni potreba fixovat
+
+                    b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
+                    elem -> type = type_if;
+                    strcpy(elem ->label, "LABELL");
+                    b_stack_push(stack, elem); // nefunguje pushovani stringu actually se pushne jen NULL ale do code genu neni potreba fixovat
+
                     return 0;
                 }
             }
         break;
-
-        case T_Keyword_Else:
-            getNextToken(token);
-                if(token -> type == T_L_c_par){
-                    //vytvori se nejaky label, pak se printne JUMP label a ten stejne pojmenovany label se printe az se narazi na '}' 
-                    b_stack_push(stack, "LABEL");
-                    return 0;
-                }
-                else{
-                    return 1;
-                }
         
         case T_R_c_par:
-            //popni stack, podivej se jestli je pred tim T_L_r_par a kdyz nebude vyhod chybu
-            if(!b_stack_is_empty(stack)){
-                
-                b_stack_pop(stack); //zasobnik bude popovat labely in the future
+            //popni stack, zjisti co za keyword jsme zrovna ukoncili a vypis label
+
+            if(!b_stack_is_empty(stack)){            
+                b_stack_elem* elem = b_stack_pop(stack); 
+
+                if(elem -> type == type_if){
+                    getNextToken(token);
+                    if(token -> type == T_Keyword_Else){
+                        //code gen asi o.o
+                        getNextToken(token);
+                        if(token -> type == T_L_c_par){
+                            b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
+                            elem -> type = type_else;
+                            b_stack_push(stack, elem);
+                            return 0;
+                        }
+                        else{
+                            return 1;
+                        }
+                        
+                    }
+                    if(elem -> type == type_else_if){
+
+                    }
+                    if(elem -> type == type_else){
+
+                    }
+                }
                 return 0;
             }
-            else
+            else //if(!b_stack_is_empty(stack) v zasobniku nejsou zadne { tudiz neni pripustny znak }
                 return 1;
         break;
 
-        //tohle realne osetrit v lexeru nebo mainu na tokens[0]
+        //tohle realne osetrit v lexeru nebo mainu na tokens[0], protoze tohle nekontroluje jestli je to prvni token a ani to nema parser jak urcit
         case T_Start_opening:
             getNextToken(token);
             if (token -> type == T_Identifier && strcmp(token -> data, "php") == 0)

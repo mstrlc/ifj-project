@@ -1,13 +1,9 @@
 <?php
 // $float=3.4312;
-$int="sda";
-$exp=3e2; 
-if(fdsfdsfdsfds){
-    $hello = "www";
-    $hello = 3;
-    $hello = "SDA";
-    $hello = $sad;
+if(){
+
 }
+$pfd=0;
 else{
-    $ahoj = 5;
+
 }

@@ -4,16 +4,16 @@ void b_stack_init(b_stack* s){
     s -> top = 0;
 }
 
-void b_stack_push(b_stack* s, char* label){
-    if (s->top < BRACKET_STACK_MAX) {
-        s->dataArray[s->top] = label;
+void b_stack_push(b_stack* s, b_stack_elem* elem){
+    if (s->top < BRACKET_STACK_MAX ) {
         s->top++;
+        s->dataArray[s->top] = elem;
     }
 }
-char* b_stack_pop(b_stack* s){
-    char* data = s -> dataArray[s->top];
+b_stack_elem* b_stack_pop(b_stack* s){
+    b_stack_elem* elem = s -> dataArray[s->top];
     s -> top--;
-    return data;
+    return elem;
 }
 
 bool b_stack_is_empty(b_stack* s){

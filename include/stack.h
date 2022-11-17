@@ -12,16 +12,28 @@
 // znameno to ze pred tim nebyla zadna oteviraci zavorka a tudiz zpusobi chybi
 // pozdej v nem bude asi vic informaci nebo tu bude i vic zasobniku na vic druhu informaci treba scopy prommenych funkci atd
 
+typedef enum bracket_body_type{ // body type ( ͡° ͜ʖ ͡°)
+    type_if,
+    type_else,
+    type_else_if
+} bracket_body_type;
+
+typedef struct b_stack_elem{
+    char label[50];
+    bracket_body_type type;
+    
+} b_stack_elem;
+
 typedef struct b_stack{
-    char* dataArray[BRACKET_STACK_MAX];
+    b_stack_elem* dataArray[BRACKET_STACK_MAX];
     int top;
 } b_stack;
 
 void b_stack_init(b_stack* s);
 
-void b_stack_push(b_stack* s, char* c);
+void b_stack_push(b_stack* s, b_stack_elem * elem);
 
-char* b_stack_pop(b_stack* s);
+b_stack_elem*  b_stack_pop(b_stack* s);
 
 bool b_stack_is_empty(b_stack* s);
 
