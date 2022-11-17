@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #include "../include/lexer.h"
+#include "../include/error.h"
 
 int currentLine = 1;
 
@@ -210,7 +211,7 @@ char *typeToString(token_type_t type)
     case T_Error:
         return "T_Error";
     default:
-        return "UNKNOWN";
+        return "T_Error";
     }
 }
 
@@ -599,5 +600,13 @@ int getNextToken(token_t *token)
         token->data = string;
     }
 
-    return 0;
+    // Return error if lexeme is not recognized as valid
+    if (token->type == T_Error)
+    {
+        return ERR_LEXEME;
+    }
+    else
+    {
+        return 0;
+    }
 }
