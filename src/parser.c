@@ -11,7 +11,8 @@
 
 int prog (token_t *token, b_stack* stack){
 
-    ERR_CODE error_code = (ERR_CODE) malloc(sizeof(ERR_CODE));
+    ERR_CODE error_code = (ERR_CODE) malloc(sizeof(ERR_CODE)); // zatim nikde nevyuzivam
+
     switch(token -> type){
         case T_Var_id:
             getNextToken(token);
@@ -19,11 +20,26 @@ int prog (token_t *token, b_stack* stack){
             if(token -> type == T_Assign){
                 getNextToken(token);
 
+                if(token -> type == T_Var_id){ 
+                    getNextToken(token);
+    
+                    if(token -> type == T_Semicolon) // tyhle konstrukce nebudou brat vicenasobne prirazeni jako $var1 = $var2 = 8;
+                    {   
+                        //CODE GEN
+                        error_code = pass;
+                        return 0;
+                    }
+                    else{
+                        return 1;
+                    }
+                }
+
                 if(token -> type == T_String){
                     getNextToken(token);
                     if(token -> type == T_Semicolon)
                     {
                         //CODE GEN
+                        return 0;
                         error_code = pass;
                     }
                     else{
@@ -33,10 +49,10 @@ int prog (token_t *token, b_stack* stack){
 
                 else if(token -> type == T_Int){
                     getNextToken(token);
-
                     if(token -> type == T_Semicolon)
                     {
                         //CODE GEN
+                        return 0;
                         error_code = pass;
                     }
                     else{
@@ -49,6 +65,7 @@ int prog (token_t *token, b_stack* stack){
                     if(token -> type == T_Semicolon)
                     {
                         //CODE GEN
+                        return 0;
                         error_code = pass;
                     }
                     else{
@@ -61,6 +78,7 @@ int prog (token_t *token, b_stack* stack){
                     if(token -> type == T_Semicolon)
                     {
                         //CODE GEN
+                        return 0;
                         error_code = pass;
                     }
                     else{
@@ -103,14 +121,27 @@ int prog (token_t *token, b_stack* stack){
                 getNextToken(token);
                 if(token -> type == T_L_c_par){
                     //vytvori se nejaky label, pak se printne JUMP label a ten stejne pojmenovany label se printe az se narazi na '}' 
-                    b_stack_push(stack, "LABEL");
+                    b_stack_push(stack, "LABEL"); // nefunguje pushovani stringu actually se pushne jen NULL ale do code genu neni potreba fixovat
+                    return 0;
                 }
             }
         break;
+
+        case T_Keyword_Else:
+            getNextToken(token);
+                if(token -> type == T_L_c_par){
+                    //vytvori se nejaky label, pak se printne JUMP label a ten stejne pojmenovany label se printe az se narazi na '}' 
+                    b_stack_push(stack, "LABEL");
+                    return 0;
+                }
+                else{
+                    return 1;
+                }
         
         case T_R_c_par:
             //popni stack, podivej se jestli je pred tim T_L_r_par a kdyz nebude vyhod chybu
             if(!b_stack_is_empty(stack)){
+                
                 b_stack_pop(stack); //zasobnik bude popovat labely in the future
                 return 0;
             }
@@ -121,12 +152,11 @@ int prog (token_t *token, b_stack* stack){
         //tohle realne osetrit v lexeru nebo mainu na tokens[0]
         case T_Start_opening:
             getNextToken(token);
-
             if (token -> type == T_Identifier && strcmp(token -> data, "php") == 0)
             {
                 return 0;
             }
-            return 0;
+             return 1;
         break;
 
         case T_Line_comment:

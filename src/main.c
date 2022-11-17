@@ -75,7 +75,7 @@ int main()
     while(true){
         getNextToken(tokens_p[a]);
         if(prog(tokens_p[a], stack) == 1){
-            printf("\n\nERROR ON LINE: %d", tokens_p[a] -> line / 2);
+            printf("\n\nERROR ON LINE: %d", tokens_p[a] -> line ); //nefunguje , protoze iteruju po druhe, ale kdyz zakomentuju lexer debug tak funguje
             printf("\n\nTHE ERROR IS NEAR: %s\n", tokens_p[a] -> data );
             break;
         }
