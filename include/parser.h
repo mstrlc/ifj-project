@@ -3,17 +3,21 @@
 
 #include "symtable.h"
 #include "lexer.h"
+#include "../include/lexer.h"
+#include "../include/stack.h"
 
-typedef enum ERR_TYPE {
-    ERR_PARSE,
-    ERR_LEX,
-    ERR_SEM
-} err_type;
+typedef enum err_code{
+   parser_err,
+   lexer_err,
+   semantic_err,
+   pass
+}ERR_CODE;
 
-err_type next_check(token_t* t);
 
-err_type next_check_type(token_type_t* token_type, token_type_t* valid_type);
+// err_type next_check(token_t* t);
 
-void syntax_check(token_t* token);
+// err_type next_check_type(token_type_t* token_type, token_type_t* valid_type);
+
+int prog(token_t* token, b_stack* stack);
 
 #endif
