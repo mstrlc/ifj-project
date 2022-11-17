@@ -7,8 +7,6 @@
 #include "../include/lexer.h"
 #include "../include/error.h"
 
-int currentLine = 1;
-
 char *stateToString(fsm_state_t state)
 {
     switch (state)
@@ -235,6 +233,8 @@ bool char_to_token(char c, token_t *token)
 /// @return Error code
 int getNextToken(token_t *token)
 {
+    static int currentLine = 1;
+
     token->lenght = 0;
     token->data = NULL;
     token->type = T_Unknown;
