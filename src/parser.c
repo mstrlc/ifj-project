@@ -6,98 +6,66 @@
 
 #include "../include/parser.h"
 
-int prog (token_t *token, b_stack* stack){
 
-    ERR_CODE error_code = (ERR_CODE) malloc(sizeof(ERR_CODE)); // zatim nikde nevyuzivam
+//0... PASS
+//1... syntax err
+
+#define CREATE_ASSIGN                       \
+        strcat(lineToPrint, " ");           \
+        strcat(lineToPrint, token->data);   \
+        getNextToken(token);                \
+        if(token -> type == T_Semicolon)    \
+        {                                   \
+            printf("MOVE %s \n", lineToPrint); \
+            return 0;                       \
+        }                                   \
+        else{                               \
+            return 1;                       \
+        }                                   \
+
+int prog (token_t *token, b_stack* stack){
+char lineToPrint[100];
 
     switch(token -> type){
         case T_Var_id:
+            printf("DEFVAR %s \n", token->data); // az se bude pracovat s tabulkou symbolu, pridej kontrolu, jestli je promenna definovana
+
+            strcpy(lineToPrint, token -> data);
             getNextToken(token);
           
             if(token -> type == T_Assign){
                 getNextToken(token);
-
-                if(token -> type == T_Var_id){ 
-                    getNextToken(token);
-    
-                    if(token -> type == T_Semicolon) // tyhle konstrukce nebudou brat vicenasobne prirazeni jako $var1 = $var2 = 8;
-                    {   
-                        //CODE GEN
-                        error_code = pass;
-                        return 0;
-                    }
-                    else{
-                        return 1;
-                    }
+                if(token -> type == T_Var_id){ // az se bude pracovat s tabulkou symbolu, pridej kontrolu, jestli je promenna definovana
+                    CREATE_ASSIGN;
                 }
-
-                if(token -> type == T_String){
-                    getNextToken(token);
-                    if(token -> type == T_Semicolon)
-                    {
-                        //CODE GEN
-                        return 0;
-                        error_code = pass;
-                    }
-                    else{
-                        return 1;
-                    }
+                
+                else if(token -> type == T_String){
+                    CREATE_ASSIGN;
                 }
 
                 else if(token -> type == T_Int){
-                    getNextToken(token);
-                    if(token -> type == T_Semicolon)
-                    {
-                        //CODE GEN
-                        return 0;
-                        error_code = pass;
-                    }
-                    else{
-                        return 1;
-                    }
+                    CREATE_ASSIGN;
                 }
 
                 else if(token -> type == T_Float){
-                    getNextToken(token);
-                    if(token -> type == T_Semicolon)
-                    {
-                        //CODE GEN
-                        return 0;
-                        error_code = pass;
-                    }
-                    else{
-                        return 1;
-                    }
+                    CREATE_ASSIGN;
                 }
 
-                else if(token -> type == T_Exp){
+                else if(token -> type == T_Exp){ // TODO: tady to uprav podle toho jak se bude pracovat s expressions
                     getNextToken(token);
-                    if(token -> type == T_Semicolon)
-                    {
-                        //CODE GEN
-                        return 0;
-                        error_code = pass;
-                    }
-                    else{
-                        return 1;
-                    }   
+                    return 0;
+                   
+                }
+                else if(token -> type == T_Semicolon){
+                    printf("DEFVAR %s \n", token->data);
                 }
 
                 else{
-                    //check_expression();
-                    error_code = parser_err;
+                    //check_expression(); // idk kde se to bude checkovat
+                    //_code = parser_err;
                     return 1;
                 }
             } // if(token -> type == T_Equal)
-
-            else if(token -> type == T_Semicolon){
-                    //DEFVAR CODE GEN
-            }
-            
-            else{
-                return 1;
-            }
-
         break; //case T_Var_id
         
         case T_Keyword_If:
@@ -130,7 +98,7 @@ int prog (token_t *token, b_stack* stack){
         break;
         
         case T_R_c_par:
-            //popni stack, zjisti co za keyword jsme zrovna ukoncili a vypis label
+            //popni stack, zjisti co za keyword { jsme zrovna ukoncili a vypis label
 
             if(!b_stack_is_empty(stack)){            
                 b_stack_elem* elem = b_stack_pop(stack); 
@@ -140,7 +108,7 @@ int prog (token_t *token, b_stack* stack){
                     if(token -> type == T_Keyword_Else){
                         //code gen asi o.o
                         getNextToken(token);
-                        if(token -> type == T_L_c_par){
+                        if(token -> type == T_L_c_par){ 
                             b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
                             elem -> type = type_else;
                             b_stack_push(stack, elem);

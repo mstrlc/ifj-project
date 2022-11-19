@@ -1,9 +1,6 @@
+
 <?php
-// $float=3.4312;
-if(){
-
-}
-$pfd=0;
-else{
-
-}
+$flat = "AHOJ";
+$int = 3;
+$exp = 3e2;
+$ahoj;
