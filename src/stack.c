@@ -10,10 +10,13 @@ void b_stack_push(b_stack* s, b_stack_elem* elem){
         s->dataArray[s->top] = elem;
     }
 }
+
 b_stack_elem* b_stack_pop(b_stack* s){
-    b_stack_elem* elem = s -> dataArray[s->top];
     s -> top--;
-    return elem;
+}
+
+b_stack_elem* b_stack_top(b_stack* s){
+    return s -> dataArray[s->top];
 }
 
 bool b_stack_is_empty(b_stack* s){

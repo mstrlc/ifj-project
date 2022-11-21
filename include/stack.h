@@ -15,7 +15,9 @@
 typedef enum bracket_body_type{ // body type ( ͡° ͜ʖ ͡°)
     type_if,
     type_else,
-    type_else_if
+    type_else_if,
+    type_while,
+    type_function
 } bracket_body_type;
 
 typedef struct b_stack_elem{
@@ -34,6 +36,8 @@ void b_stack_init(b_stack* s);
 void b_stack_push(b_stack* s, b_stack_elem * elem);
 
 b_stack_elem*  b_stack_pop(b_stack* s);
+
+b_stack_elem* b_stack_top(b_stack* s);
 
 bool b_stack_is_empty(b_stack* s);
 

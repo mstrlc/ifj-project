@@ -10,13 +10,14 @@
 //0... PASS
 //1... syntax err
 
-#define CREATE_ASSIGN                       \
+#define CREATE_ASSIGN(tType)                       \
         strcat(lineToPrint, " ");           \
+        strcat(lineToPrint, tType);           \
         strcat(lineToPrint, token->data);   \
         getNextToken(token);                \
         if(token -> type == T_Semicolon)    \
         {                                   \
-            printf("MOVE %s \n", lineToPrint); \
+            printf("MOVE TF@%s \n", lineToPrint); \
             return 0;                       \
         }                                   \
         else{                               \
@@ -28,7 +29,7 @@ char lineToPrint[100];
 
     switch(token -> type){
         case T_Var_id:
-            printf("DEFVAR %s \n", token->data); // az se bude pracovat s tabulkou symbolu, pridej kontrolu, jestli je promenna definovana
+            printf("DEFVAR TF@%s \n", token->data); // az se bude pracovat s tabulkou symbolu, pridej kontrolu, jestli je promenna definovana
 
             strcpy(lineToPrint, token -> data);
             getNextToken(token);
@@ -36,19 +37,19 @@ char lineToPrint[100];
             if(token -> type == T_Assign){
                 getNextToken(token);
                 if(token -> type == T_Var_id){ // az se bude pracovat s tabulkou symbolu, pridej kontrolu, jestli je promenna definovana
-                    CREATE_ASSIGN;
+                    CREATE_ASSIGN("TF@");
                 }
                 
                 else if(token -> type == T_String){
-                    CREATE_ASSIGN;
+                    CREATE_ASSIGN("string@");
                 }
 
                 else if(token -> type == T_Int){
-                    CREATE_ASSIGN;
+                    CREATE_ASSIGN("int@");
                 }
 
                 else if(token -> type == T_Float){
-                    CREATE_ASSIGN;
+                    CREATE_ASSIGN("float@");
                 }
 
                 else if(token -> type == T_Exp){ // TODO: tady to uprav podle toho jak se bude pracovat s expressions
@@ -58,6 +59,10 @@ char lineToPrint[100];
                 }
                 else if(token -> type == T_Semicolon){
                     printf("DEFVAR %s \n", token->data);
+                }
+                else if(token -> type == T_Identifier){
+                    // navratova hodnota funkce sem
+                    return 1;
                 }
 
                 else{
@@ -70,91 +75,153 @@ char lineToPrint[100];
         
         case T_Keyword_If:
             getNextToken(token);
+            if (token -> type != T_L_r_par)
+                return 1;
+
             int max_expression_lenght = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
             int exp_count = 0;
-            if (token -> type == T_L_r_par){
-                do {
-                    if(exp_count < max_expression_lenght){
-                        exp_count++;
-                        getNextToken(token);
-                        // udelej string ktery pak narvy do check_expression()
-                    }
-                    else 
-                        return 1;
-                } while (token -> type != T_R_r_par);
+
+            do {
+                exp_count++;
+                if(exp_count > max_expression_lenght)
+                    return 1;
 
                 getNextToken(token);
-                if(token -> type == T_L_c_par){
-                    //vytvori se nejaky label, pak se printne JUMP label a ten stejne pojmenovany label se printe az se narazi na '}' 
+                // udelej string ktery pak narvy do check_expression()
 
-                    b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
-                    elem -> type = type_if;
-                    strcpy(elem ->label, "LABELL");
-                    b_stack_push(stack, elem); // nefunguje pushovani stringu actually se pushne jen NULL ale do code genu neni potreba fixovat
+            } while (token -> type != T_R_r_par);
 
-                    return 0;
-                }
-            }
+            getNextToken(token);
+            if(token -> type != T_L_c_par)
+                return 1;
+
+            //vytvori se nejaky label, pak se printne JUMP label a ten stejne pojmenovany label se printe az se narazi na '}' 
+            b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
+            elem -> type = type_if;
+            strcpy(elem ->label, "IF");
+
+            b_stack_push(stack, elem);
+
+            printf("PUSHFRAME\n");
+            printf("CREATEFRAME\n");
+            printf("JUMP [podminene na vyraze] %s\n",elem->label); // tady bude nejake printovani podminene na vyrazu
         break;
         
         case T_R_c_par:
             //popni stack, zjisti co za keyword { jsme zrovna ukoncili a vypis label
-
-            if(!b_stack_is_empty(stack)){            
-                b_stack_elem* elem = b_stack_pop(stack); 
-
-                if(elem -> type == type_if){
-                    getNextToken(token);
-                    if(token -> type == T_Keyword_Else){
-                        //code gen asi o.o
-                        getNextToken(token);
-                        if(token -> type == T_L_c_par){ 
-                            b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
-                            elem -> type = type_else;
-                            b_stack_push(stack, elem);
-                            return 0;
-                        }
-                        else{
-                            return 1;
-                        }
-                        
-                    }
-                    if(elem -> type == type_else_if){
-
-                    }
-                    if(elem -> type == type_else){
-
-                    }
-                }
-                return 0;
-            }
-            else //if(!b_stack_is_empty(stack) v zasobniku nejsou zadne { tudiz neni pripustny znak }
+            if(b_stack_is_empty(stack))
                 return 1;
+                     
+            elem = b_stack_top(stack);
+            b_stack_pop(stack);
+
+            if(elem -> type == type_if){
+                printf("POPFRAME\n");
+                printf("LABEL :%s\n", elem ->label);
+
+                getNextToken(token);
+
+                if(token -> type == T_Keyword_Else){
+                    getNextToken(token);
+
+                    if(token -> type != T_L_c_par)
+                        return 1;
+                    
+                    // b_stack_pop(stack);
+                     
+                    b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
+                    elem -> type = type_else;
+                    strcpy(elem -> label, "ELSE");
+                        
+                    printf("PUSHFRAME\n");
+                    printf("CREATEFRAME\n");
+                    printf("JUMP [podminene na vyraze] %s\n",elem->label); // tady bude nejake printovani podminene na vyrazu
+
+                    b_stack_push(stack, elem);
+                }
+                else{
+                    return prog(token, stack); // bud muze nasledovat za if else, nebo statement-list
+                }    
+            }
+
+            if(elem -> type == type_else){
+                printf("POPFRAME\n");
+                printf("LABEL %s\n", elem ->label);
+                // b_stack_pop(stack);
+            }
+            
+            if(elem -> type == type_while){
+                // b_stack_pop(stack);
+            }
+        break;
+
+        case T_Keyword_While: // od ted to zacinam psat jak clovek
+            getNextToken(token);
+
+            if(token -> type != T_L_r_par)
+                return 1;
+
+            max_expression_lenght = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
+            exp_count = 0;
+
+            do{
+                exp_count++;
+                getNextToken(token);
+                if (exp_count > max_expression_lenght)
+                    return 1;
+
+                //nacti expresiion a posli ho do zpracovani 
+            } while (token -> type != T_R_r_par);
+
+            getNextToken(token);
+            if(token -> type != T_L_c_par)
+                return 1;
+            
+            elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
+            elem -> type = type_while;
+            strcpy(elem -> label, "WHILEE");
+
+            b_stack_push(stack, elem);
+
+        break;
+
+        case T_Keyword_Function:
+            getNextToken(token);
+
+            if(token -> type != T_Identifier)
+                return 1;
+
+            getNextToken(token);
+            if(token -> type != T_L_r_par)
+                return 1;
+
+            // if(check_args){
+            
+            // }
+
+
         break;
 
         //tohle realne osetrit v lexeru nebo mainu na tokens[0], protoze tohle nekontroluje jestli je to prvni token a ani to nema parser jak urcit
         case T_Start_opening:
             getNextToken(token);
-            if (token -> type == T_Identifier && strcmp(token -> data, "php") == 0)
-            {
-                return 0;
-            }
-             return 1;
+
+            if (strcmp(token -> data, "php") != 0)
+                return 1;
+
         break;
 
         case T_Line_comment:
-            return 0;
+            //
         break;
 
         case T_Block_comment:
-            return 0;
+            //
         break;
 
-        case T_File_end:
-            if(!b_stack_is_empty(stack)){ // jestli je otevrena zavorka ale neni zadna ukoncena
+        case T_File_end: 
+            if(!b_stack_is_empty(stack)) // jestli je otevrena zavorka ale neni zadna ukoncena
                 return 1;
-            }
-            return 0;
         break;
 
         default:

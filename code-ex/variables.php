@@ -1,6 +1,16 @@
 
 <?php
-$flat = "AHOJ";
-$int = 3;
-$exp = 3e2;
-$ahoj;
+while( ){
+   if(){
+      if(){
+         if(){}
+         else{
+            while(){
+
+
+               $cauky = "ds"  ;
+            }
+         }
+      }
+   }
+}
