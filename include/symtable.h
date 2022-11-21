@@ -12,21 +12,25 @@ typedef struct symbol {
     symbol_t *prev;
 }symbol;
 
-typedef struct hash_table hash_table_t;
-struct hash_table {
+typedef struct symtable symtable_T;
+struct symtable {
     size_t size;
     size_t count;
     symbol_t **symbols;
 };
 
-unsigned int hash(char *name, int size);
+unsigned long hash(char *name);
 
 symbol_t *token_to_symbol(token_t *token);
-hash_table_t *hash_table_init(int size);
-void hash_table_free(hash_table_t *table);
-hash_table_t* resize(hash_table_t *table);
-void hash_table_insert(hash_table_t *table, symbol_t *symbol);
-symbol_t *hash_table_lookup(hash_table_t *table, char *name);
-void hash_table_print(hash_table_t *table);
+
+symtable_T *symtable_init(int size);
+void free_symbols(symtable_T *table);
+void symtable_dispose(symtable_T *table);
+
+void symtable_insert(symtable_T *table, symbol_t *symbol);
+symbol_t *symtable_lookup(symtable_T *table, char *name);
+
+void symtable_print(symtable_T *table);
+symtable_T* resize(symtable_T *table);
 
 #endif

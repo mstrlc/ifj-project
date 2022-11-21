@@ -1,7 +1,6 @@
 CC=gcc
-CFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon
-#debug flags
-DBFLAGS=-std=c99 -Wall -Wextra -pedantic -lm -fcommon -g -fsanitize=address
+CFLAGS=-std=c99 -Wall -Wextra -pedantic -fcommon -lm
+DBFLAGS=-std=c99 -Wall -Wextra -pedantic -fcommon -lm -g -fsanitize=address
 
 SRC_DIR := src
 INC_DIR := include
@@ -15,12 +14,12 @@ OBJ := $(SRC:.c=.o)
 all: $(EXE)
 
 $(EXE): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lm
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 #debug
 debug: $(OBJ)
-	$(CC) $(DBFLAGS) -o $(EXE) $^
+	$(CC) $(DBFLAGS) -o $(EXE) $^ -lm -g
 clean:
 	rm -f $(OBJ) $(EXE)
