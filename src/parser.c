@@ -57,12 +57,28 @@ char lineToPrint[100];
                     return 0;
                    
                 }
+
                 else if(token -> type == T_Semicolon){
                     printf("DEFVAR %s \n", token->data);
                 }
+
                 else if(token -> type == T_Identifier){
-                    // navratova hodnota funkce sem
-                    return 1;
+                    getNextToken(token);
+                    if(token -> type != T_L_r_par)
+                        return 1;
+
+                    if(check_call_args(token) != 0){
+                        return check_call_args(token);
+                    }
+
+                    getNextToken(token);
+                    if(token -> type == T_Semicolon){
+                        //code gen
+                    }
+                    else{
+                        return 1;
+                    }
+
                 }
 
                 else{
@@ -153,6 +169,10 @@ char lineToPrint[100];
             if(elem -> type == type_while){
                 // b_stack_pop(stack);
             }
+
+            if(elem -> type == type_function){
+
+            }
         break;
 
         case T_Keyword_While: // od ted to zacinam psat jak clovek
@@ -189,16 +209,46 @@ char lineToPrint[100];
             getNextToken(token);
 
             if(token -> type != T_Identifier)
-                return 1;
+                return 0;
 
             getNextToken(token);
             if(token -> type != T_L_r_par)
                 return 1;
 
-            // if(check_args){
-            
-            // }
+            if(check_args(token) != 0){
+                return check_args(token);
+            }
 
+            getNextToken(token);
+            if(token->type != T_Colon)
+                return 1;
+
+            getNextToken(token);
+            if(token -> type == T_Keyword_String){
+
+            }  
+            else if(token -> type == T_Keyword_Int){
+
+            }
+            else if(token->type == T_Keyword_Float){
+
+            }
+            else{
+                return 1;
+            }
+
+            getNextToken(token);
+            if(token -> type != T_L_c_par)
+                return 1;
+            
+            elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
+            elem -> type = type_function;
+            strcpy(elem ->label, "FUNCTION");
+            
+            b_stack_push(stack, elem);
+            
+            // if(token -> type != T_L_c_par)
+            //     return 1;
 
         break;
 
@@ -229,4 +279,88 @@ char lineToPrint[100];
         break;
     }
     return 0;
+}
+
+// rekurznivne, protoze mame volitelne mnozstvi argumentu
+int check_args(token_t *token){
+    getNextToken(token);
+
+    if (token->type == T_Keyword_String){
+        getNextToken(token);
+
+        if(token->type != T_Var_id)
+            return 1;
+        
+        getNextToken(token);
+        if(token->type == T_R_r_par){
+            return 0;
+        }
+        else if(token -> type == T_Comma){
+            return check_args(token);
+        }
+        else{
+            return 1;
+        }
+    }
+    else if (token->type == T_Keyword_Int){
+        getNextToken(token);
+
+        if(token->type != T_Var_id)
+            return 1;
+        
+        getNextToken(token);
+        if(token->type == T_R_r_par){
+            return 0;
+        }
+        else if(token -> type == T_Comma){
+            return check_args(token);
+        }
+        else{
+            return 1;
+        }
+    }
+
+    else if (token->type == T_Keyword_Float){
+        getNextToken(token);
+
+        if(token->type != T_Var_id)
+            return 1;
+        
+        getNextToken(token);
+        if(token->type == T_R_r_par){
+            return 0;
+        }
+        else if(token -> type == T_Comma){
+            return check_args(token);
+        }
+        else{
+            return 1;
+        }
+    }
+    else if(token -> type == T_R_r_par){
+        return 0;
+    }
+
+    else{
+        return 1;
+    }
+    
+}
+
+int check_call_args(token_t *token){
+        
+       getNextToken(token);
+        if(token->type != T_Var_id)
+            return 1;
+        
+        getNextToken(token);
+        if(token->type == T_R_r_par){
+            return 0;
+        }
+        else if(token -> type == T_Comma){
+            return check_call_args(token);
+        }
+        else{
+            return 1;
+        }
 }

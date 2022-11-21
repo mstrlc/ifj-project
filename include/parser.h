@@ -20,4 +20,8 @@ typedef enum err_code{
 
 int prog(token_t* token, b_stack* stack);
 
+int check_args(token_t *token);
+
+int check_call_args(token_t *token);
+
 #endif

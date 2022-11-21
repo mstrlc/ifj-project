@@ -1,16 +1,8 @@
-
 <?php
-while( ){
+function bar(string $ahoj):int{
+if(){
    if(){
-      if(){
-         if(){}
-         else{
-            while(){
-
-
-               $cauky = "ds"  ;
-            }
-         }
-      }
+      $ahoj = bar(  $sda,  $dsadsa, );
    }
+}
 }
