@@ -25,7 +25,6 @@ symbol_t *token_to_symbol(token_t *token) {
     }
 
     strcpy(symbol->name, token->data);
-    free(token->data);
 
     symbol->line = token->line;
     symbol->type = token->type;

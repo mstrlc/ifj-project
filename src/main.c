@@ -90,46 +90,22 @@ int main()
         a++;
     }
 
-
-    // printf("\nImprovised symbol table:\n");
-    // hash_table_t *table = hash_table_init(100);
-    // for (int j = 0; j < i; j++)
-    // {
-    //     double lf = (double)table->count / table->size;
-    //     if (lf > 0.6)
-    //     {
-    //         // int nsize = table->size * 2;
-    //         table = resize(table);
-    //     }
-    //     hash_table_insert(table, token_to_symbol(tokens[j]));
-    // }
-    // hash_table_lookup(table, "strict_types");
-    //    // hash_table_print(table);
-    // for (int i = 0; i < 1000; i++)
-    // {
-    //     free(tokens[i]);
-    // }
-    // hash_table_free(table);
     printf("\nImprovised symbol table:\n");
     //ALWAYS USE PRIME NUMBERS FOR HASH TABLE SIZE
     symtable_t *table = symtable_init(11);
     for (int j = 0; j < i; j++)
     {
+        table = symtable_check_size(table);
+        symbol_t *symbol = token_to_symbol(tokens[j]);
+        symtable_insert(table, symbol);    
         
-        if (tokens[j]->type == T_Identifier || tokens[j]->type == T_Int || tokens[j]->type == T_Float || tokens[j]->type == T_Exp || tokens[j]->type == T_String)
-        {
-            table = symtable_check_size(table);
-            symbol_t *symbol = token_to_symbol(tokens[j]);
-            symtable_insert(table, symbol);
-        }
-        else
-        free(tokens[j]->data);
     }
-    symtable_print(table);
+    
     for (int i = 0; i < 1000; i++)
     {
         free(tokens[i]);
     }
+    symtable_print(table);
     free_symbols(table);
     symtable_dispose(table);
     return 0;
