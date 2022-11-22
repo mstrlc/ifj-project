@@ -7,6 +7,7 @@
 #include "../include/parser.h"
 #include "../include/symtable.h"
 #include "../include/lexer.h"
+#include "../include/stack.h"
 
 
 int main()
@@ -56,6 +57,38 @@ int main()
         }
         i++;
     }
+
+
+    //PARSE DEBUG
+    rewind(stdin);
+
+    b_stack* stack = (b_stack *) malloc(sizeof(struct b_stack)) ;
+    b_stack_init(stack);
+
+    token_t *tokens_p[1000];
+    for (int a = 0; a < 1000; a++)
+    {
+        tokens_p[a] = malloc(sizeof(token_t));
+    }
+    // Go through tokens until End of file token type
+    int a = 0;
+    while(true){
+        getNextToken(tokens_p[a]);
+
+        if(prog(tokens_p[a], stack) == 1){
+            printf("\n\nERROR ON LINE: %d", tokens_p[a] -> line ); //nefunguje , protoze iteruju po druhe, ale kdyz zakomentuju lexer debug tak funguje
+            printf("\n\nTHE ERROR IS NEAR: %s\n", tokens_p[a] -> data );
+            break;
+        }
+
+        if (tokens_p[a] -> type == T_File_end){
+            a++;
+            break;
+        }
+        a++;
+    }
+
+
     // printf("\nImprovised symbol table:\n");
     // hash_table_t *table = hash_table_init(100);
     // for (int j = 0; j < i; j++)

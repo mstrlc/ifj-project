@@ -219,7 +219,8 @@ bool char_to_token(char c, token_t *token)
     {
         token->lenght++;
         token->data = realloc(token->data, token->lenght * sizeof(char));
-        if (token->data != NULL)
+        
+        if (token->data != NULL )
         {
             token->data[token->lenght - 1] = c;
             return 1;
@@ -285,7 +286,7 @@ int getNextToken(token_t *token)
             else if (c == '}')
                 nextState = R_c_par;
             else if (isspace(c))
-                nextState = Whitespace;
+                nextState = Start; //misto stavu whitespace jdi na start a vyignoruj tak whitespace [Dominik]
             else if (c == ',')
                 nextState = Comma;
             else if (c == ':')
@@ -530,6 +531,7 @@ int getNextToken(token_t *token)
             token->type = T_Error;
             break;
         default:
+            // vyhod chybu
             token->type = T_Unknown;
             nextState = Start;
             break;
@@ -557,6 +559,40 @@ int getNextToken(token_t *token)
         char_to_token(c, token);
 
     } while (token->type == T_Unknown);
+
+
+
+
+    // (copy paste z netu!!!! predelat in the future) kdyz jsem odstranil white space stav, tak white space zustavali v token->data, kvuli tomu se keywordy oznacovali jako identifiery
+    // proto trimuju whitespacy tady [Dominik]
+    char *trimwhitespace(char *str)
+    {
+    char *end;
+
+    // Trim leading space
+    while(isspace((unsigned char)*str)) str++;
+
+    if(*str == 0)  // All spaces?
+        return str;
+
+    // Trim trailing space
+    end = str + strlen(str) - 1;
+    while(end > str && isspace((unsigned char)*end)) end--;
+
+    // Write new null terminator character
+    end[1] = '\0';
+
+    return str;
+    }
+
+    token->data = trimwhitespace(token->data);
+
+
+
+
+
+
+
 
     // Recognize token type
     if (strcmp(token->data, "else") == 0)
@@ -596,7 +632,7 @@ int getNextToken(token_t *token)
             string[i] = token->data[i + 1];
         }
         string[strlen(token->data) - 2] = '\0';
-        free(token->data);
+       // free(token->data);  Kvuli trimwhitespace() to vyhazovalo Aborted error, nevim jak to fixnout tak zakomentovavam [Dominik]
         token->data = string;
     }
 
