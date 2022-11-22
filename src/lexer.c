@@ -572,6 +572,11 @@ int getNextToken(token_t *token)
     if (token->type == T_String)
     {
         char *string = malloc(sizeof(char) * (strlen(token->data) - 1));
+        if(string == NULL)
+        {
+            fprintf(stderr, "Error: malloc failed\n");
+            return 1;
+        }
         for (size_t i = 0; i < strlen(token->data) - 2; i++)
         {
             string[i] = token->data[i + 1];

@@ -12,7 +12,7 @@ typedef struct symbol {
     symbol_t *prev;
 }symbol;
 
-typedef struct symtable symtable_T;
+typedef struct symtable symtable_t;
 struct symtable {
     size_t size;
     size_t count;
@@ -23,14 +23,15 @@ unsigned long hash(char *name);
 
 symbol_t *token_to_symbol(token_t *token);
 
-symtable_T *symtable_init(int size);
-void free_symbols(symtable_T *table);
-void symtable_dispose(symtable_T *table);
+symtable_t *symtable_init(int size);
+void free_symbols(symtable_t *table);
+void symtable_dispose(symtable_t *table);
 
-void symtable_insert(symtable_T *table, symbol_t *symbol);
-symbol_t *symtable_lookup(symtable_T *table, char *name);
+void symtable_insert(symtable_t *table, symbol_t *symbol);
+symbol_t *symtable_lookup(symtable_t *table, char *name);
 
-void symtable_print(symtable_T *table);
-symtable_T* resize(symtable_T *table);
+void symtable_print(symtable_t *table);
+symtable_t* symtable_check_size(symtable_t *table);
+symtable_t* resize(symtable_t *table);
 
 #endif
