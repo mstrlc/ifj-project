@@ -3,12 +3,14 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "../include/parser.h"
 #include "../include/symtable.h"
 #include "../include/lexer.h"
 #include "../include/stack.h"
 
+#define MAX_HTAB_LD 0.75f
 
 int main()
 {
@@ -24,7 +26,7 @@ int main()
     while (true)
     {
         getNextToken(tokens[i]);
-        printf("%d:\t", tokens[i]->line);
+        printf("%d:\t", tokens[i]->line)    ;
         printf("%s\t", typeToString(tokens[i]->type));
         if(strlen(typeToString(tokens[i]->type))>7)
             printf("\t");
@@ -108,5 +110,27 @@ int main()
     //     free(tokens[i]);
     // }
     // hash_table_free(table);
+    printf("\nImprovised symbol table:\n");
+    //ALWAYS USE PRIME NUMBERS FOR HASH TABLE SIZE
+    symtable_t *table = symtable_init(11);
+    for (int j = 0; j < i; j++)
+    {
+        
+        if (tokens[j]->type == T_Identifier || tokens[j]->type == T_Int || tokens[j]->type == T_Float || tokens[j]->type == T_Exp || tokens[j]->type == T_String)
+        {
+            table = symtable_check_size(table);
+            symbol_t *symbol = token_to_symbol(tokens[j]);
+            symtable_insert(table, symbol);
+        }
+        else
+        free(tokens[j]->data);
+    }
+    symtable_print(table);
+    for (int i = 0; i < 1000; i++)
+    {
+        free(tokens[i]);
+    }
+    free_symbols(table);
+    symtable_dispose(table);
     return 0;
 }
