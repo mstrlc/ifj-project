@@ -35,7 +35,7 @@ void b_stack_init(b_stack* s);
 
 void b_stack_push(b_stack* s, b_stack_elem * elem);
 
-b_stack_elem*  b_stack_pop(b_stack* s);
+void  b_stack_pop(b_stack* s);
 
 b_stack_elem* b_stack_top(b_stack* s);
 

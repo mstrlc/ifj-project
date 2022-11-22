@@ -2,7 +2,11 @@
 function bar(string $ahoj):int{
 if(){
    if(){
-      $ahoj = bar(  $sda,  $dsadsa, );
+      $ahoj = bar(  $sda,  $dsadsa );
    }
+   else{
+
+   }
+
 }
 }

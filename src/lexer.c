@@ -229,6 +229,29 @@ bool char_to_token(char c, token_t *token)
     return 0;
 }
 
+
+// (copy paste z netu!!!! predelat in the future) kdyz jsem odstranil white space stav, tak white space zustavali v token->data, kvuli tomu se keywordy oznacovali jako identifiery
+// proto trimuju whitespacy tady [Dominik]
+char *trimwhitespace(char *str)
+{
+char *end;
+
+// Trim leading space
+while(isspace((unsigned char)*str)) str++;
+
+if(*str == 0)  // All spaces?
+    return str;
+
+// Trim trailing space
+end = str + strlen(str) - 1;
+while(end > str && isspace((unsigned char)*end)) end--;
+
+// Write new null terminator character
+end[1] = '\0';
+
+return str;
+}
+
 /// @brief
 /// @param token
 /// @return Error code
@@ -560,39 +583,7 @@ int getNextToken(token_t *token)
 
     } while (token->type == T_Unknown);
 
-
-
-
-    // (copy paste z netu!!!! predelat in the future) kdyz jsem odstranil white space stav, tak white space zustavali v token->data, kvuli tomu se keywordy oznacovali jako identifiery
-    // proto trimuju whitespacy tady [Dominik]
-    char *trimwhitespace(char *str)
-    {
-    char *end;
-
-    // Trim leading space
-    while(isspace((unsigned char)*str)) str++;
-
-    if(*str == 0)  // All spaces?
-        return str;
-
-    // Trim trailing space
-    end = str + strlen(str) - 1;
-    while(end > str && isspace((unsigned char)*end)) end--;
-
-    // Write new null terminator character
-    end[1] = '\0';
-
-    return str;
-    }
-
     token->data = trimwhitespace(token->data);
-
-
-
-
-
-
-
 
     // Recognize token type
     if (strcmp(token->data, "else") == 0)
