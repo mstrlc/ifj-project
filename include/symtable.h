@@ -3,7 +3,6 @@
 #define SYMTABLE_H
 
 typedef struct symbol symbol_t;
-
 typedef struct symbol {
     int line;
     char *name;
