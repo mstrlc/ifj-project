@@ -24,4 +24,5 @@ int check_args(token_t *token);
 
 int check_call_args(token_t *token);
 
+char* make_random_string();
 #endif

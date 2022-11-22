@@ -1,12 +1,11 @@
 <?php
-function bar(string $ahoj):int{
 if(){
-   if(){
-      $ahoj = bar(  $sda,  $dsadsa );
-   }
-   else{
-
-   }
-
+   $ahoj = "dsad";
+   $cus = 4;
 }
+else{
+   $ahoj = "dsad";
+   if(){
+      
+   }
 }

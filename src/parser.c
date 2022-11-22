@@ -34,9 +34,9 @@ char lineToPrint[100];
             strcpy(lineToPrint, token -> data);
             getNextToken(token);
           
-            if(token -> type == T_Assign){
+            if(token -> type == T_Assign){ // cely tenhle kod v T_Assign bude potreba nahradit expression parserem, tohle je tady jen for fun abych neco aspon generoval
                 getNextToken(token);
-                if(token -> type == T_Var_id){ // az se bude pracovat s tabulkou symbolu, pridej kontrolu, jestli je promenna definovana
+                if(token -> type == T_Var_id){ 
                     CREATE_ASSIGN("TF@");
                 }
                 
@@ -52,17 +52,17 @@ char lineToPrint[100];
                     CREATE_ASSIGN("float@");
                 }
 
-                else if(token -> type == T_Exp){ // TODO: tady to uprav podle toho jak se bude pracovat s expressions
+                else if(token -> type == T_Exp){
                     getNextToken(token);
                     return 0;
                    
                 }
 
-                else if(token -> type == T_Semicolon){
+                else if(token -> type == T_Semicolon){ //semicolon asi taky nechame, to by nemel delat exp parser
                     printf("DEFVAR %s \n", token->data);
                 }
 
-                else if(token -> type == T_Identifier){
+                else if(token -> type == T_Identifier){         // prirazeni fuknce nechame uvidime jak to vymyslime s express parserem
                     getNextToken(token);
                     if(token -> type != T_L_r_par)
                         return 1;
@@ -72,13 +72,8 @@ char lineToPrint[100];
                     }
 
                     getNextToken(token);
-                    if(token -> type == T_Semicolon){
-                        //code gen
-                    }
-                    else{
+                    if(token -> type != T_Semicolon)
                         return 1;
-                    }
-
                 }
 
                 else{
@@ -114,13 +109,13 @@ char lineToPrint[100];
             //vytvori se nejaky label, pak se printne JUMP label a ten stejne pojmenovany label se printe az se narazi na '}' 
             b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
             elem -> type = type_if;
-            strcpy(elem ->label, "IF");
+            strcpy(elem ->label, make_random_string());
 
             b_stack_push(stack, elem);
 
-            printf("PUSHFRAME\n");
-            printf("CREATEFRAME\n");
-            printf("JUMP [podminene na vyraze] %s\n",elem->label); // tady bude nejake printovani podminene na vyrazu
+            // printf("PUSHFRAME\n");
+            // printf("CREATEFRAME\n");
+            printf("JUMPIFNEQ %s LF@vysledekExp bool@true\n",elem->label); // tady bude nejake printovani podminene na vyrazu
         break;
         
         case T_R_c_par:
@@ -129,11 +124,9 @@ char lineToPrint[100];
                 return 1;
                      
             elem = b_stack_top(stack);
-            b_stack_pop(stack);
+            
 
-            if(elem -> type == type_if){
-                printf("POPFRAME\n");
-                printf("LABEL :%s\n", elem ->label);
+            if(elem -> type == type_if){            // kdyz ukoncujeme telo IFu
 
                 getNextToken(token);
 
@@ -142,35 +135,48 @@ char lineToPrint[100];
 
                     if(token -> type != T_L_c_par)
                         return 1;
-                    
-                    // b_stack_pop(stack);
-                     
-                    b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
+
+                    char* tempIfLabel = elem->label;            // potrebujeme si uchovat label ifu, abysme
+
+                    b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  //vygenerujeme novy jump pro else, abysme mohli skocit na konec else jestlize v if bude true
                     elem -> type = type_else;
-                    strcpy(elem -> label, "ELSE");
+                    strcpy(elem -> label, make_random_string());
+                    
+                    printf("JUMP %s\n",elem -> label);
+                    printf("LABEL %s\n", tempIfLabel);
+                    b_stack_pop(stack);
                         
-                    printf("PUSHFRAME\n");
-                    printf("CREATEFRAME\n");
-                    printf("JUMP [podminene na vyraze] %s\n",elem->label); // tady bude nejake printovani podminene na vyrazu
+                    // printf("PUSHFRAME\n");
+                    // printf("CREATEFRAME\n");
 
                     b_stack_push(stack, elem);
                 }
                 else{
+                    // printf("POPFRAME\n");
+                    printf("LABEL %s\n", elem ->label);
+                    b_stack_pop(stack);
                     return prog(token, stack); // bud muze nasledovat za if else, nebo statement-list
                 }    
             }
 
             if(elem -> type == type_else){
-                printf("POPFRAME\n");
+                
+                elem = b_stack_top(stack);
+                b_stack_pop(stack);
+
+                // printf("POPFRAME\n");
                 printf("LABEL %s\n", elem ->label);
+                
                 // b_stack_pop(stack);
             }
             
             if(elem -> type == type_while){
+                b_stack_pop(stack);
                 // b_stack_pop(stack);
             }
 
             if(elem -> type == type_function){
+                b_stack_pop(stack);
 
             }
         break;
@@ -363,4 +369,18 @@ int check_call_args(token_t *token){
         else{
             return 1;
         }
+}
+
+//generujeme random stringy pro LABELs
+char* make_random_string(){
+    char const abeceda[]= "abcdefghijklmnopqrstuvwxyz0123456789";
+    char* output = malloc(sizeof(char)*7);
+    int random;
+    output[0] = 'L';
+    for(int i = 1; i<7; i++){
+        random = rand()%35;
+        output[i] = abeceda [random];
+    }
+    output[7] = '\0';
+    return output;
 }

@@ -89,25 +89,25 @@ int main()
         }
         a++;
     }
-    //SYMBOL TABLE DEBUG
-    //tabulka zatím insertuje úplně všechno a nekontroluje, jestli tam už je
-    printf("\nImprovised symbol table:\n");
-    //ALWAYS USE PRIME NUMBERS FOR HASH TABLE SIZE
-    symtable_t *table = symtable_init(11);
-    for (int j = 0; j < i; j++)
-    {
-        //pouzivejte vzdycky check a pak insert [Seidly]
-        table = symtable_check_size(table);
-        symbol_t *symbol = token_to_symbol(tokens[j]);
-        symtable_insert(table, symbol);    
-    }
+    // //SYMBOL TABLE DEBUG
+    // //tabulka zatím insertuje úplně všechno a nekontroluje, jestli tam už je
+    // printf("\nImprovised symbol table:\n");
+    // //ALWAYS USE PRIME NUMBERS FOR HASH TABLE SIZE
+    // symtable_t *table = symtable_init(11);
+    // for (int j = 0; j < i; j++)
+    // {
+    //     //pouzivejte vzdycky check a pak insert [Seidly]
+    //     table = symtable_check_size(table);
+    //     symbol_t *symbol = token_to_symbol(tokens[j]);
+    //     symtable_insert(table, symbol);    
+    // }
     
-    for (int i = 0; i < 1000; i++)
-    {
-        free(tokens[i]);
-    }
-    symtable_print(table);
-    free_symbols(table);
-    symtable_dispose(table);
-    return 0;
+    // for (int i = 0; i < 1000; i++)
+    // {
+    //     free(tokens[i]);
+    // }
+    // symtable_print(table);
+    // free_symbols(table);
+    // symtable_dispose(table);
+    // return 0;
 }
