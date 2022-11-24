@@ -1,3 +1,15 @@
+/**
+ * @file lexer.c
+ *
+ * Implementation of lexical analysis and working with tokens
+ *
+ * IFJ project 2022
+ *
+ * @author <xstrel03> Matyáš Strelec
+ * @author <xseidl06> Ondřej Seidl
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,7 +18,14 @@
 
 #include "../include/lexer.h"
 #include "../include/error.h"
+#include "../include/common.h"
 
+/**
+ * @brief Get next token from input
+ *
+ * @param state State to be returned
+ * @return char* State as string
+ */
 char *stateToString(fsm_state_t state)
 {
     switch (state)
@@ -105,13 +124,17 @@ char *stateToString(fsm_state_t state)
         return "File_end";
     case ERROR:
         return "ERROR";
-    case END:
-        return "END";
     default:
         return "UNKNOWN";
     }
 }
 
+/**
+ * @brief Debug function to return token type as string
+ *
+ * @param type Type to be returned
+ * @return char* Type as string
+ */
 char *typeToString(token_type_t type)
 {
     switch (type)
@@ -213,59 +236,53 @@ char *typeToString(token_type_t type)
     }
 }
 
-bool char_to_token(char c, token_t *token)
+/**
+ * @brief Append a character to end of string in token safely
+ *
+ * @param c Character to be appended
+ * @param token Token to be appended to
+ */
+void charToToken(char c, token_t *token)
 {
     if (c != EOF)
     {
-        token->lenght++;
-        token->data = realloc(token->data, token->lenght * sizeof(char));
-        
-        if (token->data != NULL )
+        token->length++;
+        token->data = realloc(token->data, token->length * sizeof(char));
+
+        if (token->data != NULL)
         {
-            token->data[token->lenght - 1] = c;
-            return 1;
+            token->data[token->length - 1] = c;
         }
     }
-    return 0;
 }
 
-
-// (copy paste z netu!!!! predelat in the future) kdyz jsem odstranil white space stav, tak white space zustavali v token->data, kvuli tomu se keywordy oznacovali jako identifiery
-// proto trimuju whitespacy tady [Dominik]
-char *trimwhitespace(char *str)
-{
-char *end;
-
-// Trim leading space
-while(isspace((unsigned char)*str)) str++;
-
-if(*str == 0)  // All spaces?
-    return str;
-
-// Trim trailing space
-end = str + strlen(str) - 1;
-while(end > str && isspace((unsigned char)*end)) end--;
-
-// Write new null terminator character
-end[1] = '\0';
-
-return str;
-}
-
-/// @brief
-/// @param token
-/// @return Error code
+/**
+ * @brief Get next token from input
+ *
+ * Load next token from standard input to given token pointer,
+ * token must be allocated before calling this function,
+ * decides on token type using the state machine
+ *
+ * @param token Pointer to token into which data is loaded
+ * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_LEXEME or ERR_INTERNAL)
+ */
 int getNextToken(token_t *token)
 {
+    // Keep track of line in the file, static so it is not reset every time this function is called
     static int currentLine = 1;
 
-    token->lenght = 0;
+    // Init token
+    token->length = 0;
     token->data = NULL;
     token->type = T_Unknown;
+
+    // Init state machine
     fsm_state_t currentState = Start;
     fsm_state_t nextState;
 
-    int c;
+    int c; // Current character
+
+    // Load characters
     do
     {
         c = getchar();
@@ -309,7 +326,7 @@ int getNextToken(token_t *token)
             else if (c == '}')
                 nextState = R_c_par;
             else if (isspace(c))
-                nextState = Start; //misto stavu whitespace jdi na start a vyignoruj tak whitespace [Dominik]
+                nextState = Whitespace;
             else if (c == ',')
                 nextState = Comma;
             else if (c == ':')
@@ -330,7 +347,7 @@ int getNextToken(token_t *token)
         case Var_id_prefix:
             if (isalnum(c) || c == '_')
                 nextState = Var_id;
-            if (isspace(c))
+            else
                 nextState = ERROR;
             break;
         case Var_id:
@@ -515,7 +532,7 @@ int getNextToken(token_t *token)
                 token->type = T_Exp;
             break;
         case Whitespace:
-            if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
+            if (isspace(c))
                 nextState = Whitespace;
             else
                 token->type = T_Whitespace;
@@ -554,38 +571,33 @@ int getNextToken(token_t *token)
             token->type = T_Error;
             break;
         default:
-            // vyhod chybu
-            token->type = T_Unknown;
-            nextState = Start;
+            nextState = ERROR;
             break;
         }
 
+        // If token type was decided by the state machine, terminate string
         if (token->type != T_Unknown)
         {
-            char_to_token('\0', token);
+            charToToken('\0', token);
             token->line = currentLine;
+
+            // The currently read character was not a part of the token, so unread it for next token
             ungetc(c, stdin);
             break;
         }
-        // else if (nextState == ERROR)
-        // {
-        //     printf("err\n");
-        //     char_to_token('\0', token);
-        //     ungetc(c, stdin);
-        //     return 1;
-        // }
+
         if (c == '\n')
         {
             currentLine++;
         }
+
+        // Append the read character to string
+        charToToken(c, token);
         currentState = nextState;
-        char_to_token(c, token);
 
-    } while (token->type == T_Unknown);
+    } while (token->type == T_Unknown); // Loop until token type is decided
 
-    token->data = trimwhitespace(token->data);
-
-    // Recognize token type
+    // Recognize token type -- keywords
     if (strcmp(token->data, "else") == 0)
         token->type = T_Keyword_Else;
     else if (strcmp(token->data, "float") == 0)
@@ -611,27 +623,119 @@ int getNextToken(token_t *token)
     if (token->type == T_String)
     {
         char *string = malloc(sizeof(char) * (strlen(token->data) - 1));
-        if(string == NULL)
-        {
-            fprintf(stderr, "Error: malloc failed\n");
-            return 1;
-        }
+        // malloc
         for (size_t i = 0; i < strlen(token->data) - 2; i++)
         {
             string[i] = token->data[i + 1];
         }
         string[strlen(token->data) - 2] = '\0';
-       // free(token->data);  Kvuli trimwhitespace() to vyhazovalo Aborted error, nevim jak to fixnout tak zakomentovavam [Dominik]
         token->data = string;
     }
 
     // Return error if lexeme is not recognized as valid
     if (token->type == T_Error)
     {
-        return ERR_LEXEME;
+        error_exit(ERR_LEXEME, token);
     }
     else
     {
-        return 0;
+        return EXIT_SUCCESS;
     }
+}
+
+/**
+ * @brief Print a given token for debugging purposes
+ *
+ * Prints the line, token type, data, and if they exist, types of next and previous token
+ *
+ * @param token Token to be printed
+ */
+void printToken(token_t *token)
+{
+    printf("%d: %s\n", token->line, typeToString(token->type));
+    if (token->data != NULL)
+        printf("   Data: %s\n", token->data);
+    if (token->prev != NULL)
+        printf("   Prev: %s\n", typeToString(token->prev->type));
+    if (token->next != NULL)
+        printf("   Next: %s\n", typeToString(token->next->type));
+    printf("\n");
+}
+
+/**
+ * @brief Print all tokens in list
+ *
+ * @param list List with tokens to be printed
+ */
+
+void printTokenList(token_list_t *list)
+{
+    token_t *current = list->firstToken;
+    printToken(current);
+    while (current != NULL)
+    {
+        printToken(current);
+        current = current->next;
+    }
+}
+
+/**
+ * @brief Fills token list with tokens from input
+ *
+ * @param list Linked list of tokens to be filled
+ * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_LEXEME or ERR_INTERNAL)
+ */
+int fillTokenList(token_list_t *list)
+{
+    token_t *token = malloc(sizeof(token_t));
+    int exitCode;
+    exitCode = getNextToken(token);
+    if (exitCode == EXIT_SUCCESS)
+    {
+        list->firstToken = token;
+        while (token->type != T_File_end)
+        {
+            token_t *next = malloc(sizeof(token_t));
+            token_t *temp = token;
+            token->next = next;
+            token = next;
+            token->prev = temp;
+            exitCode = getNextToken(token);
+            if (exitCode != EXIT_SUCCESS)
+            {
+                return exitCode;
+            }
+        }
+    }
+    else
+    {
+        return exitCode;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+/**
+ * @brief Free allocated memory of all tokens in list
+ *
+ * @param list List of tokens to be freed
+ */
+void freeTokenList(token_list_t *list)
+{
+    token_t *current = list->firstToken;
+    token_t *next = current->next;
+
+    // Go through all tokens in list
+    while (current != NULL)
+    {
+        free(current->data);
+        free(current);
+        current = next;
+        if (next != NULL)
+        {
+            next = next->next;
+        }
+    }
+
+    free(list);
 }
