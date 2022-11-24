@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-std=c99 -Wall -Wextra -pedantic -fcommon -lm
-DBFLAGS=-std=c99 -Wall -Wextra -pedantic -fcommon -lm -g -fsanitize=address
+CFLAGS=-std=c99 -Wall -Wextra -pedantic -fcommon
+DBFLAGS=-std=c99 -Wall -Wextra -pedantic -fcommon -g -fsanitize=address
 
 SRC_DIR := src
 INC_DIR := include
