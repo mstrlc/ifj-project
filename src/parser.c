@@ -94,12 +94,12 @@ char lineToPrint[100];
             if (token -> type != T_L_r_par)
                 return 1;
 
-            int max_expression_lenght = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
+            int max_expression_length = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
             int exp_count = 0;
 
             do {
                 exp_count++;
-                if(exp_count > max_expression_lenght)
+                if(exp_count > max_expression_length)
                     return 1;
 
                 getNextToken(token);
@@ -181,13 +181,13 @@ char lineToPrint[100];
             if(token -> type != T_L_r_par)
                 return 1;
 
-            max_expression_lenght = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
+            max_expression_length = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
             exp_count = 0;
 
             do{
                 exp_count++;
                 getNextToken(token);
-                if (exp_count > max_expression_lenght)
+                if (exp_count > max_expression_length)
                     return 1;
 
                 //nacti expresiion a posli ho do zpracovani 
