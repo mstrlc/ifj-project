@@ -24,7 +24,7 @@
  */
 
 #define error_exit(code, token) \
-    fprintf(stderr, "Error %d on line %d near %s\n", code, token->line, token->data);\
+    fprintf(stderr, "Error %d on line %d near \'%s\'.\n", code, token->line, token->data);\
     return code;\
 
 #endif
