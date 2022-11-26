@@ -14,7 +14,7 @@
         strcat(lineToPrint, " ");           \
         strcat(lineToPrint, tType);           \
         strcat(lineToPrint, token->data);   \
-        getNextToken(token);                \
+        token = token->next;                \
         if(token -> type == T_Semicolon)    \
         {                                   \
             printf("MOVE TF@%s \n", lineToPrint); \
@@ -32,10 +32,10 @@ char lineToPrint[100];
             printf("DEFVAR TF@%s \n", token->data); // az se bude pracovat s tabulkou symbolu, pridej kontrolu, jestli je promenna definovana
 
             strcpy(lineToPrint, token -> data);
-            getNextToken(token);
+            token = token->next;
           
             if(token -> type == T_Assign){
-                getNextToken(token);
+                token = token->next;
                 if(token -> type == T_Var_id){ // az se bude pracovat s tabulkou symbolu, pridej kontrolu, jestli je promenna definovana
                     CREATE_ASSIGN("TF@");
                 }
@@ -53,7 +53,7 @@ char lineToPrint[100];
                 }
 
                 else if(token -> type == T_Exp){ // TODO: tady to uprav podle toho jak se bude pracovat s expressions
-                    getNextToken(token);
+                    token = token->next;
                     return 0;
                    
                 }
@@ -63,7 +63,7 @@ char lineToPrint[100];
                 }
 
                 else if(token -> type == T_Identifier){
-                    getNextToken(token);
+                    token = token->next;
                     if(token -> type != T_L_r_par)
                         return 1;
 
@@ -71,7 +71,7 @@ char lineToPrint[100];
                         return check_call_args(token);
                     }
 
-                    getNextToken(token);
+                    token = token->next;
                     if(token -> type == T_Semicolon){
                         //code gen
                     }
@@ -90,24 +90,24 @@ char lineToPrint[100];
         break; //case T_Var_id
         
         case T_Keyword_If:
-            getNextToken(token);
+            token = token->next;
             if (token -> type != T_L_r_par)
                 return 1;
 
-            int max_expression_lenght = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
+            int max_expression_length = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
             int exp_count = 0;
 
             do {
                 exp_count++;
-                if(exp_count > max_expression_lenght)
+                if(exp_count > max_expression_length)
                     return 1;
 
-                getNextToken(token);
+                token = token->next;
                 // udelej string ktery pak narvy do check_expression()
 
             } while (token -> type != T_R_r_par);
 
-            getNextToken(token);
+            token = token->next;
             if(token -> type != T_L_c_par)
                 return 1;
 
@@ -135,10 +135,10 @@ char lineToPrint[100];
                 printf("POPFRAME\n");
                 printf("LABEL :%s\n", elem ->label);
 
-                getNextToken(token);
+                token = token->next;
 
                 if(token -> type == T_Keyword_Else){
-                    getNextToken(token);
+                    token = token->next;
 
                     if(token -> type != T_L_c_par)
                         return 1;
@@ -176,24 +176,24 @@ char lineToPrint[100];
         break;
 
         case T_Keyword_While: // od ted to zacinam psat jak clovek
-            getNextToken(token);
+            token = token->next;
 
             if(token -> type != T_L_r_par)
                 return 1;
 
-            max_expression_lenght = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
+            max_expression_length = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
             exp_count = 0;
 
             do{
                 exp_count++;
-                getNextToken(token);
-                if (exp_count > max_expression_lenght)
+                token = token->next;
+                if (exp_count > max_expression_length)
                     return 1;
 
                 //nacti expresiion a posli ho do zpracovani 
             } while (token -> type != T_R_r_par);
 
-            getNextToken(token);
+            token = token->next;
             if(token -> type != T_L_c_par)
                 return 1;
             
@@ -206,12 +206,12 @@ char lineToPrint[100];
         break;
 
         case T_Keyword_Function:
-            getNextToken(token);
+            token = token->next;
 
             if(token -> type != T_Identifier)
                 return 0;
 
-            getNextToken(token);
+            token = token->next;
             if(token -> type != T_L_r_par)
                 return 1;
 
@@ -219,11 +219,11 @@ char lineToPrint[100];
                 return check_args(token);
             }
 
-            getNextToken(token);
+            token = token->next;
             if(token->type != T_Colon)
                 return 1;
 
-            getNextToken(token);
+            token = token->next;
             if(token -> type == T_Keyword_String){
 
             }  
@@ -237,7 +237,7 @@ char lineToPrint[100];
                 return 1;
             }
 
-            getNextToken(token);
+            token = token->next;
             if(token -> type != T_L_c_par)
                 return 1;
             
@@ -254,7 +254,7 @@ char lineToPrint[100];
 
         //tohle realne osetrit v lexeru nebo mainu na tokens[0], protoze tohle nekontroluje jestli je to prvni token a ani to nema parser jak urcit
         case T_Start_opening:
-            getNextToken(token);
+            token = token->next;
 
             if (strcmp(token -> data, "php") != 0)
                 return 1;
@@ -283,15 +283,15 @@ char lineToPrint[100];
 
 // rekurznivne, protoze mame volitelne mnozstvi argumentu
 int check_args(token_t *token){
-    getNextToken(token);
+    token = token->next;
 
     if (token->type == T_Keyword_String){
-        getNextToken(token);
+        token = token->next;
 
         if(token->type != T_Var_id)
             return 1;
         
-        getNextToken(token);
+        token = token->next;
         if(token->type == T_R_r_par){
             return 0;
         }
@@ -303,12 +303,12 @@ int check_args(token_t *token){
         }
     }
     else if (token->type == T_Keyword_Int){
-        getNextToken(token);
+        token = token->next;
 
         if(token->type != T_Var_id)
             return 1;
         
-        getNextToken(token);
+        token = token->next;
         if(token->type == T_R_r_par){
             return 0;
         }
@@ -321,12 +321,12 @@ int check_args(token_t *token){
     }
 
     else if (token->type == T_Keyword_Float){
-        getNextToken(token);
+        token = token->next;
 
         if(token->type != T_Var_id)
             return 1;
         
-        getNextToken(token);
+        token = token->next;
         if(token->type == T_R_r_par){
             return 0;
         }
@@ -349,11 +349,11 @@ int check_args(token_t *token){
 
 int check_call_args(token_t *token){
         
-       getNextToken(token);
+       token = token->next;
         if(token->type != T_Var_id)
             return 1;
         
-        getNextToken(token);
+        token = token->next;
         if(token->type == T_R_r_par){
             return 0;
         }

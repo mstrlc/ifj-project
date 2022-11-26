@@ -1,3 +1,14 @@
+/**
+ * @file error.h
+ *
+ * Definitions of error codes from assignment
+ *
+ * IFJ project 2022
+ *
+ * @author <xstrel03> Matyáš Strelec
+ *
+ */
+
 #ifndef ERROR_H
 #define ERROR_H
 

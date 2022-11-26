@@ -1,6 +1,21 @@
-#ifndef LEXER_H
-#define LEXER_H 
+/**
+ * @file lexer.h
+ *
+ * Implementation of lexical analysis and working with tokens
+ *
+ * IFJ project 2022
+ *
+ * @author <xstrel03> Matyáš Strelec
+ *
+ */
 
+#ifndef LEXER_H
+#define LEXER_H
+
+/**
+ * @brief States of FSM
+ *
+ */
 typedef enum fsm_state_t
 {
     Start,
@@ -49,10 +64,13 @@ typedef enum fsm_state_t
     Colon,
     Semicolon,
     File_end,
-    ERROR,
-    END
+    ERROR
 } fsm_state_t;
 
+/**
+ * @brief Types of tokens
+ * 
+ */
 typedef enum token_type_t
 {
     T_Unknown,
@@ -103,19 +121,36 @@ typedef enum token_type_t
     T_Error
 } token_type_t;
 
-
+/**
+ * @brief Token structure
+ * 
+ */
 typedef struct token_t
 {
     token_type_t type;
     char *data;
     int line;
-    size_t lenght;
+    size_t length;
+    struct token_t *prev;
+    struct token_t *next;
 } token_t;
 
-char *stateToString(fsm_state_t state);
+/**
+ * @brief Token list structure
+ * 
+ */
+typedef struct token_list_t
+{
+    token_t *firstToken;
+    token_t *activeToken;
+    token_t *lastToken;
 
-char *typeToString(token_type_t type);
+} token_list_t;
 
-int getNextToken(token_t *token);
+void printTokenList(token_list_t *list);
+
+int fillTokenList(token_list_t *list);
+
+void freeTokenList(token_list_t *list);
 
 #endif
