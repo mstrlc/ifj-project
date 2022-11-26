@@ -20,6 +20,9 @@
 #include "../include/error.h"
 #include "../include/common.h"
 
+char *stateToString(fsm_state_t state);
+char *typeToString(token_type_t type);
+
 /**
  * @brief Get next token from input
  *
@@ -443,10 +446,12 @@ int getNextToken(token_t *token)
             token->type = T_Line_comment;
             break;
         case Comment_b_in:
-            if (c != '*')
-                nextState = Comment_b_in;
-            else if (c == '*')
+            if (c == '*')
                 nextState = Comment_b_end_1;
+            else if (c == EOF)
+                nextState = ERROR;
+            else if (c != '*')
+                nextState = Comment_b_in;
             else
                 nextState = ERROR;
             break;
@@ -476,7 +481,7 @@ int getNextToken(token_t *token)
                 nextState = String_end;
             else if (c == '\\')
                 nextState = String_esc;
-            else if (c != '"' || c != '\\')
+            else if (c > 31 && c < 127 && c != '"' && c != '\\')
                 nextState = String_in;
             else
                 nextState = ERROR;
@@ -594,6 +599,7 @@ int getNextToken(token_t *token)
         // Append the read character to string
         charToToken(c, token);
         currentState = nextState;
+    
 
     } while (token->type == T_Unknown); // Loop until token type is decided
 
