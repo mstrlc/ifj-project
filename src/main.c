@@ -14,7 +14,6 @@
 
 int main()
 {
-    // // Debug function, lol
     // token_t *tokens[1000];
 
     // for (int i = 0; i < 1000; i++)
@@ -109,18 +108,17 @@ int main()
     // free_symbols(table);
     // symtable_dispose(table);
 
+    // Initialize token list and fill it with tokens from stdin
     token_list_t *tokens = malloc(sizeof(token_list_t));
-    int exitCode;
-    exitCode = fillTokenList(tokens);
-    if (exitCode == EXIT_SUCCESS)
+    int exitCode = fillTokenList(tokens);
+    // If there was an error, print it and exit
+    if (exitCode != EXIT_SUCCESS)
     {
-        printTokenList(tokens);
-        freeTokenList(tokens);
-    }
-    else
-    {
-        return exitCode;
+        exit(exitCode);
     }
 
-    return 0;
+    printTokenList(tokens);
+
+    freeTokenList(tokens);
+    exit(0);
 }
