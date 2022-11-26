@@ -14,53 +14,11 @@
 
 int main()
 {
-    // token_t *tokens[1000];
-
-    // for (int i = 0; i < 1000; i++)
-    // {
-    //     tokens[i] = malloc(sizeof(token_t));
-    // }
-    // // Go through tokens until End of file token type
-    // int i = 0;
-    // while (true)
-    // {
-    //     getNextToken(tokens[i]);
-    //     printf("%d:\t", tokens[i]->line)    ;
-    //     printf("%s\t", typeToString(tokens[i]->type));
-    //     if(strlen(typeToString(tokens[i]->type))>7)
-    //         printf("\t");
-    //     switch (tokens[i]->type)
-    //     {
-    //         case T_Identifier:
-    //             printf("Identifier: %s\n", tokens[i]->data);
-    //             break;
-    //         case T_Int:
-    //             printf("Int: %s\n", tokens[i]->data);
-    //             break;
-    //         case T_Float:
-    //             printf("Float: %s\n", tokens[i]->data);
-    //             break;
-    //         case T_Exp:
-    //             printf("Exp: %s\n", tokens[i]->data);
-    //             break;
-    //         case T_String:
-    //             printf("String: %s\n", tokens[i]->data);
-    //             break;
-    //         default:
-    //             printf("\n");
-    //             break;
-    //     }
-
-    //     if (tokens[i]->type == T_File_end)
-    //     {
-    //         i++;
-    //         break;
-    //     }
-    //     i++;
-    // }
+    // Initialize token list and fill it with tokens from stdin
+    token_list_t *tokens = malloc(sizeof(token_list_t));
+    int exitCode = fillTokenList(tokens);
 
     // //PARSE DEBUG
-    // rewind(stdin);
 
     // b_stack* stack = (b_stack *) malloc(sizeof(struct b_stack)) ;
     // b_stack_init(stack);
@@ -108,9 +66,6 @@ int main()
     // free_symbols(table);
     // symtable_dispose(table);
 
-    // Initialize token list and fill it with tokens from stdin
-    token_list_t *tokens = malloc(sizeof(token_list_t));
-    int exitCode = fillTokenList(tokens);
     // If there was an error, print it and exit
     if (exitCode != EXIT_SUCCESS)
     {
