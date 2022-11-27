@@ -27,7 +27,7 @@ char *typeToString(token_type_t type);
  * @brief Get next token from input
  *
  * @param state State to be returned
- * @return char* State as string
+ * @return char * State as string
  */
 char *stateToString(fsm_state_t state)
 {
@@ -243,7 +243,7 @@ char *typeToString(token_type_t type)
  * @brief Append a character to end of string in token safely
  *
  * @param c Character to be appended
- * @param token Token to be appended to
+ * @param token Pointer to token to be appended to
  */
 void charToToken(char c, token_t *token)
 {
@@ -599,7 +599,6 @@ int getNextToken(token_t *token)
         // Append the read character to string
         charToToken(c, token);
         currentState = nextState;
-    
 
     } while (token->type == T_Unknown); // Loop until token type is decided
 
@@ -654,30 +653,29 @@ int getNextToken(token_t *token)
  *
  * Prints the line, token type, data, and if they exist, types of next and previous token
  *
- * @param token Token to be printed
+ * @param token Pointer to token to be printed
  */
 void printToken(token_t *token)
 {
-    printf("%d: %s\n", token->line, typeToString(token->type));
+    printf("%d: %s: ", token->line, typeToString(token->type));
     if (token->data != NULL)
-        printf("   Data: %s\n", token->data);
-    if (token->prev != NULL)
-        printf("   Prev: %s\n", typeToString(token->prev->type));
-    if (token->next != NULL)
-        printf("   Next: %s\n", typeToString(token->next->type));
+        printf("%s", token->data);
+    // if (token->prev != NULL)
+    //     printf("   Prev: %s\n", typeToString(token->prev->type));
+    // if (token->next != NULL)
+    //     printf("   Next: %s\n", typeToString(token->next->type));
     printf("\n");
 }
 
 /**
  * @brief Print all tokens in list
  *
- * @param list List with tokens to be printed
+ * @param list Pointer to list with tokens to be printed
  */
 
 void printTokenList(token_list_t *list)
 {
     token_t *current = list->firstToken;
-    printToken(current);
     while (current != NULL)
     {
         printToken(current);
@@ -688,35 +686,44 @@ void printTokenList(token_list_t *list)
 /**
  * @brief Fills token list with tokens from input
  *
- * @param list Linked list of tokens to be filled
+ * @param list Pointer to linked list of tokens to be filled
  * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_LEXEME or ERR_INTERNAL)
  */
 int fillTokenList(token_list_t *list)
 {
     token_t *token = malloc(sizeof(token_t));
     int exitCode;
-    exitCode = getNextToken(token);
-    if (exitCode == EXIT_SUCCESS)
+    do
     {
-        list->firstToken = token;
-        while (token->type != T_File_end)
+        exitCode = getNextToken(token);
+        if (exitCode == EXIT_SUCCESS)
         {
-            token_t *next = malloc(sizeof(token_t));
-            token_t *temp = token;
-            token->next = next;
-            token = next;
-            token->prev = temp;
-            exitCode = getNextToken(token);
-            if (exitCode != EXIT_SUCCESS)
+            list->firstToken = token;
+            while (token->type != T_File_end)
             {
-                return exitCode;
+                if (token->type == T_Whitespace || token->type == T_Block_comment || token->type == T_Line_comment)
+                {
+                    exitCode = getNextToken(token);
+                    if (exitCode != EXIT_SUCCESS)
+                        return exitCode;
+                    else
+                        continue;
+                }
+                token_t *next = malloc(sizeof(token_t));
+                token_t *temp = token;
+                token->next = next;
+                token = next;
+                token->prev = temp;
+                exitCode = getNextToken(token);
+                if (exitCode != EXIT_SUCCESS)
+                {
+                    return exitCode;
+                }
             }
         }
-    }
-    else
-    {
-        return exitCode;
-    }
+    } while (token->type != T_File_end);
+
+    list->activeToken = list->firstToken;
 
     return EXIT_SUCCESS;
 }
@@ -724,7 +731,7 @@ int fillTokenList(token_list_t *list)
 /**
  * @brief Free allocated memory of all tokens in list
  *
- * @param list List of tokens to be freed
+ * @param list Pointer to list of tokens to be freed
  */
 void freeTokenList(token_list_t *list)
 {
@@ -742,6 +749,10 @@ void freeTokenList(token_list_t *list)
             next = next->next;
         }
     }
+
+    list->activeToken = NULL;
+    list->firstToken = NULL;
+    list->lastToken = NULL;
 
     free(list);
 }
