@@ -1,0 +1,16 @@
+<prog> -> <stat> ; <prog> .
+<prog> -> ?> EOF .
+<prog> -> EOF .
+
+<stat> -> $id = <assign> .
+<stat> -> fun-id ( <call-params> ) .
+
+<assign> -> <expr> .
+<assign> -> fun-id ( <call-params> ) .
+
+<call-params> -> $id .
+<call-params> -> <expr> .
+
+<expr> -> <value> + <value> .
+
+<value> -> int .

@@ -147,6 +147,8 @@ typedef struct token_list_t
 
 } token_list_t;
 
+void printToken(token_t *token);
+
 void printTokenList(token_list_t *list);
 
 int fillTokenList(token_list_t *list);

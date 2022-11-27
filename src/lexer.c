@@ -657,7 +657,7 @@ int getNextToken(token_t *token)
  */
 void printToken(token_t *token)
 {
-    printf("%d: %s: ", token->line, typeToString(token->type));
+    printf("\t%d: %s: ", token->line, typeToString(token->type));
     if (token->data != NULL)
         printf("%s", token->data);
     // if (token->prev != NULL)
@@ -701,14 +701,14 @@ int fillTokenList(token_list_t *list)
             list->firstToken = token;
             while (token->type != T_File_end)
             {
-                if (token->type == T_Whitespace || token->type == T_Block_comment || token->type == T_Line_comment)
-                {
-                    exitCode = getNextToken(token);
-                    if (exitCode != EXIT_SUCCESS)
-                        return exitCode;
-                    else
-                        continue;
-                }
+                // if (token->type == T_Whitespace || token->type == T_Block_comment || token->type == T_Line_comment)
+                // {
+                //     exitCode = getNextToken(token);
+                //     if (exitCode != EXIT_SUCCESS)
+                //         return exitCode;
+                //     else
+                //         continue;
+                // }
                 token_t *next = malloc(sizeof(token_t));
                 token_t *temp = token;
                 token->next = next;

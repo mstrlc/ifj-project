@@ -18,10 +18,21 @@ int main()
     token_list_t *tokens = malloc(sizeof(token_list_t));
     int exitCode = fillTokenList(tokens);
 
-    // //PARSE DEBUG
+    // // DEBUG
+    printf("LEXER:\n--------\n");
+    printTokenList(tokens);
 
-    // b_stack* stack = (b_stack *) malloc(sizeof(struct b_stack)) ;
+    // // Initialize stack
+    // b_stack *stack = malloc(sizeof(struct b_stack));
     // b_stack_init(stack);
+
+    // // DEBUG
+    printf("PARSER:\n--------\n");
+
+    // Call parser
+    parser(tokens);
+
+    // //PARSE DEBUG
 
     // token_t *tokens_p[1000];
     // for (int a = 0; a < 1000; a++)
@@ -71,8 +82,6 @@ int main()
     {
         exit(exitCode);
     }
-
-    printTokenList(tokens);
 
     freeTokenList(tokens);
     exit(0);

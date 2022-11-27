@@ -6,361 +6,328 @@
 
 #include "../include/parser.h"
 
+// Access active element in token list
+#define ACTIVE_TOKEN (tokens->activeToken)
+#define ACTIVE_DATA tokens->activeToken->data
+#define ACTIVE_TYPE tokens->activeToken->type
 
-//0... PASS
-//1... syntax err
+// Move active element in token list
+#define ACTIVE_NEXT_WS \
+    tokens->activeToken = tokens->activeToken->next;
+#define ACTIVE_PREV_WS \
+    tokens->activeToken = tokens->activeToken->prev;
 
-#define CREATE_ASSIGN(tType)                       \
-        strcat(lineToPrint, " ");           \
-        strcat(lineToPrint, tType);           \
-        strcat(lineToPrint, token->data);   \
-        token = token->next;                \
-        if(token -> type == T_Semicolon)    \
-        {                                   \
-            printf("MOVE TF@%s \n", lineToPrint); \
-            return 0;                       \
-        }                                   \
-        else{                               \
-            return 1;                       \
-        }                                   \
+// Move active element in token list without whitespace and comments
+#define ACTIVE_NEXT                                  \
+    tokens->activeToken = tokens->activeToken->next; \
+    while (ACTIVE_TYPE == T_Whitespace ||            \
+           ACTIVE_TYPE == T_Block_comment ||         \
+           ACTIVE_TYPE == T_Line_comment)            \
+        tokens->activeToken = tokens->activeToken->next;
+#define ACTIVE_PREV                                  \
+    tokens->activeToken = tokens->activeToken->prev; \
+    while (ACTIVE_TYPE == T_Whitespace ||            \
+           ACTIVE_TYPE == T_Block_comment ||         \
+           ACTIVE_TYPE == T_Line_comment)            \
+        tokens->activeToken = tokens->activeToken->prev;
 
-int prog (token_t *token, b_stack* stack){
-char lineToPrint[100];
+/**
+ *
+ * @brief Check if prolog is correct
+ *
+ * @param tokens Pointer to list of tokens
+ * @return int Exit code (0 = OK, 1 = ERROR)
+ *
+ * @todo Implement all whitespace rules
+ */
+int checkProlog(token_list_t *tokens)
+{
+    printf("IN CHECKPROLOG\n");
+    int exitCode = 0;
 
-    switch(token -> type){
-        case T_Var_id:
-            printf("DEFVAR TF@%s \n", token->data); // az se bude pracovat s tabulkou symbolu, pridej kontrolu, jestli je promenna definovana
+    if (tokens->activeToken->type == T_Start_opening)
+    {
+        printToken(tokens->activeToken);
+        ACTIVE_NEXT_WS;
 
-            strcpy(lineToPrint, token -> data);
-            token = token->next;
-          
-            if(token -> type == T_Assign){
-                token = token->next;
-                if(token -> type == T_Var_id){ // az se bude pracovat s tabulkou symbolu, pridej kontrolu, jestli je promenna definovana
-                    CREATE_ASSIGN("TF@");
-                }
-                
-                else if(token -> type == T_String){
-                    CREATE_ASSIGN("string@");
-                }
+        if (tokens->activeToken->type == T_Identifier && strcmp(tokens->activeToken->data, "php") == 0)
+        {
+            printToken(tokens->activeToken);
+            ACTIVE_NEXT_WS;
 
-                else if(token -> type == T_Int){
-                    CREATE_ASSIGN("int@");
-                }
+            if (tokens->activeToken->type == T_Whitespace)
+            {
+                printToken(tokens->activeToken);
+                ACTIVE_NEXT_WS;
 
-                else if(token -> type == T_Float){
-                    CREATE_ASSIGN("float@");
-                }
+                if (tokens->activeToken->type == T_Identifier && strcmp(tokens->activeToken->data, "declare") == 0)
+                {
+                    printToken(tokens->activeToken);
+                    ACTIVE_NEXT_WS;
 
-                else if(token -> type == T_Exp){ // TODO: tady to uprav podle toho jak se bude pracovat s expressions
-                    token = token->next;
-                    return 0;
-                   
-                }
+                    if (tokens->activeToken->type == T_L_r_par)
+                    {
+                        printToken(tokens->activeToken);
+                        ACTIVE_NEXT_WS;
 
-                else if(token -> type == T_Semicolon){
-                    printf("DEFVAR %s \n", token->data);
-                }
+                        if (tokens->activeToken->type == T_Identifier && strcmp(tokens->activeToken->data, "strict_types") == 0)
+                        {
+                            printToken(tokens->activeToken);
+                            ACTIVE_NEXT_WS;
 
-                else if(token -> type == T_Identifier){
-                    token = token->next;
-                    if(token -> type != T_L_r_par)
-                        return 1;
+                            if (tokens->activeToken->type == T_Assign)
+                            {
+                                printToken(tokens->activeToken);
+                                ACTIVE_NEXT_WS;
 
-                    if(check_call_args(token) != 0){
-                        return check_call_args(token);
+                                if (tokens->activeToken->type == T_Int && strcmp(tokens->activeToken->data, "1") == 0)
+                                {
+                                    printToken(tokens->activeToken);
+                                    ACTIVE_NEXT_WS;
+
+                                    if (tokens->activeToken->type == T_R_r_par)
+                                    {
+                                        printToken(tokens->activeToken);
+                                        ACTIVE_NEXT_WS;
+
+                                        if (tokens->activeToken->type == T_Semicolon)
+                                        {
+                                            printToken(tokens->activeToken);
+                                            ACTIVE_NEXT_WS;
+                                        }
+                                        else
+                                            exitCode = 1;
+                                    }
+                                    else
+                                        exitCode = 1;
+                                }
+                                else
+                                    exitCode = 1;
+                            }
+                            else
+                                exitCode = 1;
+                        }
+                        else
+                            exitCode = 1;
                     }
-
-                    token = token->next;
-                    if(token -> type == T_Semicolon){
-                        //code gen
-                    }
-                    else{
-                        return 1;
-                    }
-
+                    else
+                        exitCode = 1;
                 }
-
-                else{
-                    //check_expression(); // idk kde se to bude checkovat
-                    //_code = parser_err;
-                    return 1;
-                }
-            } // if(token -> type == T_Equal)
-        break; //case T_Var_id
-        
-        case T_Keyword_If:
-            token = token->next;
-            if (token -> type != T_L_r_par)
-                return 1;
-
-            int max_expression_length = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
-            int exp_count = 0;
-
-            do {
-                exp_count++;
-                if(exp_count > max_expression_length)
-                    return 1;
-
-                token = token->next;
-                // udelej string ktery pak narvy do check_expression()
-
-            } while (token -> type != T_R_r_par);
-
-            token = token->next;
-            if(token -> type != T_L_c_par)
-                return 1;
-
-            //vytvori se nejaky label, pak se printne JUMP label a ten stejne pojmenovany label se printe az se narazi na '}' 
-            b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
-            elem -> type = type_if;
-            strcpy(elem ->label, "IF");
-
-            b_stack_push(stack, elem);
-
-            printf("PUSHFRAME\n");
-            printf("CREATEFRAME\n");
-            printf("JUMP [podminene na vyraze] %s\n",elem->label); // tady bude nejake printovani podminene na vyrazu
-        break;
-        
-        case T_R_c_par:
-            //popni stack, zjisti co za keyword { jsme zrovna ukoncili a vypis label
-            if(b_stack_is_empty(stack))
-                return 1;
-                     
-            elem = b_stack_top(stack);
-            b_stack_pop(stack);
-
-            if(elem -> type == type_if){
-                printf("POPFRAME\n");
-                printf("LABEL :%s\n", elem ->label);
-
-                token = token->next;
-
-                if(token -> type == T_Keyword_Else){
-                    token = token->next;
-
-                    if(token -> type != T_L_c_par)
-                        return 1;
-                    
-                    // b_stack_pop(stack);
-                     
-                    b_stack_elem* elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
-                    elem -> type = type_else;
-                    strcpy(elem -> label, "ELSE");
-                        
-                    printf("PUSHFRAME\n");
-                    printf("CREATEFRAME\n");
-                    printf("JUMP [podminene na vyraze] %s\n",elem->label); // tady bude nejake printovani podminene na vyrazu
-
-                    b_stack_push(stack, elem);
-                }
-                else{
-                    return prog(token, stack); // bud muze nasledovat za if else, nebo statement-list
-                }    
+                else
+                    exitCode = 1;
             }
-
-            if(elem -> type == type_else){
-                printf("POPFRAME\n");
-                printf("LABEL %s\n", elem ->label);
-                // b_stack_pop(stack);
-            }
-            
-            if(elem -> type == type_while){
-                // b_stack_pop(stack);
-            }
-
-            if(elem -> type == type_function){
-
-            }
-        break;
-
-        case T_Keyword_While: // od ted to zacinam psat jak clovek
-            token = token->next;
-
-            if(token -> type != T_L_r_par)
-                return 1;
-
-            max_expression_length = 100; // nemuzeme jinak overit, ze po otevrene zavorce nasleduje uzavrena
-            exp_count = 0;
-
-            do{
-                exp_count++;
-                token = token->next;
-                if (exp_count > max_expression_length)
-                    return 1;
-
-                //nacti expresiion a posli ho do zpracovani 
-            } while (token -> type != T_R_r_par);
-
-            token = token->next;
-            if(token -> type != T_L_c_par)
-                return 1;
-            
-            elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
-            elem -> type = type_while;
-            strcpy(elem -> label, "WHILEE");
-
-            b_stack_push(stack, elem);
-
-        break;
-
-        case T_Keyword_Function:
-            token = token->next;
-
-            if(token -> type != T_Identifier)
-                return 0;
-
-            token = token->next;
-            if(token -> type != T_L_r_par)
-                return 1;
-
-            if(check_args(token) != 0){
-                return check_args(token);
-            }
-
-            token = token->next;
-            if(token->type != T_Colon)
-                return 1;
-
-            token = token->next;
-            if(token -> type == T_Keyword_String){
-
-            }  
-            else if(token -> type == T_Keyword_Int){
-
-            }
-            else if(token->type == T_Keyword_Float){
-
-            }
-            else{
-                return 1;
-            }
-
-            token = token->next;
-            if(token -> type != T_L_c_par)
-                return 1;
-            
-            elem = (b_stack_elem*)malloc(sizeof(struct b_stack_elem));  
-            elem -> type = type_function;
-            strcpy(elem ->label, "FUNCTION");
-            
-            b_stack_push(stack, elem);
-            
-            // if(token -> type != T_L_c_par)
-            //     return 1;
-
-        break;
-
-        //tohle realne osetrit v lexeru nebo mainu na tokens[0], protoze tohle nekontroluje jestli je to prvni token a ani to nema parser jak urcit
-        case T_Start_opening:
-            token = token->next;
-
-            if (strcmp(token -> data, "php") != 0)
-                return 1;
-
-        break;
-
-        case T_Line_comment:
-            //
-        break;
-
-        case T_Block_comment:
-            //
-        break;
-
-        case T_File_end: 
-            if(!b_stack_is_empty(stack)) // jestli je otevrena zavorka ale neni zadna ukoncena
-                return 1;
-        break;
-
-        default:
-            return 1;
-        break;
+            else
+                exitCode = 1;
+        }
+        else
+            exitCode = 1;
     }
+    else
+        exitCode = 1;
+
+    if (exitCode == 1)
+        printf("ERROR: Prolog is not correct!\n");
+    else
+        printf("Prolog is correct!\n");
+
+    if (ACTIVE_TYPE == T_Whitespace)
+        ACTIVE_NEXT;
+
+    return exitCode;
+}
+
+int parseTerminal(token_list_t *tokens, token_type_t type)
+{
+    printToken(ACTIVE_TOKEN);
+    if (ACTIVE_TYPE == type)
+    {
+        ACTIVE_NEXT;
+        return 0;
+    }
+    else
+        return 1;
+}
+
+int parseEpsilon(token_list_t *tokens)
+{
+    ACTIVE_NEXT;
     return 0;
 }
 
-// rekurznivne, protoze mame volitelne mnozstvi argumentu
-int check_args(token_t *token){
-    token = token->next;
+// <value> -> int .
+int rule_Value(token_list_t *tokens)
+{
+    printf("BEGIN VALUE\n");
+    int error = 0;
 
-    if (token->type == T_Keyword_String){
-        token = token->next;
-
-        if(token->type != T_Var_id)
-            return 1;
-        
-        token = token->next;
-        if(token->type == T_R_r_par){
-            return 0;
-        }
-        else if(token -> type == T_Comma){
-            return check_args(token);
-        }
-        else{
-            return 1;
-        }
+    if (ACTIVE_TYPE == T_Int)
+    {
+        error = error || parseTerminal(tokens, T_Int);
     }
-    else if (token->type == T_Keyword_Int){
-        token = token->next;
-
-        if(token->type != T_Var_id)
-            return 1;
-        
-        token = token->next;
-        if(token->type == T_R_r_par){
-            return 0;
-        }
-        else if(token -> type == T_Comma){
-            return check_args(token);
-        }
-        else{
-            return 1;
-        }
+    else
+    {
+        error = 1;
     }
 
-    else if (token->type == T_Keyword_Float){
-        token = token->next;
-
-        if(token->type != T_Var_id)
-            return 1;
-        
-        token = token->next;
-        if(token->type == T_R_r_par){
-            return 0;
-        }
-        else if(token -> type == T_Comma){
-            return check_args(token);
-        }
-        else{
-            return 1;
-        }
-    }
-    else if(token -> type == T_R_r_par){
-        return 0;
-    }
-
-    else{
-        return 1;
-    }
-    
+    return error;
 }
 
-int check_call_args(token_t *token){
-        
-       token = token->next;
-        if(token->type != T_Var_id)
-            return 1;
-        
-        token = token->next;
-        if(token->type == T_R_r_par){
-            return 0;
+// <expr> -> <value> + <value> .
+int rule_Expr(token_list_t *tokens)
+{
+    printf("BEGIN EXPR\n");
+    int error = 0;
+
+    // <expr> -> <value> + <value> .
+    if (ACTIVE_TYPE == T_Int)
+    {
+        error = error || rule_Value(tokens);
+        error = error || parseTerminal(tokens, T_Plus);
+        error = error || rule_Value(tokens);
+    }
+}
+
+// <call-params> -> $id .
+// <call-params> -> <expr> .
+int rule_CallParams(token_list_t *tokens)
+{
+    printf("BEGIN CALLPARAMS\n");
+    int error = 0;
+
+    // <call-params> -> $id .
+    if (ACTIVE_TYPE == T_Var_id)
+    {
+        // $id
+        error = error || parseTerminal(tokens, T_Var_id);
+    }
+    // <call-params> -> <expr> .
+    else if (ACTIVE_TYPE == T_Int)
+    {
+        // <expr>
+        error = error || rule_Expr(tokens);
+    }
+    else
+        error = 1;
+}
+
+// <assign> -> <expr>
+// <assign> -> fun-id ( <call-params> )
+int rule_Assign(token_list_t *tokens)
+{
+    printf("BEGIN ASSIGN\n");
+    int error = 0;
+
+    // <assign> -> <expr>
+    if (ACTIVE_TYPE == T_Int)
+    {
+        error = error || rule_Expr(tokens);
+    }
+    // <assign> -> fun-id ( <call-params> )
+    else if (ACTIVE_TYPE == T_Identifier)
+    {
+        // fun-id
+        error = error || parseTerminal(tokens, T_Identifier);
+        // (
+        error = error || parseTerminal(tokens, T_L_r_par);
+        // <call-params>
+        error = error || rule_CallParams(tokens);
+        // )
+        error = error || parseTerminal(tokens, T_R_r_par);
+    }
+    else
+        error = 1;
+}
+
+// <stat> -> $id = <assign> .
+// <stat> -> fun-id ( <call-params> ) .
+int rule_Stat(token_list_t *tokens)
+{
+    printf("BEGIN STAT\n");
+    int error = 0;
+
+    // <stat> -> $id = <assign> .
+    if (ACTIVE_TYPE == T_Var_id)
+    {
+        // $id
+        error = error || parseTerminal(tokens, T_Var_id);
+        // =
+        error = error || parseTerminal(tokens, T_Assign);
+        // <assign>
+        error = error || rule_Assign(tokens);
+    }
+    // <stat> -> fun-id ( <call-params> ) .
+    else if (ACTIVE_TYPE == T_Identifier)
+    {
+        // fun-id
+        error = error || parseTerminal(tokens, T_Identifier);
+        // (
+        error = error || parseTerminal(tokens, T_L_r_par);
+        // <call-params>
+        error = error || rule_CallParams(tokens);
+        // )
+        error = error || parseTerminal(tokens, T_R_r_par);
+    }
+    else
+    {
+        error = 1;
+    }
+
+    return error;
+}
+
+// <prog> -> <stat> <prog>
+// <prog> -> ?> EOF
+// <prog> -> EOF
+int rule_Prog(token_list_t *tokens)
+{
+    printf("BEGIN PROG\n");
+    int error = 0;
+
+    // <prog> -> <stat> ; <prog>
+    if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Identifier)
+    {
+        // <stat>
+        error = error || rule_Stat(tokens);
+        // ;
+        error = error || parseTerminal(tokens, T_Semicolon);
+        // <prog>
+        error = error || rule_Prog(tokens);
+    }
+    // <prog> -> ?> EOF
+    else if (ACTIVE_TYPE == T_End_closing)
+    {
+        // ?>
+        error = error || parseTerminal(tokens, T_End_closing);
+        // EOF
+        if (ACTIVE_TYPE == T_File_end)
+        {
+            error = error || 0;
+            return error;
         }
-        else if(token -> type == T_Comma){
-            return check_call_args(token);
-        }
-        else{
-            return 1;
-        }
+    }
+    // <prog> -> EOF
+    else if (ACTIVE_TYPE == T_File_end)
+    {
+        // EOF
+        error = error || 0;
+        return error;
+    }
+
+    return error;
+}
+
+int parser(token_list_t *tokens)
+{
+    checkProlog(tokens);
+    printf("\n\n");
+
+    int error;
+    error = rule_Prog(tokens);
+
+    if (error == 0)
+        printf("Parsing was successful! :)\n");
+    else
+        printf("Parsing was not successful! :(\n");
+
+    return 0;
 }
