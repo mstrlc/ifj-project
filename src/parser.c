@@ -37,16 +37,16 @@
     if (error == 0)  \
     error
 
+int rule_Prog(token_list_t *tokens);
 int rule_ParamsCont(token_list_t *tokens);
 int rule_Params(token_list_t *tokens);
 int rule_ArgsCont(token_list_t *tokens);
 int rule_Val(token_list_t *tokens);
-int rule_Expr(token_list_t *tokens);
 int rule_Args(token_list_t *tokens);
-int rule_Assign(token_list_t *tokens);
 int rule_Stat(token_list_t *tokens);
-int rule_Prog(token_list_t *tokens);
-
+int rule_StList(token_list_t *tokens);
+int rule_Assign(token_list_t *tokens);
+int rule_Expr(token_list_t *tokens);
 /**
  *
  * @brief Check if prolog is correct
