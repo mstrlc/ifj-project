@@ -46,6 +46,7 @@ int rule_Args(token_list_t *tokens);
 int rule_Stat(token_list_t *tokens);
 int rule_StList(token_list_t *tokens);
 int rule_Assign(token_list_t *tokens);
+int rule_Term(token_list_t *tokens);
 int rule_Expr(token_list_t *tokens);
 /**
  *
@@ -251,18 +252,18 @@ int rule_Params(token_list_t *tokens)
     return error;
 }
 
-// <args-cont> -> , <val> <args-cont> .
-// <args-cont> -> eps .
+// <args> -> <term> <args-cont> .
+// <args> ->  .
 int rule_ArgsCont(token_list_t *tokens)
 {
     // printf("BEGIN ARGSCONT\n");
     int error = 0;
 
-    // <args-cont> -> , <val> <args-cont> .
+    // <args-cont> -> , <term> <args-cont> .
     if (ACTIVE_TYPE == T_Comma)
     {
         HANDLE_ERROR = parseTerminal(tokens, T_Comma);
-        HANDLE_ERROR = rule_Val(tokens);
+        HANDLE_ERROR = rule_Term(tokens);
         HANDLE_ERROR = rule_ArgsCont(tokens);
     }
     else if (ACTIVE_TYPE == T_R_r_par)
@@ -277,59 +278,16 @@ int rule_ArgsCont(token_list_t *tokens)
     return error;
 }
 
-// <val> -> literal .
-int rule_Val(token_list_t *tokens)
-{
-    // printf("BEGIN VAL\n");
-    int error = 0;
-
-    // <val> -> literal .
-    if (ACTIVE_TYPE == T_Int) // TODO DEBUG CHANGE
-    {
-        HANDLE_ERROR = parseTerminal(tokens, T_Int);
-    }
-    else if (ACTIVE_TYPE == T_Float) // TODO DEBUG CHANGE
-    {
-        HANDLE_ERROR = parseTerminal(tokens, T_Float);
-    }
-    else if (ACTIVE_TYPE == T_String) // TODO DEBUG CHANGE
-    {
-        HANDLE_ERROR = parseTerminal(tokens, T_String);
-    }
-    else if (ACTIVE_TYPE == T_Var_id) // TODO DEBUG CHANGE
-    {
-        HANDLE_ERROR = parseTerminal(tokens, T_Var_id);
-    }
-    else
-    {
-        HANDLE_ERROR = ERR_SYNTAX;
-    }
-
-    return error;
-}
-
-// <expr> -> <val> .
+// <expr> -> <term> .
 int rule_Expr(token_list_t *tokens)
 {
     // printf("BEGIN EXPR\n");
     int error = 0;
 
-    // <expr> -> <val> .
-    if (ACTIVE_TYPE == T_Int) // TODO DEBUG CHANGE
+    // <expr> -> <term> .
+    if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String )
     {
-        HANDLE_ERROR = rule_Val(tokens);
-    }
-    else if (ACTIVE_TYPE == T_Float) // TODO DEBUG CHANGE
-    {
-        HANDLE_ERROR = rule_Val(tokens);
-    }
-    else if (ACTIVE_TYPE == T_String) // TODO DEBUG CHANGE
-    {
-        HANDLE_ERROR = rule_Val(tokens);
-    }
-    else if (ACTIVE_TYPE == T_Var_id) // TODO DEBUG CHANGE
-    {
-        HANDLE_ERROR = rule_Val(tokens);
+        HANDLE_ERROR = rule_Term(tokens);
     }
     else
     {
@@ -339,18 +297,18 @@ int rule_Expr(token_list_t *tokens)
     return error;
 }
 
-// <args> -> <val> <args-cont> .
+// <args> -> <term> <args-cont> .
 // <args> -> eps .
 int rule_Args(token_list_t *tokens)
 {
     // printf("BEGIN ARGS\n");
     int error = 0;
 
-    // <args> -> <val> <args-cont> .
-    if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
+    // <args> -> <term> <args-cont> .
+    if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Var_id)
     {
         // <val>
-        HANDLE_ERROR = rule_Val(tokens);
+        HANDLE_ERROR = rule_Term(tokens);
         // <args-cont>
         HANDLE_ERROR = rule_ArgsCont(tokens);
     }
@@ -373,7 +331,7 @@ int rule_Assign(token_list_t *tokens)
     // printf("BEGIN ASSIGN\n");
     int error = 0;
 
-    // <assign> -> <expr> ; <stat> .
+    // <assign> -> <expr> .
     if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
     {
         error = rule_Expr(tokens);
@@ -533,6 +491,33 @@ int rule_Stat(token_list_t *tokens)
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
+    }
+    else
+    {
+        HANDLE_ERROR = ERR_SYNTAX;
+    }
+
+    return error;
+}
+
+// <term> -> $id .
+// <term> -> val .
+int rule_Term(token_list_t *tokens)
+{
+    // printf("BEGIN TERM\n");
+    int error = 0;
+
+    // <term> -> $id .
+    if (ACTIVE_TYPE == T_Var_id)
+    {
+        // $id
+        HANDLE_ERROR = parseTerminal(tokens, T_Var_id);
+    }
+    // <term> -> val .
+    else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String)
+    {
+        // val
+        HANDLE_ERROR = parseTerminal(tokens, ACTIVE_TYPE);
     }
     else
     {
