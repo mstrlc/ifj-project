@@ -362,8 +362,10 @@ int getNextToken(token_t *token)
         case Type_prefix:
             if (c == '>')
                 nextState = End_closing;
+            else if (isalnum(c) || c == '_')
+                nextState = Identifier;
             else
-                token->type = T_Type_prefix;
+                nextState = ERROR;
             break;
         case Assign:
             if (c == '=')
@@ -420,7 +422,6 @@ int getNextToken(token_t *token)
             break;
         case Plus:
             token->type = T_Plus;
-
             break;
         case Minus:
             token->type = T_Minus;
@@ -605,24 +606,34 @@ int getNextToken(token_t *token)
     // Recognize token type -- keywords
     if (strcmp(token->data, "else") == 0)
         token->type = T_Keyword_Else;
-    else if (strcmp(token->data, "float") == 0)
-        token->type = T_Keyword_Float;
     else if (strcmp(token->data, "function") == 0)
         token->type = T_Keyword_Function;
     else if (strcmp(token->data, "if") == 0)
         token->type = T_Keyword_If;
-    else if (strcmp(token->data, "int") == 0)
-        token->type = T_Keyword_Int;
     else if (strcmp(token->data, "null") == 0)
         token->type = T_Keyword_Null;
     else if (strcmp(token->data, "return") == 0)
         token->type = T_Keyword_Return;
+    else if (strcmp(token->data, "int") == 0)
+        token->type = T_Keyword_Int;
     else if (strcmp(token->data, "string") == 0)
         token->type = T_Keyword_String;
+    else if (strcmp(token->data, "float") == 0)
+        token->type = T_Keyword_Float;
+    else if (strcmp(token->data, "?int") == 0)
+        token->type = T_Keyword_Int;
+    else if (strcmp(token->data, "?string") == 0)
+        token->type = T_Keyword_String;
+    else if (strcmp(token->data, "?float") == 0)
+        token->type = T_Keyword_Float;
     else if (strcmp(token->data, "void") == 0)
         token->type = T_Keyword_Void;
     else if (strcmp(token->data, "while") == 0)
         token->type = T_Keyword_While;
+
+    // Non-type identifier cannot start with ?
+    if (token->type == T_Identifier && token->data[0] == '?')
+        token->type = T_Error;
 
     // Remove parantheses from string
     if (token->type == T_String)
