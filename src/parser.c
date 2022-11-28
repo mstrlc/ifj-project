@@ -197,9 +197,13 @@ int rule_ParamsCont(token_list_t *tokens)
         error = error || rule_ParamsCont(tokens);
     }
     // <params-cont> -> eps .
-    else
+    else if (ACTIVE_TYPE == T_R_r_par)
     {
         error = error || parseEpsilon(tokens);
+    }
+    else
+    {
+        error = 1;
     }
 
     return error;
@@ -232,9 +236,13 @@ int rule_Params(token_list_t *tokens)
         error = error || rule_ParamsCont(tokens);
     }
     // <params> -> eps .
-    else
+    else if (ACTIVE_TYPE == T_R_r_par)
     {
         error = error || parseEpsilon(tokens);
+    }
+    else
+    {
+        error = 1;
     }
 
     return error;
@@ -581,41 +589,41 @@ int rule_Prog(token_list_t *tokens)
         // <prog>
         error = error || rule_Prog(tokens);
     }
-    //     // <prog> -> function func-id ( <params> ) : type { <stat> } <prog> .
-    // else if (ACTIVE_TYPE == T_Keyword_Function)
-    // {
-    //     // function
-    //     error = error || parseTerminal(tokens, T_Keyword_Function);
-    //     // func-id
-    //     error = error || parseTerminal(tokens, T_Identifier);
-    //     // (
-    //     error = error || parseTerminal(tokens, T_L_r_par);
-    //     // <params>
-    //     error = error || rule_Params(tokens);
-    //     // )
-    //     error = error || parseTerminal(tokens, T_R_r_par);
-    //     // :
-    //     error = error || parseTerminal(tokens, T_Colon);
-    //     // type
-    //     if (ACTIVE_TYPE == T_Keyword_Int)
-    //         error = error || parseTerminal(tokens, T_Keyword_Int);
-    //     else if (ACTIVE_TYPE == T_Keyword_Float)
-    //         error = error || parseTerminal(tokens, T_Keyword_Float);
-    //     else if (ACTIVE_TYPE == T_Keyword_String)
-    //         error = error || parseTerminal(tokens, T_Keyword_String);
-    //     else if (ACTIVE_TYPE == T_Keyword_Null)
-    //         error = error || parseTerminal(tokens, T_Keyword_Null);
-    //     else
-    //         error = 1;
-    //     // {
-    //     error = error || parseTerminal(tokens, T_L_c_par);
-    //     // <stat>
-    //     error = error || rule_Stat(tokens);
-    //     // }
-    //     error = error || parseTerminal(tokens, T_R_c_par);
-    //     // <prog>
-    //     error = error || rule_Prog(tokens);
-    // }
+    // <prog> -> function func-id ( <params> ) : type { <st-list> } <prog> .
+    else if (ACTIVE_TYPE == T_Keyword_Function)
+    {
+        // function
+        error = error || parseTerminal(tokens, T_Keyword_Function);
+        // func-id
+        error = error || parseTerminal(tokens, T_Identifier);
+        // (
+        error = error || parseTerminal(tokens, T_L_r_par);
+        // <params>
+        error = error || rule_Params(tokens);
+        // )
+        error = error || parseTerminal(tokens, T_R_r_par);
+        // :
+        error = error || parseTerminal(tokens, T_Colon);
+        // type
+        if (ACTIVE_TYPE == T_Keyword_Int)
+            error = error || parseTerminal(tokens, T_Keyword_Int);
+        else if (ACTIVE_TYPE == T_Keyword_Float)
+            error = error || parseTerminal(tokens, T_Keyword_Float);
+        else if (ACTIVE_TYPE == T_Keyword_String)
+            error = error || parseTerminal(tokens, T_Keyword_String);
+        else if (ACTIVE_TYPE == T_Keyword_Null)
+            error = error || parseTerminal(tokens, T_Keyword_Null);
+        else
+            error = 1;
+        // {
+        error = error || parseTerminal(tokens, T_L_c_par);
+        // <st-list>
+        error = error || rule_StList(tokens);
+        // }
+        error = error || parseTerminal(tokens, T_R_c_par);
+        // <prog>
+        error = error || rule_Prog(tokens);
+    }
     // <prog> -> <eof> .
     else if (ACTIVE_TYPE == T_End_closing || ACTIVE_TYPE == T_File_end)
     {
