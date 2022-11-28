@@ -5,6 +5,8 @@
 #include <stdbool.h>
 
 #include "../include/parser.h"
+#include "../include/common.h"
+#include "../include/error.h"
 
 // Access active element in token list
 #define ACTIVE_TOKEN (tokens->activeToken)
@@ -156,7 +158,9 @@ int parseTerminal(token_list_t *tokens, token_type_t type)
         return 0;
     }
     else
+    {
         return 1;
+    }
 }
 
 int parseEpsilon(token_list_t *tokens)
@@ -270,7 +274,7 @@ int rule_ArgsCont(token_list_t *tokens)
     {
         error = 1;
     }
-    printf("END ARGSCONT\n");
+
     return error;
 }
 
@@ -296,6 +300,10 @@ int rule_Val(token_list_t *tokens)
     else if (ACTIVE_TYPE == T_Var_id) // TODO DEBUG CHANGE
     {
         error = error || parseTerminal(tokens, T_Var_id);
+    }
+    else
+    {
+        error = 1;
     }
 
     return error;
@@ -535,6 +543,7 @@ int rule_Stat(token_list_t *tokens)
     {
         error = 1;
     }
+
     return error;
 }
 
@@ -567,6 +576,7 @@ int rule_EOF(token_list_t *tokens)
 }
 
 // <prog> -> <stat> <prog> .
+// <prog> -> function func-id ( <params> ) : type { <st-list> } <prog> .
 // <prog> -> <eof> .
 int rule_Prog(token_list_t *tokens)
 {
@@ -646,10 +656,12 @@ int parser(token_list_t *tokens)
     int error;
     error = rule_Prog(tokens);
 
+
+
     if (error == 0)
         printf("Parsing was successful! :)\n");
     else
-        printf("Parsing was not successful! :(\n");
+        error_exit(ERR_SYNTAX, ACTIVE_TOKEN);
 
     return 0;
 }
