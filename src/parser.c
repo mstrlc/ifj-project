@@ -31,6 +31,16 @@
            ACTIVE_TYPE == T_Line_comment)            \
         tokens->activeToken = tokens->activeToken->prev;
 
+int rule_ParamsCont(token_list_t *tokens);
+int rule_Params(token_list_t *tokens);
+int rule_ArgsCont(token_list_t *tokens);
+int rule_Val(token_list_t *tokens);
+int rule_Expr(token_list_t *tokens);
+int rule_Args(token_list_t *tokens);
+int rule_Assign(token_list_t *tokens);
+int rule_Stat(token_list_t *tokens);
+int rule_Prog(token_list_t *tokens);
+
 /**
  *
  * @brief Check if prolog is correct
@@ -139,6 +149,7 @@ int checkProlog(token_list_t *tokens)
 int parseTerminal(token_list_t *tokens, token_type_t type)
 {
     printToken(ACTIVE_TOKEN);
+
     if (ACTIVE_TYPE == type)
     {
         ACTIVE_NEXT;
@@ -150,19 +161,160 @@ int parseTerminal(token_list_t *tokens, token_type_t type)
 
 int parseEpsilon(token_list_t *tokens)
 {
-    ACTIVE_NEXT;
+    printf("PARSE EPSILON\n");
+    if (ACTIVE_TYPE == T_Whitespace || ACTIVE_TYPE == T_Block_comment || ACTIVE_TYPE == T_Line_comment)
+    {
+        ACTIVE_NEXT;
+    }
     return 0;
 }
 
-// <value> -> int .
-int rule_Value(token_list_t *tokens)
+// <params-cont> -> , type $id <params-cont> .
+// <params-cont> -> eps .
+int rule_ParamsCont(token_list_t *tokens)
 {
-    printf("BEGIN VALUE\n");
+    printf("BEGIN PARAMSCONT\n");
     int error = 0;
 
-    if (ACTIVE_TYPE == T_Int)
+    // <params-cont> -> , type $id <params-cont> .
+    if (ACTIVE_TYPE == T_Comma)
+    {
+        error = error || parseTerminal(tokens, T_Comma);
+        // type
+        if (ACTIVE_TYPE == T_Keyword_Int)
+            error = error || parseTerminal(tokens, T_Keyword_Int);
+        else if (ACTIVE_TYPE == T_Keyword_Float)
+            error = error || parseTerminal(tokens, T_Keyword_Float);
+        else if (ACTIVE_TYPE == T_Keyword_String)
+            error = error || parseTerminal(tokens, T_Keyword_String);
+        else if (ACTIVE_TYPE == T_Keyword_Null)
+            error = error || parseTerminal(tokens, T_Keyword_Null);
+        else
+            error = 1;
+        // $id
+        error = error || parseTerminal(tokens, T_Var_id);
+        // <params-cont>
+        error = error || rule_ParamsCont(tokens);
+    }
+    // <params-cont> -> eps .
+    else
+    {
+        error = error || parseEpsilon(tokens);
+    }
+
+    return error;
+}
+
+// <params> -> type $id <params-cont> .
+// <params> -> eps .
+int rule_Params(token_list_t *tokens)
+{
+    printf("BEGIN PARAMS\n");
+    int error = 0;
+
+    // <params> -> type $id <params-cont> .
+    if (ACTIVE_TYPE == T_Keyword_Int || ACTIVE_TYPE == T_Keyword_Float || ACTIVE_TYPE == T_Keyword_String || ACTIVE_TYPE == T_Keyword_Null)
+    {
+        // type
+        if (ACTIVE_TYPE == T_Keyword_Int)
+            error = error || parseTerminal(tokens, T_Keyword_Int);
+        else if (ACTIVE_TYPE == T_Keyword_Float)
+            error = error || parseTerminal(tokens, T_Keyword_Float);
+        else if (ACTIVE_TYPE == T_Keyword_String)
+            error = error || parseTerminal(tokens, T_Keyword_String);
+        else if (ACTIVE_TYPE == T_Keyword_Null)
+            error = error || parseTerminal(tokens, T_Keyword_Null);
+        else
+            error = 1;
+        // $id
+        error = error || parseTerminal(tokens, T_Var_id);
+        // <params-cont>
+        error = error || rule_ParamsCont(tokens);
+    }
+    // <params> -> eps .
+    else
+    {
+        error = error || parseEpsilon(tokens);
+    }
+
+    return error;
+}
+
+// <args-cont> -> , <val> <args-cont> .
+// <args-cont> -> eps .
+int rule_ArgsCont(token_list_t *tokens)
+{
+    printf("BEGIN ARGSCONT\n");
+    int error = 0;
+
+    // <args-cont> -> , <val> <args-cont> .
+    if (ACTIVE_TYPE == T_Comma)
+    {
+        error = error || parseTerminal(tokens, T_Comma);
+        error = error || rule_Val(tokens);
+        error = error || rule_ArgsCont(tokens);
+    }
+    else if (ACTIVE_TYPE == T_R_r_par)
+    {
+        error = error || parseEpsilon(tokens);
+    }
+    else
+    {
+        error = 1;
+    }
+    printf("END ARGSCONT\n");
+    return error;
+}
+
+// <val> -> literal .
+int rule_Val(token_list_t *tokens)
+{
+    printf("BEGIN VAL\n");
+    int error = 0;
+
+    // <val> -> literal .
+    if (ACTIVE_TYPE == T_Int) // TODO DEBUG CHANGE
     {
         error = error || parseTerminal(tokens, T_Int);
+    }
+    else if (ACTIVE_TYPE == T_Float) // TODO DEBUG CHANGE
+    {
+        error = error || parseTerminal(tokens, T_Float);
+    }
+    else if (ACTIVE_TYPE == T_String) // TODO DEBUG CHANGE
+    {
+        error = error || parseTerminal(tokens, T_String);
+    }
+    else if (ACTIVE_TYPE == T_Var_id) // TODO DEBUG CHANGE
+    {
+        error = error || parseTerminal(tokens, T_Var_id);
+    }
+
+    return error;
+}
+
+// <expr> -> <val> .
+int rule_Expr(token_list_t *tokens)
+{
+    printf("BEGIN EXPR\n");
+    int error = 0;
+
+    // <expr> -> <val> .
+    if (ACTIVE_TYPE == T_Int) // TODO DEBUG CHANGE
+    {
+        error = error || rule_Val(tokens);
+    }
+    else if (ACTIVE_TYPE == T_Float) // TODO DEBUG CHANGE
+    {
+        error = error || rule_Val(tokens);
+    }
+    else if (ACTIVE_TYPE == T_String) // TODO DEBUG CHANGE
+    {
+        error = error || rule_Val(tokens);
+    }
+    else if (ACTIVE_TYPE == T_Var_id) // TODO DEBUG CHANGE
+    {
+        error = error || rule_Val(tokens);
     }
     else
     {
@@ -172,80 +324,118 @@ int rule_Value(token_list_t *tokens)
     return error;
 }
 
-// <expr> -> <value> + <value> .
-int rule_Expr(token_list_t *tokens)
+// <args> -> <val> <args-cont> .
+// <args> -> eps .
+int rule_Args(token_list_t *tokens)
 {
-    printf("BEGIN EXPR\n");
+    printf("BEGIN ARGS\n");
     int error = 0;
 
-    // <expr> -> <value> + <value> .
-    if (ACTIVE_TYPE == T_Int)
+    // <args> -> <val> <args-cont> .
+    if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
     {
-        error = error || rule_Value(tokens);
-        error = error || parseTerminal(tokens, T_Plus);
-        error = error || rule_Value(tokens);
+        // <val>
+        error = error || rule_Val(tokens);
+        // <args-cont>
+        error = error || rule_ArgsCont(tokens);
     }
-}
-
-// <call-params> -> $id .
-// <call-params> -> <expr> .
-int rule_CallParams(token_list_t *tokens)
-{
-    printf("BEGIN CALLPARAMS\n");
-    int error = 0;
-
-    // <call-params> -> $id .
-    if (ACTIVE_TYPE == T_Var_id)
+    // <args> -> eps .
+    else if (ACTIVE_TYPE == T_R_r_par)
     {
-        // $id
-        error = error || parseTerminal(tokens, T_Var_id);
-    }
-    // <call-params> -> <expr> .
-    else if (ACTIVE_TYPE == T_Int)
-    {
-        // <expr>
-        error = error || rule_Expr(tokens);
+        error = error || parseEpsilon(tokens);
     }
     else
+    {
+        printf("ARGS ERROR\n");
         error = 1;
+    }
+    {
+        error = error || parseEpsilon(tokens);
+    }
+
+    return error;
 }
 
-// <assign> -> <expr>
-// <assign> -> fun-id ( <call-params> )
+// <assign> -> <expr> .
 int rule_Assign(token_list_t *tokens)
 {
     printf("BEGIN ASSIGN\n");
     int error = 0;
 
-    // <assign> -> <expr>
-    if (ACTIVE_TYPE == T_Int)
+    // <assign> -> <expr> ; <stat> .
+    if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
     {
         error = error || rule_Expr(tokens);
     }
-    // <assign> -> fun-id ( <call-params> )
+    // <assign> -> func-id ( <args> ) .
     else if (ACTIVE_TYPE == T_Identifier)
     {
-        // fun-id
+        // func-id
         error = error || parseTerminal(tokens, T_Identifier);
         // (
         error = error || parseTerminal(tokens, T_L_r_par);
-        // <call-params>
-        error = error || rule_CallParams(tokens);
+        // <args>
+        error = error || rule_Args(tokens);
         // )
         error = error || parseTerminal(tokens, T_R_r_par);
     }
     else
+    {
         error = 1;
+    }
+
+    return error;
 }
 
-// <stat> -> $id = <assign> .
-// <stat> -> fun-id ( <call-params> ) .
+// <st-list> -> <stat> <st-list> .
+// <st-list> -> .
+int rule_StList(token_list_t *tokens)
+{
+    printf("BEGIN STLIST\n");
+    int error = 0;
+
+    // <st-list> -> <stat> <st-list> .
+    if (ACTIVE_TYPE == T_Keyword_Int ||
+        ACTIVE_TYPE == T_Keyword_Float ||
+        ACTIVE_TYPE == T_Keyword_String ||
+        ACTIVE_TYPE == T_Keyword_Null ||
+        ACTIVE_TYPE == T_Var_id ||
+        ACTIVE_TYPE == T_Keyword_If ||
+        ACTIVE_TYPE == T_Keyword_Return ||
+        ACTIVE_TYPE == T_Identifier ||
+        ACTIVE_TYPE == T_Keyword_While ||
+        ACTIVE_TYPE == T_Var_id)
+    {
+        // <stat>
+        error = error || rule_Stat(tokens);
+        // <st-list>
+        error = error || rule_StList(tokens);
+    }
+    // <st-list> -> .
+    if (ACTIVE_TYPE == T_R_c_par)
+    {
+        error = error || parseEpsilon(tokens);
+    }
+    else
+    {
+        error = 1;
+    }
+
+    return error;
+}
+
+// <stat> -> $id = <assign> ; .
+// <stat> -> while ( <expr> ) { <st-list> } .
+// <stat> -> if ( <expr> ) { <st-list> } else { <st-list> } .
+// <stat> -> return <expr> ; .
+// <stat> -> <expr> ; .
+// <stat> -> func-id ( <args> ) ; .
 int rule_Stat(token_list_t *tokens)
 {
     printf("BEGIN STAT\n");
     int error = 0;
 
-    // <stat> -> $id = <assign> .
+    // <stat> -> $id = <assign> ; .
     if (ACTIVE_TYPE == T_Var_id)
     {
         // $id
@@ -254,18 +444,111 @@ int rule_Stat(token_list_t *tokens)
         error = error || parseTerminal(tokens, T_Assign);
         // <assign>
         error = error || rule_Assign(tokens);
+        // ;
+        error = error || parseTerminal(tokens, T_Semicolon);
     }
-    // <stat> -> fun-id ( <call-params> ) .
+    // <stat> -> while ( <expr> ) { <st-list> } .
+    else if (ACTIVE_TYPE == T_Keyword_While)
+    {
+        // while
+        error = error || parseTerminal(tokens, T_Keyword_While);
+        // (
+        error = error || parseTerminal(tokens, T_L_r_par);
+        // <expr>
+        error = error || rule_Expr(tokens);
+        // )
+        error = error || parseTerminal(tokens, T_R_r_par);
+        // {
+        error = error || parseTerminal(tokens, T_L_c_par);
+        // <st-list>
+        error = error || rule_StList(tokens);
+        // }
+        error = error || parseTerminal(tokens, T_R_c_par);
+    }
+    // <stat> -> if ( <expr> ) { <st-list> } else { <st-list> } .
+    else if (ACTIVE_TYPE == T_Keyword_If)
+    {
+        // if
+        error = error || parseTerminal(tokens, T_Keyword_If);
+        // (
+        error = error || parseTerminal(tokens, T_L_r_par);
+        // <expr>
+        error = error || rule_Expr(tokens);
+        // )
+        error = error || parseTerminal(tokens, T_R_r_par);
+        // {
+        error = error || parseTerminal(tokens, T_L_c_par);
+        // <st-list>
+        error = error || rule_StList(tokens);
+        // }
+        error = error || parseTerminal(tokens, T_R_c_par);
+        // else
+        error = error || parseTerminal(tokens, T_Keyword_Else);
+        // {
+        error = error || parseTerminal(tokens, T_L_c_par);
+        // <st-list>
+        error = error || rule_StList(tokens);
+        // }
+        error = error || parseTerminal(tokens, T_R_c_par);
+    }
+    // <stat> -> return <expr> ; .
+    else if (ACTIVE_TYPE == T_Keyword_Return)
+    {
+        // return
+        error = error || parseTerminal(tokens, T_Keyword_Return);
+        // <expr>
+        error = error || rule_Expr(tokens);
+        // ;
+        error = error || parseTerminal(tokens, T_Semicolon);
+    }
+    // <stat> -> <expr> ; .
+    else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
+    {
+        // <expr>
+        error = error || rule_Expr(tokens);
+        // ;
+        error = error || parseTerminal(tokens, T_Semicolon);
+    }
+    // <stat> -> func-id ( <args> ) ; .
     else if (ACTIVE_TYPE == T_Identifier)
     {
-        // fun-id
+        // func-id
         error = error || parseTerminal(tokens, T_Identifier);
         // (
         error = error || parseTerminal(tokens, T_L_r_par);
-        // <call-params>
-        error = error || rule_CallParams(tokens);
+        // <args>
+        error = error || rule_Args(tokens);
         // )
         error = error || parseTerminal(tokens, T_R_r_par);
+        // ;
+        error = error || parseTerminal(tokens, T_Semicolon);
+    }
+    else
+    {
+        error = 1;
+    }
+    return error;
+}
+
+// <eof> -> ?> <eof> .
+// <eof> -> EOF .
+int rule_EOF(token_list_t *tokens)
+{
+    printf("BEGIN EOF\n");
+    int error = 0;
+
+    // <eof> -> ?> <eof> .
+    if (ACTIVE_TYPE == T_End_closing)
+    {
+        error = error || parseTerminal(tokens, T_End_closing);
+        error = error || rule_EOF(tokens);
+    }
+    // <eof> -> EOF .
+    else if (ACTIVE_TYPE == T_File_end)
+    {
+        // parseTerminal(tokens, T_File_end);
+        error = error || 0;
+        return error;
     }
     else
     {
@@ -275,42 +558,73 @@ int rule_Stat(token_list_t *tokens)
     return error;
 }
 
-// <prog> -> <stat> <prog>
-// <prog> -> ?> EOF
-// <prog> -> EOF
+// <prog> -> <stat> <prog> .
+// <prog> -> <eof> .
 int rule_Prog(token_list_t *tokens)
 {
     printf("BEGIN PROG\n");
     int error = 0;
 
-    // <prog> -> <stat> ; <prog>
-    if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Identifier)
+    // <prog> -> <stat> <prog> .
+    if (ACTIVE_TYPE == T_Var_id ||
+        ACTIVE_TYPE == T_Keyword_While ||
+        ACTIVE_TYPE == T_Keyword_If ||
+        ACTIVE_TYPE == T_Keyword_Return ||
+        ACTIVE_TYPE == T_Identifier ||
+        ACTIVE_TYPE == T_Keyword_Int ||
+        ACTIVE_TYPE == T_Keyword_Float ||
+        ACTIVE_TYPE == T_Keyword_String ||
+        ACTIVE_TYPE == T_Keyword_Null)
     {
         // <stat>
         error = error || rule_Stat(tokens);
-        // ;
-        error = error || parseTerminal(tokens, T_Semicolon);
         // <prog>
         error = error || rule_Prog(tokens);
     }
-    // <prog> -> ?> EOF
-    else if (ACTIVE_TYPE == T_End_closing)
+    //     // <prog> -> function func-id ( <params> ) : type { <stat> } <prog> .
+    // else if (ACTIVE_TYPE == T_Keyword_Function)
+    // {
+    //     // function
+    //     error = error || parseTerminal(tokens, T_Keyword_Function);
+    //     // func-id
+    //     error = error || parseTerminal(tokens, T_Identifier);
+    //     // (
+    //     error = error || parseTerminal(tokens, T_L_r_par);
+    //     // <params>
+    //     error = error || rule_Params(tokens);
+    //     // )
+    //     error = error || parseTerminal(tokens, T_R_r_par);
+    //     // :
+    //     error = error || parseTerminal(tokens, T_Colon);
+    //     // type
+    //     if (ACTIVE_TYPE == T_Keyword_Int)
+    //         error = error || parseTerminal(tokens, T_Keyword_Int);
+    //     else if (ACTIVE_TYPE == T_Keyword_Float)
+    //         error = error || parseTerminal(tokens, T_Keyword_Float);
+    //     else if (ACTIVE_TYPE == T_Keyword_String)
+    //         error = error || parseTerminal(tokens, T_Keyword_String);
+    //     else if (ACTIVE_TYPE == T_Keyword_Null)
+    //         error = error || parseTerminal(tokens, T_Keyword_Null);
+    //     else
+    //         error = 1;
+    //     // {
+    //     error = error || parseTerminal(tokens, T_L_c_par);
+    //     // <stat>
+    //     error = error || rule_Stat(tokens);
+    //     // }
+    //     error = error || parseTerminal(tokens, T_R_c_par);
+    //     // <prog>
+    //     error = error || rule_Prog(tokens);
+    // }
+    // <prog> -> <eof> .
+    else if (ACTIVE_TYPE == T_End_closing || ACTIVE_TYPE == T_File_end)
     {
-        // ?>
-        error = error || parseTerminal(tokens, T_End_closing);
-        // EOF
-        if (ACTIVE_TYPE == T_File_end)
-        {
-            error = error || 0;
-            return error;
-        }
+        // <eof>
+        error = error || rule_EOF(tokens);
     }
-    // <prog> -> EOF
-    else if (ACTIVE_TYPE == T_File_end)
+    else
     {
-        // EOF
-        error = error || 0;
-        return error;
+        error = 1;
     }
 
     return error;
