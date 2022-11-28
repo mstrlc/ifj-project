@@ -151,8 +151,16 @@ void printToken(token_t *token);
 
 void printTokenList(token_list_t *list);
 
+void initTokenList(token_list_t *List);
+
 int fillTokenList(token_list_t *list);
 
 void freeTokenList(token_list_t *list);
+
+token_t *TopToken(token_list_t *list);
+
+int PopToken(token_list_t *list);
+
+int PushToken(token_list_t *list, token_t *token);
 
 #endif

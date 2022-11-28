@@ -768,3 +768,67 @@ void freeTokenList(token_list_t *list)
 
     free(list);
 }
+
+/**
+ * @brief Initialize token list
+ * @param list Pointer to list to be initialized
+ */
+
+void initTokenList(token_list_t *list)
+{
+    list->firstToken = NULL;
+    list->lastToken = NULL;
+    list->activeToken = NULL;
+}
+
+
+/**
+ * @brief Get top token from list
+ * 
+ * @param list Pointer to list of tokens
+ * @return token_t* Pointer to top token
+ */
+
+token_t *TopToken(token_list_t *list){
+    return list->lastToken;
+}
+
+/**
+ * @brief Pop top token from list
+ * 
+ * @param list Pointer to list of tokens
+ * @return int Error code
+ */
+
+int PopToken(token_list_t *list){
+    if(TopToken(list) != NULL){
+        token_t *temp = TopToken(list);
+        list->lastToken = temp->prev;
+        free(temp);
+        return EXIT_SUCCESS;
+    }
+    else
+        return ERR_INTERNAL;
+}
+
+/**
+ * @brief Push token to list
+ * 
+ * @param list Pointer to list of tokens
+ * @param token Pointer to token to be pushed
+ * @return int Error code
+ */
+
+int PushToken(token_list_t *list, token_t *token){
+    if(TopToken(list) == NULL){
+        list->lastToken = token;
+        return EXIT_SUCCESS;
+    }
+    else{
+        token_t *temp = TopToken(list);
+        temp->next = token;
+        token->prev = temp;
+        list->lastToken = token;
+        return EXIT_SUCCESS;
+    }
+}
