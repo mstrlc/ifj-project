@@ -1,5 +1,5 @@
 <prog> -> <stat> <prog> .
-<prog> -> function func-id ( <params> ) : type { <stat> } <prog> .
+<prog> -> function func-id ( <params> ) : type { <st-list> } <prog> .
 <prog> -> <eof> .
 
 <eof> -> ?> EOF .
@@ -11,49 +11,26 @@
 <params> -> type $id <params-cont> .
 <params> ->	.
 
-<args-cont> -> , <val> <args-cont> .
-<args-cont> ->	.
+<args-cont> -> , <term> <args-cont> .
+<args-cont> ->  .
 
-<args> -> <val> <args-cont> .
-<args> ->	.
+<args> -> <term> <args-cont> .
+<args> ->  .
 
-<stat> -> $id <assign> ; <stat> .
-<stat> -> if ( <expr> ) { <stat> } else { <stat> } ; <stat> .
-<stat> -> while ( <expr> ) { <stat> } ; <stat> .
-<stat> -> return <expr> ; <stat> .
-<stat> -> <expr> ; <stat> .
-<stat> -> func-id ( <args> ) ; <stat> .
-<stat> -> ; .
+<stat> -> $id = <assign> ; .
+<stat> -> while ( <expr> ) { <st-list> } .
+<stat> -> if ( <expr> ) { <st-list> } else { <st-list> } .
+<stat> -> return <expr> ; .
+<stat> -> <expr> ; .
+<stat> -> func-id ( <args> ) ; .
 
-<assign> -> <expr> ; <stat> .
-<assign> -> func-id ( <args> ) ; <stat> .
+<st-list> -> <stat> <st-list> .
+<st-list> -> . 
 
-<val> -> literal .
+<assign> -> <expr> .
+<assign> -> func-id ( <args> ) .
 
-<expr> -> <val> .
+<term> -> $id .
+<term> -> val .
 
-----
-LL bez definice funkce
-	<prog> -> <stat> <prog> .
-	<prog> -> EOF .
-
-	<args-cont> -> , <expr> <args-cont> .
-	<args-cont> ->	.
-
-	<args> -> <expr> <args-cont> .
-	<args> ->	.
-
-	<stat> -> $id = <assign> ; .
-	<stat> -> while ( <expr> ) { <st-list> } .
-	<stat> -> if ( <expr> ) { <st-list> } else { <st-list> } .
-	<stat> -> return <expr> ; .
-    <stat> -> <expr> ; .
-    <stat> -> func-id ( <args> ) ; .
-
-	<st-list> -> <stat> <st-list> .
-	<st-list> -> . 
-
-	<assign> -> <expr> .
-	<assign> -> func-id ( <args> ) .
-
-	<expr> -> E .
+<expr> -> E .
