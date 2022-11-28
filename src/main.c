@@ -10,8 +10,6 @@
 #include "../include/lexer.h"
 #include "../include/stack.h"
 
-#define MAX_HTAB_LD 0.75f
-
 int main()
 {
     // Initialize token list and fill it with tokens from stdin
