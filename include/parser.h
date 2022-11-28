@@ -1,10 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "symtable.h"
-#include "lexer.h"
 #include "../include/lexer.h"
-#include "../include/stack.h"
 
 typedef enum err_code
 {

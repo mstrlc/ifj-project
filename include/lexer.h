@@ -8,7 +8,7 @@
  * @author <xstrel03> Matyáš Strelec
  *
  */
-
+#include <stdlib.h>
 #ifndef LEXER_H
 #define LEXER_H
 
