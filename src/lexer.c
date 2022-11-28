@@ -640,7 +640,7 @@ int getNextToken(token_t *token)
     // Return error if lexeme is not recognized as valid
     if (token->type == T_Error)
     {
-        error_exit(ERR_LEXEME, token);
+        return ERR_LEXEME;
     }
     else
     {
@@ -714,6 +714,7 @@ int fillTokenList(token_list_t *list)
                 token->next = next;
                 token = next;
                 token->prev = temp;
+                list->activeToken = token;
                 exitCode = getNextToken(token);
                 if (exitCode != EXIT_SUCCESS)
                 {
