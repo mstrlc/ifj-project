@@ -9,69 +9,43 @@
 #include "../include/symtable.h"
 #include "../include/lexer.h"
 #include "../include/stack.h"
+#include "../include/common.h"
+#include "../include/error.h"
 
 int main()
 {
+    int error = 0;
     // Initialize token list and fill it with tokens from stdin
     token_list_t *tokens = malloc(sizeof(token_list_t));
-    int exitCode = fillTokenList(tokens);
 
-    // //PARSE DEBUG
-
-    // b_stack* stack = (b_stack *) malloc(sizeof(struct b_stack)) ;
-    // b_stack_init(stack);
-
-    // token_t *tokens_p[1000];
-    // for (int a = 0; a < 1000; a++)
-    // {
-    //     tokens_p[a] = malloc(sizeof(token_t));
-    // }
-    // // Go through tokens until End of file token type
-    // int a = 0;
-    // while(true){
-    //     getNextToken(tokens_p[a]);
-
-    //     if(prog(tokens_p[a], stack) == 1){
-    //         printf("\n\nERROR ON LINE: %d", tokens_p[a] -> line ); //nefunguje , protoze iteruju po druhe, ale kdyz zakomentuju lexer debug tak funguje
-    //         printf("\n\nTHE ERROR IS NEAR: %s\n", tokens_p[a] -> data );
-    //         break;
-    //     }
-
-    //     if (tokens_p[a] -> type == T_File_end){
-    //         a++;
-    //         break;
-    //     }
-    //     a++;
-    // }
-    // //SYMBOL TABLE DEBUG
-    // //tabulka zatím insertuje úplně všechno a nekontroluje, jestli tam už je
-    // printf("\nImprovised symbol table:\n");
-    // //ALWAYS USE PRIME NUMBERS FOR HASH TABLE SIZE
-    // symtable_t *table = symtable_init(11);
-    // for (int j = 0; j < i; j++)
-    // {
-    //     //pouzivejte vzdycky check a pak insert [Seidly]
-    //     table = symtable_check_size(table);
-    //     symbol_t *symbol = token_to_symbol(tokens[j]);
-    //     symtable_insert(table, symbol);
-    // }
-
-    // for (int i = 0; i < 1000; i++)
-    // {
-    //     free(tokens[i]);
-    // }
-    // symtable_print(table);
-    // free_symbols(table);
-    // symtable_dispose(table);
-
-    // If there was an error, print it and exit
-    if (exitCode != EXIT_SUCCESS)
+    // Call lexer
+    error = fillTokenList(tokens);
+    if (error != 0)
     {
-        exit(exitCode);
+        error_exit(error, tokens->activeToken);
+        freeTokenList(tokens);
+        exit(error);
+    }
+    else
+    {
+        printf("Lexer success\n");
     }
 
-    printTokenList(tokens);
+    // Call parser
+    error = parser(tokens);
+    if (error != 0)
+    {
+        error_exit(error, tokens->activeToken);
+        freeTokenList(tokens);
+        exit(error);
+    }
+    else
+    {
+        printf("Parser success\n");
+    }
+
 
     freeTokenList(tokens);
-    exit(0);
+    printf("PROGRAM CORRECT\n");
+    exit(error);
 }

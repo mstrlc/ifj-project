@@ -1,0 +1,36 @@
+<prog> -> <stat> <prog> .
+<prog> -> function func-id ( <params> ) : type { <st-list> } <prog> .
+<prog> -> <eof> .
+
+<eof> -> ?> EOF .
+<eof> -> EOF .
+
+<params-cont> -> , type $id <params-cont> .
+<params-cont> ->	.
+
+<params> -> type $id <params-cont> .
+<params> ->	.
+
+<args-cont> -> , <term> <args-cont> .
+<args-cont> ->  .
+
+<args> -> <term> <args-cont> .
+<args> ->  .
+
+<stat> -> $id = <assign> ; .
+<stat> -> while ( <expr> ) { <st-list> } .
+<stat> -> if ( <expr> ) { <st-list> } else { <st-list> } .
+<stat> -> return <expr> ; .
+<stat> -> <expr> ; .
+<stat> -> func-id ( <args> ) ; .
+
+<st-list> -> <stat> <st-list> .
+<st-list> -> . 
+
+<assign> -> <expr> .
+<assign> -> func-id ( <args> ) .
+
+<term> -> $id .
+<term> -> val .
+
+<expr> -> E .

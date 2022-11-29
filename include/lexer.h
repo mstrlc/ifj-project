@@ -8,7 +8,7 @@
  * @author <xstrel03> Matyáš Strelec
  *
  */
-
+#include <stdlib.h>
 #ifndef LEXER_H
 #define LEXER_H
 
@@ -147,10 +147,20 @@ typedef struct token_list_t
 
 } token_list_t;
 
+void printToken(token_t *token);
+
 void printTokenList(token_list_t *list);
+
+void initTokenList(token_list_t *List);
 
 int fillTokenList(token_list_t *list);
 
 void freeTokenList(token_list_t *list);
+
+token_t *TopToken(token_list_t *list);
+
+int PopToken(token_list_t *list);
+
+int PushToken(token_list_t *list, token_t *token);
 
 #endif
