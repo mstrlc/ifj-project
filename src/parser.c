@@ -1,3 +1,14 @@
+/**
+ * @file parser.c
+ *
+ * Implementation of syntax and semantic analysis and code generation 
+ * 
+ * IFJ project 2022
+ *
+ * @author <xstrel03> Matyáš Strelec
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,7 +30,7 @@
 #define ACTIVE_PREV_WS \
     tokens->activeToken = tokens->activeToken->prev;
 
-// Move active element in token list without whitespace and comments
+// Move active element in token list skipping whitespaces or comments
 #define ACTIVE_NEXT                                  \
     tokens->activeToken = tokens->activeToken->next; \
     while (ACTIVE_TYPE == T_Whitespace ||            \
@@ -33,6 +44,7 @@
            ACTIVE_TYPE == T_Line_comment)            \
         tokens->activeToken = tokens->activeToken->prev;
 
+// Do not overwrite error code if it is already set
 #define HANDLE_ERROR \
     if (error == 0)  \
     error
@@ -48,94 +60,23 @@ int rule_StList(token_list_t *tokens);
 int rule_Assign(token_list_t *tokens);
 int rule_Term(token_list_t *tokens);
 int rule_Expr(token_list_t *tokens);
+
 /**
- *
- * @brief Check if prolog is correct
- *
- * @param tokens Pointer to list of tokens
- * @return int Exit code (0 = OK, 1 = ERROR)
- *
- * @todo Implement all whitespace rules
+ * @brief Parse token, used in prolog
+ * 
+ * If the active token matches the given type, parse it and move to the next one,
+ * including whitespace and comments. Else, return error.
+ * 
+ * @param tokens Pointer to list of tokens to be parsed
+ * @param type Type of token to be parsed
+ * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_SYNTAX)
  */
-int checkProlog(token_list_t *tokens)
+int parseProlog(token_list_t *tokens, token_type_t type)
 {
-    // printf("IN CHECKPROLOG\n");
-    int exitCode = 0;
-
-    if (tokens->activeToken->type == T_Start_opening)
-    {
-        ACTIVE_NEXT_WS;
-        if (tokens->activeToken->type == T_Identifier && strcmp(tokens->activeToken->data, "php") == 0)
-        {
-            ACTIVE_NEXT_WS;
-            if (tokens->activeToken->type == T_Whitespace)
-            {
-                ACTIVE_NEXT_WS;
-                if (tokens->activeToken->type == T_Identifier && strcmp(tokens->activeToken->data, "declare") == 0)
-                {
-                    ACTIVE_NEXT_WS;
-                    if (tokens->activeToken->type == T_L_r_par)
-                    {
-                        ACTIVE_NEXT_WS;
-                        if (tokens->activeToken->type == T_Identifier && strcmp(tokens->activeToken->data, "strict_types") == 0)
-                        {
-                            ACTIVE_NEXT_WS;
-                            if (tokens->activeToken->type == T_Assign)
-                            {
-                                ACTIVE_NEXT_WS;
-                                if (tokens->activeToken->type == T_Int && strcmp(tokens->activeToken->data, "1") == 0)
-                                {
-                                    ACTIVE_NEXT_WS;
-                                    if (tokens->activeToken->type == T_R_r_par)
-                                    {
-                                        ACTIVE_NEXT_WS;
-                                        if (tokens->activeToken->type == T_Semicolon)
-                                        {
-                                            ACTIVE_NEXT_WS;
-                                        }
-                                        else
-                                            exitCode = 1;
-                                    }
-                                    else
-                                        exitCode = 1;
-                                }
-                                else
-                                    exitCode = 1;
-                            }
-                            else
-                                exitCode = 1;
-                        }
-                        else
-                            exitCode = 1;
-                    }
-                    else
-                        exitCode = 1;
-                }
-                else
-                    exitCode = 1;
-            }
-            else
-                exitCode = 1;
-        }
-        else
-            exitCode = 1;
-    }
-    else
-        exitCode = 1;
-
-    if (ACTIVE_TYPE == T_Whitespace)
-        ACTIVE_NEXT;
-
-    return exitCode;
-}
-
-int parseTerminal(token_list_t *tokens, token_type_t type)
-{
-    // printToken(ACTIVE_TOKEN);
     if (ACTIVE_TYPE == type)
     {
-        ACTIVE_NEXT;
-        return 0;
+        ACTIVE_NEXT_WS;
+        return EXIT_SUCCESS;
     }
     else
     {
@@ -143,24 +84,101 @@ int parseTerminal(token_list_t *tokens, token_type_t type)
     }
 }
 
+/**
+ * @brief Parse terminal
+ * 
+ * If the active token matches the given type, parse it and move to the next token
+ * that is not whitespace or comment. Else, return error.
+ * 
+ * @param tokens Pointer to list of tokens to be parsed
+ * @param type Type of token to be parsed
+ * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_SYNTAX)
+ */
+int parseTerminal(token_list_t *tokens, token_type_t type)
+{
+    if (ACTIVE_TYPE == type)
+    {
+        ACTIVE_NEXT;
+        return EXIT_SUCCESS;
+    }
+    else
+    {
+        return ERR_SYNTAX;
+    }
+}
+
+/**
+ * @brief Parse epsilon
+ * 
+ * If the active token is whitespace or comment, move onto the next one.
+ * 
+ * @param tokens Pointer to list of tokens to be parsed
+ * @return int Error code - success (EXIT_SUCCESS)
+ */
 int parseEpsilon(token_list_t *tokens)
 {
-    // printf("PARSE EPSILON\n");
     if (ACTIVE_TYPE == T_Whitespace || ACTIVE_TYPE == T_Block_comment || ACTIVE_TYPE == T_Line_comment)
     {
         ACTIVE_NEXT;
     }
-    return 0;
+    return EXIT_SUCCESS;
 }
 
-// <params-cont> -> , type $id <params-cont> .
-// <params-cont> -> eps .
-int rule_ParamsCont(token_list_t *tokens)
+/**
+ *
+ * @brief Check if prolog is correct
+ *
+ * @param tokens Pointer to list of tokens where prolog is going to be checked
+ * @return int Error code (0 = OK, others = error)
+ */
+int checkProlog(token_list_t *tokens)
 {
-    // printf("BEGIN PARAMSCONT\n");
     int error = 0;
 
-    // <params-cont> -> , type $id <params-cont> .
+    // <?
+    HANDLE_ERROR = parseProlog(tokens, T_Start_opening);
+    // php
+    if (strcmp(ACTIVE_DATA, "php") == 0)
+    {
+        HANDLE_ERROR = parseProlog(tokens, T_Identifier);
+    }
+    HANDLE_ERROR = parseProlog(tokens, T_Whitespace);
+    // declare
+    if (strcmp(ACTIVE_DATA, "declare") == 0)
+    {
+        HANDLE_ERROR = parseProlog(tokens, T_Identifier);
+    }
+    // (
+    HANDLE_ERROR = parseProlog(tokens, T_L_r_par);
+    // strict_types
+    if (strcmp(ACTIVE_DATA, "strict_types") == 0)
+    {
+        HANDLE_ERROR = parseProlog(tokens, T_Identifier);
+    }
+    // =
+    HANDLE_ERROR = parseProlog(tokens, T_Assign);
+    // 1
+    if (strcmp(ACTIVE_DATA, "1") == 0)
+    {
+        HANDLE_ERROR = parseProlog(tokens, T_Int);
+    }
+    // )
+    HANDLE_ERROR = parseProlog(tokens, T_R_r_par);
+    // ;
+    HANDLE_ERROR = parseProlog(tokens, T_Semicolon);
+
+    parseEpsilon(tokens);
+
+    return error;
+}
+
+// <params-cont> -> , type $id <params-cont>
+// <params-cont> ->
+int rule_ParamsCont(token_list_t *tokens)
+{
+    int error = 0;
+
+    // <params-cont> -> , type $id <params-cont>
     if (ACTIVE_TYPE == T_Comma)
     {
         HANDLE_ERROR = parseTerminal(tokens, T_Comma);
@@ -190,7 +208,7 @@ int rule_ParamsCont(token_list_t *tokens)
         // <params-cont>
         HANDLE_ERROR = rule_ParamsCont(tokens);
     }
-    // <params-cont> -> eps .
+    // <params-cont> ->
     else if (ACTIVE_TYPE == T_R_r_par)
     {
         HANDLE_ERROR = parseEpsilon(tokens);
@@ -203,14 +221,13 @@ int rule_ParamsCont(token_list_t *tokens)
     return error;
 }
 
-// <params> -> type $id <params-cont> .
-// <params> -> eps .
+// <params> -> type $id <params-cont>
+// <params> ->
 int rule_Params(token_list_t *tokens)
 {
-    // printf("BEGIN PARAMS\n");
     int error = 0;
 
-    // <params> -> type $id <params-cont> .
+    // <params> -> type $id <params-cont>
     if (ACTIVE_TYPE == T_Keyword_Int || ACTIVE_TYPE == T_Keyword_Float || ACTIVE_TYPE == T_Keyword_String || ACTIVE_TYPE == T_Keyword_Null)
     {
         // type
@@ -239,7 +256,7 @@ int rule_Params(token_list_t *tokens)
         // <params-cont>
         HANDLE_ERROR = rule_ParamsCont(tokens);
     }
-    // <params> -> eps .
+    // <params> ->
     else if (ACTIVE_TYPE == T_R_r_par)
     {
         HANDLE_ERROR = parseEpsilon(tokens);
@@ -252,20 +269,20 @@ int rule_Params(token_list_t *tokens)
     return error;
 }
 
-// <args> -> <term> <args-cont> .
-// <args> ->  .
+// <args> -> <term> <args-cont>
+// <args> -> 
 int rule_ArgsCont(token_list_t *tokens)
 {
-    // printf("BEGIN ARGSCONT\n");
     int error = 0;
 
-    // <args-cont> -> , <term> <args-cont> .
+    // <args-cont> -> , <term> <args-cont>
     if (ACTIVE_TYPE == T_Comma)
     {
         HANDLE_ERROR = parseTerminal(tokens, T_Comma);
         HANDLE_ERROR = rule_Term(tokens);
         HANDLE_ERROR = rule_ArgsCont(tokens);
     }
+    // <args-cont> ->
     else if (ACTIVE_TYPE == T_R_r_par)
     {
         HANDLE_ERROR = parseEpsilon(tokens);
@@ -278,14 +295,13 @@ int rule_ArgsCont(token_list_t *tokens)
     return error;
 }
 
-// <expr> -> <term> .
+// <expr> -> <term>
 int rule_Expr(token_list_t *tokens)
 {
-    // printf("BEGIN EXPR\n");
     int error = 0;
 
-    // <expr> -> <term> .
-    if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String )
+    // <expr> -> <term>
+    if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String)
     {
         HANDLE_ERROR = rule_Term(tokens);
     }
@@ -297,14 +313,12 @@ int rule_Expr(token_list_t *tokens)
     return error;
 }
 
-// <args> -> <term> <args-cont> .
-// <args> ->  .
+// <args> -> <term> <args-cont>
+// <args> -> 
 int rule_Args(token_list_t *tokens)
 {
-    // printf("BEGIN ARGS\n");
     int error = 0;
 
-    // <args> -> <term> <args-cont> .
     if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Var_id)
     {
         // <val>
@@ -312,7 +326,7 @@ int rule_Args(token_list_t *tokens)
         // <args-cont>
         HANDLE_ERROR = rule_ArgsCont(tokens);
     }
-    // <args> -> eps .
+    // <args> ->
     else if (ACTIVE_TYPE == T_R_r_par)
     {
         HANDLE_ERROR = parseEpsilon(tokens);
@@ -325,18 +339,17 @@ int rule_Args(token_list_t *tokens)
     return error;
 }
 
-// <assign> -> <expr> .
+// <assign> -> <expr>
 int rule_Assign(token_list_t *tokens)
 {
-    // printf("BEGIN ASSIGN\n");
     int error = 0;
 
-    // <assign> -> <expr> .
+    // <assign> -> <expr>
     if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
     {
         error = rule_Expr(tokens);
     }
-    // <assign> -> func-id ( <args> ) .
+    // <assign> -> func-id ( <args> )
     else if (ACTIVE_TYPE == T_Identifier)
     {
         // func-id
@@ -356,14 +369,13 @@ int rule_Assign(token_list_t *tokens)
     return error;
 }
 
-// <st-list> -> <stat> <st-list> .
-// <st-list> -> .
+// <st-list> -> <stat> <st-list>
+// <st-list> ->
 int rule_StList(token_list_t *tokens)
 {
-    // printf("BEGIN STLIST\n");
     int error = 0;
 
-    // <st-list> -> <stat> <st-list> .
+    // <st-list> -> <stat> <st-list>
     if (ACTIVE_TYPE == T_Keyword_Int ||
         ACTIVE_TYPE == T_Keyword_Float ||
         ACTIVE_TYPE == T_Keyword_String ||
@@ -393,18 +405,17 @@ int rule_StList(token_list_t *tokens)
     return error;
 }
 
-// <stat> -> $id = <assign> ; .
-// <stat> -> while ( <expr> ) { <st-list> } .
-// <stat> -> if ( <expr> ) { <st-list> } else { <st-list> } .
-// <stat> -> return <expr> ; .
-// <stat> -> <expr> ; .
-// <stat> -> func-id ( <args> ) ; .
+// <stat> -> $id = <assign> ;
+// <stat> -> while ( <expr> ) { <st-list> }
+// <stat> -> if ( <expr> ) { <st-list> } else { <st-list> }
+// <stat> -> return <expr> ;
+// <stat> -> <expr> ;
+// <stat> -> func-id ( <args> ) ;
 int rule_Stat(token_list_t *tokens)
 {
-    // printf("BEGIN STAT\n");
     int error = 0;
 
-    // <stat> -> $id = <assign> ; .
+    // <stat> -> $id = <assign> ;
     if (ACTIVE_TYPE == T_Var_id)
     {
         // $id
@@ -416,7 +427,7 @@ int rule_Stat(token_list_t *tokens)
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
-    // <stat> -> while ( <expr> ) { <st-list> } .
+    // <stat> -> while ( <expr> ) { <st-list> }
     else if (ACTIVE_TYPE == T_Keyword_While)
     {
         // while
@@ -434,7 +445,7 @@ int rule_Stat(token_list_t *tokens)
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
     }
-    // <stat> -> if ( <expr> ) { <st-list> } else { <st-list> } .
+    // <stat> -> if ( <expr> ) { <st-list> } else { <st-list> }
     else if (ACTIVE_TYPE == T_Keyword_If)
     {
         // if
@@ -460,7 +471,7 @@ int rule_Stat(token_list_t *tokens)
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
     }
-    // <stat> -> return <expr> ; .
+    // <stat> -> return <expr> ;
     else if (ACTIVE_TYPE == T_Keyword_Return)
     {
         // return
@@ -470,7 +481,7 @@ int rule_Stat(token_list_t *tokens)
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
-    // <stat> -> <expr> ; .
+    // <stat> -> <expr> ;
     else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
     {
         // <expr>
@@ -478,7 +489,7 @@ int rule_Stat(token_list_t *tokens)
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
-    // <stat> -> func-id ( <args> ) ; .
+    // <stat> -> func-id ( <args> ) ;
     else if (ACTIVE_TYPE == T_Identifier)
     {
         // func-id
@@ -500,20 +511,19 @@ int rule_Stat(token_list_t *tokens)
     return error;
 }
 
-// <term> -> $id .
-// <term> -> val .
+// <term> -> $id
+// <term> -> val
 int rule_Term(token_list_t *tokens)
 {
-    // printf("BEGIN TERM\n");
     int error = 0;
 
-    // <term> -> $id .
+    // <term> -> $id
     if (ACTIVE_TYPE == T_Var_id)
     {
         // $id
         HANDLE_ERROR = parseTerminal(tokens, T_Var_id);
     }
-    // <term> -> val .
+    // <term> -> val
     else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String)
     {
         // val
@@ -527,20 +537,33 @@ int rule_Term(token_list_t *tokens)
     return error;
 }
 
-// <eof> -> ?> <eof> .
-// <eof> -> EOF .
+// <eof> -> ?> <eof>
+// <eof> -> EOF
 int rule_EOF(token_list_t *tokens)
 {
-    // printf("BEGIN EOF\n");
     int error = 0;
 
-    // <eof> -> ?> <eof> .
+    // <eof> -> ?> <eof>
     if (ACTIVE_TYPE == T_End_closing)
     {
         HANDLE_ERROR = parseTerminal(tokens, T_End_closing);
-        if(ACTIVE_DATA[0] == '\n')
+        // Check for epilog rules (only newline permitted after epilog if not EOF)
+        if (tokens->lastToken->type == T_File_end)
         {
-            HANDLE_ERROR = EXIT_SUCCESS;
+            if (tokens->lastToken->prev->type == T_End_closing)
+            {
+                HANDLE_ERROR = EXIT_SUCCESS;
+            }
+            else if (tokens->lastToken->prev->type == T_Whitespace &&
+                     tokens->lastToken->prev->prev->type == T_End_closing &&
+                     strcmp(tokens->lastToken->prev->data, "\n") == 0)
+            {
+                HANDLE_ERROR = EXIT_SUCCESS;
+            }
+            else
+            {
+                HANDLE_ERROR = ERR_SYNTAX;
+            }
         }
         else
         {
@@ -548,10 +571,9 @@ int rule_EOF(token_list_t *tokens)
         }
         HANDLE_ERROR = rule_EOF(tokens);
     }
-    // <eof> -> EOF .
+    // <eof> -> EOF
     else if (ACTIVE_TYPE == T_File_end)
     {
-        // parseTerminal(tokens, T_File_end);
         HANDLE_ERROR = 0;
         return error;
     }
@@ -563,9 +585,9 @@ int rule_EOF(token_list_t *tokens)
     return error;
 }
 
-// <prog> -> <stat> <prog> .
-// <prog> -> function func-id ( <params> ) : type { <st-list> } <prog> .
-// <prog> -> <eof> .
+// <prog> -> <stat> <prog>
+// <prog> -> function func-id ( <params> ) : type { <st-list> } <prog>
+// <prog> -> <eof>
 int rule_Prog(token_list_t *tokens)
 {
     // printf("BEGIN PROG\n");
@@ -587,7 +609,7 @@ int rule_Prog(token_list_t *tokens)
         // <prog>
         HANDLE_ERROR = rule_Prog(tokens);
     }
-    // <prog> -> function func-id ( <params> ) : type { <st-list> } <prog> .
+    // <prog> -> function func-id ( <params> ) : type { <st-list> } <prog>
     else if (ACTIVE_TYPE == T_Keyword_Function)
     {
         // function
@@ -632,7 +654,7 @@ int rule_Prog(token_list_t *tokens)
         // <prog>
         HANDLE_ERROR = rule_Prog(tokens);
     }
-    // <prog> -> <eof> .
+    // <prog> -> <eof>
     else if (ACTIVE_TYPE == T_End_closing || ACTIVE_TYPE == T_File_end)
     {
         // <eof>
@@ -646,13 +668,22 @@ int rule_Prog(token_list_t *tokens)
     return error;
 }
 
+/**
+ * @brief Parse the input file based on syntax rules in defined grammar
+ * 
+ * Used rule is called based on LL(1) grammar parsing table
+ * 
+ * @param tokens Pointer to list of tokens containing input
+ * @return int Error code - success (0) or failure (1 = ERR_LEXEME or 2 = ERR_SYNTAX)
+ */
 int parser(token_list_t *tokens)
 {
     int error = 0;
 
     error = checkProlog(tokens);
     if (error != 0)
-        return error;
+        return 1;
+    // Begin parsing
     error = rule_Prog(tokens);
 
     return error;
