@@ -726,6 +726,7 @@ int fillTokenList(token_list_t *list)
                 token = next;
                 token->prev = temp;
                 list->activeToken = token;
+                list->lastToken = token;
                 exitCode = getNextToken(token);
                 if (exitCode != EXIT_SUCCESS)
                 {
