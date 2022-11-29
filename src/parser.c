@@ -298,7 +298,7 @@ int rule_Expr(token_list_t *tokens)
 }
 
 // <args> -> <term> <args-cont> .
-// <args> -> eps .
+// <args> ->  .
 int rule_Args(token_list_t *tokens)
 {
     // printf("BEGIN ARGS\n");
@@ -538,6 +538,14 @@ int rule_EOF(token_list_t *tokens)
     if (ACTIVE_TYPE == T_End_closing)
     {
         HANDLE_ERROR = parseTerminal(tokens, T_End_closing);
+        if(ACTIVE_DATA[0] == '\n')
+        {
+            HANDLE_ERROR = EXIT_SUCCESS;
+        }
+        else
+        {
+            HANDLE_ERROR = ERR_SYNTAX;
+        }
         HANDLE_ERROR = rule_EOF(tokens);
     }
     // <eof> -> EOF .
