@@ -1,0 +1,72 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[left=2cm,right=2cm,text={18cm,24cm},top=2cm]{geometry}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\renewcommand{\familydefault}{\sfdefault}
+
+
+\begin{document}
+    \begin{titlepage}
+        \begin{center}
+            % FIT logo
+            \includegraphics[scale=0.65]{include/fit.pdf} \\
+
+            \LARGE{
+                \textbf{
+                    Project documentation} \\
+                Compiler for the IFJ22 language} \\
+                
+            \vspace{2cm}
+            
+            \Large{
+                Team xstrel03 \\
+                Variant TRP \\
+            }
+                
+            \vspace{2cm}
+            
+            \normalsize{}
+            \today{}
+
+            \vspace{2cm}
+
+            \begin{tabular}{l l l}
+                \textbf{Matyáš Strelec} & \textbf{(xstrel03)}   & \quad X\% \\
+                Ondřej Seidl            & (xseidl06)            & \quad X\% \\
+                Maxmilián Nový          & (xnovym00)            & \quad X\% \\
+                Dominik Klon            & (xklond00)            & \quad X\% \\
+            \end{tabular}
+        \end{center}
+    \end{titlepage}
+
+    \tableofcontents
+
+    \newpage{}
+
+    \section{Introduction}
+    V dokumentaci popisujte návrh (části překladače a předávání informací mezi nimi),
+    implementaci (použité datové struktury, tabulku symbolů, generování kódu),
+    vývojový cyk- lus, způsob práce v týmu, speciální použité techniky a algoritmy
+    a různé odchylky od před- nášené látky či tradičních přístupů. Nezapomínejte také
+    citovat literaturu a uvádět refe- rence na čerpané zdroje včetně správné citace
+    převzatých částí (obrázky, magické konstanty, vzorce). Nepopisujte záležitosti
+    obecně známé či přednášené na naší fakultě.
+
+    \section{Division of work}
+    Rozdělení práce mezi členy týmu (uveďte kdo a jak se podílel na jednotlivých
+    částech projektu; povinně zdůvodněte odchylky od rovnoměrného rozdělení bodů).
+
+    \section{Lexical analysis}
+    Diagram konečného automatu, který specifikuje lexikální analyzátor.
+
+    \section{Syntactic analysis}
+    LL-gramatiku,LL-tabulku a precedenční tabulku, podle kterých jste implementovali
+    váš syntaktický analyzátor.
+
+    \section{Implementation details}
+    Stručný popis členění implementačního řešení včetně názvů souborů, kde jsou jednotlivé
+    části včetně povinných implementovaných metod překladače k nalezení.
+
+\end{document}
