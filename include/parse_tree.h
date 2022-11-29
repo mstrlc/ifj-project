@@ -2,26 +2,26 @@
 #ifndef PARSE_TREE_H
 #define PARSER_TREE_H
 
-typedef struct PTree PTree_t; 
+typedef struct PTree PTreeNode_t; 
 
 struct PTree {
     token_t *token;
     
-    PTree_t *parent;
-    PTree_t *left;
-    PTree_t *right;
+    PTreeNode_t *parent;
+    PTreeNode_t *left;
+    PTreeNode_t *right;
 } PTree;
 
-PTree_t *initPtree(token_t *token);
+PTreeNode_t *initPtree(token_t *token);
 
-void disposePtree(PTree_t *ptree);
+void disposePtree(PTreeNode_t *ptree);
 
-void insertPtree(PTree_t *ptree, token_t *token);
+void insertPtreeNode(PTreeNode_t *ptree, token_t *token);
 
-void deletePtree(PTree_t *ptree, token_t *token);
+void deletePtreeNode(PTreeNode_t *ptree, token_t *token);
 
-void printNode(PTree_t *ptree);
+void printPtreeNode(PTreeNode_t *ptree);
 
-void printPtree(PTree_t *ptree);
+void printPtree(PTreeNode_t *ptree);
 
 #endif
