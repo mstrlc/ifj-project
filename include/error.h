@@ -47,4 +47,20 @@
 // (napr. chyba alokace pameti atd.)
 #define ERR_INTERNAL 99
 
+/**
+ * @brief Macro for error handling
+ * 
+ * Prints the error code with message and data, returns the error code
+ * 
+ * @param code Error code
+ * @param token Token which caused the error
+ * 
+ * @return int Error code
+ */
+#define error_exit(code, token) \
+    fprintf(stderr, "Error %d (%s) on line %d near \'%s\'.\n", code, errorToString(code), token->line, token->data);\
+    return code;\
+
+char *errorToString(int error);
+
 #endif
