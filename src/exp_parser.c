@@ -8,8 +8,17 @@
 
 static int depth = 0;
 
-int precedence(token_type_t precedence) {
-    switch (precedence) {
+
+/**
+ * @brief Returns the precedence of the given operator
+ * 
+ * Higher precedence means the operator is evaluated first
+ * 
+ * @param int precedence 
+ * @return int 
+ */
+int precedence(token_type_t operator) {
+    switch (operator) {
         case T_Mul:
         case T_Div:
             return 4;
@@ -29,6 +38,14 @@ int precedence(token_type_t precedence) {
     }
 }
 
+/**
+ * @brief Builds a expresion parse tree from the given token list
+ * 
+ * 
+ * 
+ * @param tokens list of tokens 
+ * @return int EXIT_SUCCESS or EXIT_FAILURE
+ */
 int exp_parser(token_list_t *tokens){
     int error = 0;
     PTreeNode_t *PTree;
@@ -39,6 +56,17 @@ int exp_parser(token_list_t *tokens){
     return ERR_SYNTAX;
 }
 
+
+/**
+ * @brief Parses an expression
+ * 
+ * Goes through the token list and builds a parse tree from it
+ * 
+ * @param tokens list of tokens
+ * @param min_precedence minimum precedence of the operator
+ * @param PTree parse tree
+ * @return PTreeNode_t* 
+ */
 PTreeNode_t *parse_expression(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree) {
     insertLeftPtreeNode(PTree, ACTIVE_TOKEN);
     ACTIVE_NEXT;
