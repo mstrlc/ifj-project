@@ -1,9 +1,10 @@
 #include "../include/parse_tree.h"
+#include <stdio.h>
 
-PTreeNode_t *initPtree(token_t *token)
+PTreeNode_t *initPtree()
 {
     PTreeNode_t *ptree = (PTreeNode_t *)malloc(sizeof(PTreeNode_t));
-    ptree->token = token;
+    ptree->token = NULL;
     ptree->left = NULL;
     ptree->right = NULL;
     ptree->parent = NULL;
@@ -21,16 +22,27 @@ void disposePtree(PTreeNode_t *ptree)
     free(ptree);
 }
 
-void insertPtreeNode(PTreeNode_t *ptree, token_t *token)
+void insertLeftPtreeNode(PTreeNode_t *ptree, token_t *token)
 {
-    if (ptree->left == NULL) {
-        ptree->left = initPtree(token);
-        ptree->left->parent = ptree;
-    } else if (ptree->right == NULL) {
-        ptree->right = initPtree(token);
-        ptree->right->parent = ptree;
-    } else {
-        insertPtreeNode(ptree->left, token);
+    PTreeNode_t *newNode = initPtree(token);
+    if(ptree->left == NULL) {
+        newNode->parent = ptree;
+        ptree->left = newNode;
+    }
+    else {
+        insertLeftPtreeNode(ptree->left, token);
+    }   
+}
+
+void insertRightPtreeNode(PTreeNode_t *ptree, token_t *token)
+{
+    PTreeNode_t *newNode = initPtree(token);
+    if(ptree->right == NULL) {
+        newNode->parent = ptree;
+        ptree->right = newNode;
+    }
+    else {
+        insertRightPtreeNode(ptree->right, token);
     }
 }
 
