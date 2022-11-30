@@ -50,7 +50,7 @@ int main()
     symtable_print(symtable);
 
     void *aa = symtable_lookup(symtable, "$d");
-    printf("aa: %p", aa);
+    printf("aa: %p\n\n", aa);
 
     tokens->activeToken = tokens->firstToken;
 
@@ -66,7 +66,7 @@ int main()
     }
     else
     {
-        printf("Parser success\n");
+        printf("\n\nParser success\n");
     }
 
 

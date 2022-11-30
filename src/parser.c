@@ -71,6 +71,22 @@ int rule_Expr(token_list_t *tokens);
  * @param type Type of token to be parsed
  * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_SYNTAX)
  */
+
+ //pomocne funkce 
+ char* make_random_label(){
+    char const abeceda[]= "abcdefghijklmnopqrstuvwxyz0123456789";
+    char* output = malloc(sizeof(char)*8);
+    int random;
+    output[0] = 'L';
+    for(int i = 1; i<8; i++){
+        random = rand()%35;
+        output[i] = abeceda [random];
+    }
+    output[8] = '\0';
+    return output;
+}
+
+
 int parseProlog(token_list_t *tokens, token_type_t type)
 {
     if (ACTIVE_TYPE == type)
@@ -169,6 +185,13 @@ int checkProlog(token_list_t *tokens)
 
     parseEpsilon(tokens);
 
+    //codegen HEADER
+    printf(".IFJcode22\n");
+    printf("DEFVAR GF@expRes\n");
+    printf("MOVE GF@expRes bool@false\n");
+    printf("CREATEFRAME\n");
+    printf("PUSHFRAME\n");
+    
     return error;
 }
 
@@ -419,6 +442,7 @@ int rule_Stat(token_list_t *tokens)
     if (ACTIVE_TYPE == T_Var_id)
     {
         // $id
+        char* var = ACTIVE_DATA;
         HANDLE_ERROR = parseTerminal(tokens, T_Var_id);
         // =
         HANDLE_ERROR = parseTerminal(tokens, T_Assign);
@@ -426,10 +450,16 @@ int rule_Stat(token_list_t *tokens)
         HANDLE_ERROR = rule_Assign(tokens);
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
+
+        printf("DEFVAR LF@%s\n", var);
+        printf("MOVE LF@%s GF@expRes\n", var);
+        
     }
     // <stat> -> while ( <expr> ) { <st-list> }
     else if (ACTIVE_TYPE == T_Keyword_While)
     {
+        char* while_label = make_random_label();
+
         // while
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_While);
         // (
@@ -448,6 +478,9 @@ int rule_Stat(token_list_t *tokens)
     // <stat> -> if ( <expr> ) { <st-list> } else { <st-list> }
     else if (ACTIVE_TYPE == T_Keyword_If)
     {
+        char* if_label = make_random_label();
+        char* else_label = make_random_label();
+
         // if
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_If);
         // (
@@ -458,10 +491,24 @@ int rule_Stat(token_list_t *tokens)
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
+
+        //codegen IF
+        printf("JUMPIFEQ %s GF@expRes bool@false\n", if_label); // tady uz by mela byt prirazena hodnota expressionu
+        printf("CREATEFRAME\n");
+        printf("PUSHFRAME\n");
+
         // <st-list>
         HANDLE_ERROR = rule_StList(tokens);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
+
+        //codegen IF -> ELSE
+        printf("POPFRAME\n");
+        printf("JUMP %s\n", else_label);
+        printf("LABEL %s\n", if_label);
+        printf("CREATEFRAME\n");
+        printf("PUSHFRAME\n");
+
         // else
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Else);
         // {
@@ -470,6 +517,13 @@ int rule_Stat(token_list_t *tokens)
         HANDLE_ERROR = rule_StList(tokens);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
+
+        //codegen ELSE -> END
+        printf("LABEL %s\n", else_label);
+        printf("POPFRAME\n");
+        free(else_label);
+        free(if_label);
+        
     }
     // <stat> -> return <expr> ;
     else if (ACTIVE_TYPE == T_Keyword_Return)
@@ -553,6 +607,7 @@ int rule_EOF(token_list_t *tokens)
             if (tokens->lastToken->prev->type == T_End_closing)
             {
                 HANDLE_ERROR = EXIT_SUCCESS;
+                printf("POPFRAME");
             }
             else if (tokens->lastToken->prev->type == T_Whitespace &&
                      tokens->lastToken->prev->prev->type == T_End_closing &&
@@ -592,6 +647,7 @@ int rule_Prog(token_list_t *tokens)
 {
     // printf("BEGIN PROG\n");
     int error = 0;
+    
 
     // <prog> -> <stat> <prog> .
     if (ACTIVE_TYPE == T_Var_id ||
