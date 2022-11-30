@@ -637,9 +637,9 @@ int rule_Prog(token_list_t *tokens)
         {
             HANDLE_ERROR = parseTerminal(tokens, T_Keyword_String);
         }
-        else if (ACTIVE_TYPE == T_Keyword_Null)
+        else if (ACTIVE_TYPE == T_Keyword_Void)
         {
-            HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Null);
+            HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Void);
         }
         else
         {
