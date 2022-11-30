@@ -191,7 +191,7 @@ int checkProlog(token_list_t *tokens)
     printf("MOVE GF@expRes bool@false\n");
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
-    
+
     return error;
 }
 
@@ -450,15 +450,17 @@ int rule_Stat(token_list_t *tokens)
         HANDLE_ERROR = rule_Assign(tokens);
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
-
-        printf("DEFVAR LF@%s\n", var);
+        
+        //codegen inicializace a prirazeni
+        printf("DEFVAR LF@%s\n", var); //pridat podminku nedefinovanosti promenne
         printf("MOVE LF@%s GF@expRes\n", var);
         
     }
     // <stat> -> while ( <expr> ) { <st-list> }
     else if (ACTIVE_TYPE == T_Keyword_While)
     {
-        char* while_label = make_random_label();
+        char* while_label_end = make_random_label();
+        char* while_label_begin = make_random_label();
 
         // while
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_While);
@@ -468,12 +470,28 @@ int rule_Stat(token_list_t *tokens)
         HANDLE_ERROR = rule_Expr(tokens);
         // )
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
+
+        //TODO dostat DEFVARy pred while loopy :D
+        //codegen WHILE -> BEGIN
+        printf("JUMPIFEQ %s GF@expRes bool@false\n",while_label_end);
+        printf("LABEL %s\n", while_label_begin);
+        printf("CREATEFRAME\n");
+        printf("PUSHFRAME\n");
+
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
         HANDLE_ERROR = rule_StList(tokens);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
+
+        //codegen WHILE -> END
+        printf("JUMP %s\n", while_label_begin);
+        printf("LABEL %s\n", while_label_end);
+        printf("POPFRAME\n");
+        free(while_label_begin);
+        free(while_label_end); 
+
     }
     // <stat> -> if ( <expr> ) { <st-list> } else { <st-list> }
     else if (ACTIVE_TYPE == T_Keyword_If)
@@ -489,20 +507,20 @@ int rule_Stat(token_list_t *tokens)
         HANDLE_ERROR = rule_Expr(tokens);
         // )
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
-        // {
-        HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
 
-        //codegen IF
-        printf("JUMPIFEQ %s GF@expRes bool@false\n", if_label); // tady uz by mela byt prirazena hodnota expressionu
+        //codegen IF -> BEGIN
+        printf("JUMPIFEQ %s GF@expRes bool@false\n", if_label); 
         printf("CREATEFRAME\n");
         printf("PUSHFRAME\n");
 
+        // {
+        HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
         HANDLE_ERROR = rule_StList(tokens);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
 
-        //codegen IF -> ELSE
+        //codegen IF -> END, ELSE -> BEGIN
         printf("POPFRAME\n");
         printf("JUMP %s\n", else_label);
         printf("LABEL %s\n", if_label);
@@ -557,6 +575,7 @@ int rule_Stat(token_list_t *tokens)
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
+
     else
     {
         HANDLE_ERROR = ERR_SYNTAX;
@@ -607,7 +626,6 @@ int rule_EOF(token_list_t *tokens)
             if (tokens->lastToken->prev->type == T_End_closing)
             {
                 HANDLE_ERROR = EXIT_SUCCESS;
-                printf("POPFRAME");
             }
             else if (tokens->lastToken->prev->type == T_Whitespace &&
                      tokens->lastToken->prev->prev->type == T_End_closing &&
