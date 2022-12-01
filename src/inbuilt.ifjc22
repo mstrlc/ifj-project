@@ -1,0 +1,184 @@
+.IFJcode22
+
+# global return variable
+DEFVAR GF@ret
+
+# reads
+LABEL GF@reads
+READ GF@ret string
+RETURN
+
+#readi
+LABEL GF@readi
+READ GF@ret int
+RETURN
+
+#readf
+LABEL GF@readf
+READ GF@ret float
+RETURN
+
+#write
+LABEL GF@write
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@arg
+DEFVAR LF@count
+DEFVAR LF@i
+POPS LF@arg
+LABEL LF@write_loop
+POPS LF@arg
+WRITE LF@arg
+ADD LF@i LF@i int@1
+JUMPIFNEQ LF@write_loop LF@i LF@count
+POPFRAME
+CLEARS
+RETURN
+
+#floatval
+LABEL GF@floatval
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@arg
+DEFVAR LF@type
+POPS LF@arg
+TYPE LF@type LF@arg
+JUMPIFEQ LF@floatval_float LF@type string@float
+JUMPIFEQ LF@floatval_int LF@type string@int
+JUMPIFEQ LF@floatval_null LF@type string@nil
+JUMP LF@floatval_end
+LABEL LF@floatval_float
+MOVE GF@ret LF@arg
+JUMP LF@floatval_end
+LABEL LF@floatval_int
+INT2FLOAT GF@ret LF@arg
+JUMP LF@floatval_end
+LABEL LF@floatval_nil
+MOVE GF@ret float@0x0p+0
+JUMP LF@floatval_end
+LABEL LF@floatval_end
+POPFRAME
+CLEARS
+RETURN
+
+#intval
+LABEL GF@intval
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@arg
+DEFVAR LF@type
+POPS LF@arg
+TYPE LF@type LF@arg
+JUMPIFEQ LF@intval_int LF@type string@int
+JUMPIFEQ LF@intval_float LF@type string@float
+JUMPIFEQ LF@intval_nil LF@type string@nil
+JUMP LF@floatval_end
+LABEL LF@intval_int
+MOVE GF@ret LF@arg
+JUMP LF@intval_end
+LABEL LF@intval_float
+FLOAT2INT GF@ret LF@arg
+JUMP LF@intval_end
+LABEL LF@intval_nil
+MOVE GF@ret int@0
+JUMP LF@intval_end
+LABEL LF@intval_end
+POPFRAME
+CLEARS
+RETURN
+
+# strval
+LABEL GF@strval
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@arg
+DEFVAR LF@type
+POPS LF@arg
+TYPE LF@type LF@arg
+JUMPIFEQ LF@strval_string LF@type string@string
+JUMPIFEQ LF@strval_null LF@type string@nil
+JUMP LF@floatval_end
+LABEL LF@strval_string
+MOVE GF@ret LF@arg
+JUMP LF@strval_end
+LABEL LF@strval_nil
+MOVE GF@ret string@
+JUMP LF@strval_end
+LABEL LF@strval_end
+POPFRAME
+CLEARS
+RETURN
+
+
+#strlen
+LABEL GF@strlen
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@arg
+POPS LF@arg
+STRLEN GF@ret LF@arg
+POPFRAME
+CLEARS
+RETURN
+
+# substring
+LABEL GF@substring
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@arg
+DEFVAR LF@arg2
+DEFVAR LF@arg3
+DEFVAR LF@len
+DEFVAR LF@i
+DEFVAR LF@char
+DEFVAR LF@error
+POPS LF@arg3
+POPS LF@arg2
+POPS LF@arg
+MOVE LF@i LF@arg2
+STRLEN LF@len LF@arg
+#error check
+LT LF@error LF@arg2 int@0
+LT LF@error LF@arg3 int@0
+GT LF@error LF@arg2 LF@arg3
+GT LF@error LF@arg2 LF@len
+EQ LF@error LF@arg2 LF@len
+GT LF@error LF@arg3 LF@len
+JUMPIFEQ LF@substing_error LF@error bool@true
+#end error check
+JUMP LF@substring_loop
+LABEL LF@substring_loop
+GETCHAR LF@char LF@arg LF@i
+CONCAT GF@ret GF@ret LF@char
+ADD LF@i LF@i int@1
+JUMPIFNEQ LF@substring_loop LF@i LF@arg3
+JUMP LF@substring_end
+LABEL LF@substring_error
+MOVE GF@ret string@
+JUMP LF@substring_end
+LABEL LF@substring_end
+POPFRAME
+CLEARS
+RETURN
+
+# ord
+LABEL GF@ord
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@arg
+POPS LF@arg
+STRI2INT GF@ret LF@char int@0
+POPFRAME
+CLEARS
+RETURN
+
+# chr
+LABEL GF@chr
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@arg
+POPS LF@arg
+INT2CHAR GF@ret LF@arg
+POPFRAME
+CLEARS
+RETURN

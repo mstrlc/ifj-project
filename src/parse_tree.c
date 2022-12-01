@@ -1,15 +1,27 @@
 #include "../include/parse_tree.h"
+#include <stdio.h>
 
-PTreeNode_t *initPtree(token_t *token)
+/**
+ * @brief Initializes a new parse tree node
+ * 
+ * @return PTreeNode_t* pointer to the new parse tree node
+ */
+PTreeNode_t *initPtree()
 {
     PTreeNode_t *ptree = (PTreeNode_t *)malloc(sizeof(PTreeNode_t));
-    ptree->token = token;
+    ptree->token = NULL;
     ptree->left = NULL;
     ptree->right = NULL;
     ptree->parent = NULL;
     return ptree;
 }
 
+
+/**
+ * @brief Disposes parse tree node
+ * 
+ * @param ptree pointer to the parse tree node to be disposed of
+ */
 void disposePtree(PTreeNode_t *ptree)
 {
     if (ptree->left != NULL) {
@@ -21,19 +33,48 @@ void disposePtree(PTreeNode_t *ptree)
     free(ptree);
 }
 
-void insertPtreeNode(PTreeNode_t *ptree, token_t *token)
+/**
+ * @brief Inserts a new node to the left of the current node
+ * 
+ * @param ptree pointer to the current node
+ * @param token pointer to the token to be inserted
+ */
+void insertLeftPtreeNode(PTreeNode_t *ptree, token_t *token)
 {
-    if (ptree->left == NULL) {
-        ptree->left = initPtree(token);
-        ptree->left->parent = ptree;
-    } else if (ptree->right == NULL) {
-        ptree->right = initPtree(token);
-        ptree->right->parent = ptree;
-    } else {
-        insertPtreeNode(ptree->left, token);
+    PTreeNode_t *newNode = initPtree(token);
+    if(ptree->left == NULL) {
+        newNode->parent = ptree;
+        ptree->left = newNode;
+    }
+    else {
+        insertLeftPtreeNode(ptree->left, token);
+    }   
+}
+
+/**
+ * @brief Inserts a new node to the right of the current node
+ * 
+ * @param ptree pointer to the current node
+ * @param token pointer to the token to be inserted
+ */
+void insertRightPtreeNode(PTreeNode_t *ptree, token_t *token)
+{
+    PTreeNode_t *newNode = initPtree(token);
+    if(ptree->right == NULL) {
+        newNode->parent = ptree;
+        ptree->right = newNode;
+    }
+    else {
+        insertRightPtreeNode(ptree->right, token);
     }
 }
 
+/**
+ * @brief Deletes a node from the parse tree
+ * 
+ * @param ptree pointer to the node to be deleted
+ * @param token pointer to the token to be deleted
+ */
 void deletePtreeNode(PTreeNode_t *ptree, token_t *token)
 {
     if (ptree->left != NULL) {
@@ -54,11 +95,21 @@ void deletePtreeNode(PTreeNode_t *ptree, token_t *token)
     }
 }
 
+/**
+ * @brief Prints a node of the parse tree
+ * 
+ * @param ptree pointer to the node to be printed
+ */
 void printPtreeNode(PTreeNode_t *ptree)
 {
     printf("%s", ptree->token->data);
 }
 
+/**
+ * @brief Prints the parse tree
+ * 
+ * @param ptree pointer to the root of the parse tree
+ */
 void printPtree(PTreeNode_t *ptree)
 {
     if (ptree->left != NULL) {
