@@ -2,6 +2,7 @@
 #define PARSER_H
 
 #include "../include/lexer.h"
+#include "../include/symtable.h"
 
 // Access active element in token list
 #define ACTIVE_TOKEN (tokens->activeToken)
@@ -45,7 +46,7 @@ typedef enum err_code
 
 // err_type next_check_type(token_type_t* token_type, token_type_t* valid_type);
 
-int parser(token_list_t *tokens);
+int parser(token_list_t *tokens, Symtables* symtables);
 
 int check_args(token_t *token);
 

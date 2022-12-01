@@ -18,16 +18,17 @@
 #include "../include/parser.h"
 #include "../include/common.h"
 #include "../include/error.h"
+#include "../include/stack.h"
+#include "../include/symtable.h"
 
-
-int rule_Prog(token_list_t *tokens);
+int rule_Prog(token_list_t *tokens, Symtables* symtables);
 int rule_ParamsCont(token_list_t *tokens);
 int rule_Params(token_list_t *tokens);
 int rule_ArgsCont(token_list_t *tokens);
 int rule_Val(token_list_t *tokens);
 int rule_Args(token_list_t *tokens);
-int rule_Stat(token_list_t *tokens);
-int rule_StList(token_list_t *tokens);
+int rule_Stat(token_list_t *tokens, Symtables* symtables);
+int rule_StList(token_list_t *tokens, Symtables* symtables);
 int rule_Assign(token_list_t *tokens);
 int rule_Term(token_list_t *tokens);
 int rule_Expr(token_list_t *tokens);
@@ -118,8 +119,7 @@ int parseEpsilon(token_list_t *tokens)
  * @param tokens Pointer to list of tokens where prolog is going to be checked
  * @return int Error code (0 = OK, others = error)
  */
-int checkProlog(token_list_t *tokens)
-{
+int checkProlog(token_list_t *tokens){
     int error = 0;
 
     // <?
@@ -365,7 +365,7 @@ int rule_Assign(token_list_t *tokens)
 
 // <st-list> -> <stat> <st-list>
 // <st-list> ->
-int rule_StList(token_list_t *tokens)
+int rule_StList(token_list_t *tokens, Symtables* symtables)
 {
     int error = 0;
 
@@ -382,9 +382,9 @@ int rule_StList(token_list_t *tokens)
         ACTIVE_TYPE == T_Var_id)
     {
         // <stat>
-        HANDLE_ERROR = rule_Stat(tokens);
+        HANDLE_ERROR = rule_Stat(tokens, symtables);
         // <st-list>
-        HANDLE_ERROR = rule_StList(tokens);
+        HANDLE_ERROR = rule_StList(tokens, symtables);
     }
     // <st-list> -> .
     if (ACTIVE_TYPE == T_R_c_par)
@@ -405,7 +405,7 @@ int rule_StList(token_list_t *tokens)
 // <stat> -> return <expr> ;
 // <stat> -> <expr> ;
 // <stat> -> func-id ( <args> ) ;
-int rule_Stat(token_list_t *tokens)
+int rule_Stat(token_list_t *tokens, Symtables* symtables)
 {
     int error = 0;
 
@@ -413,7 +413,7 @@ int rule_Stat(token_list_t *tokens)
     if (ACTIVE_TYPE == T_Var_id)
     {
         // $id
-        char* var = ACTIVE_DATA;
+        token_t* var = ACTIVE_TOKEN;
         HANDLE_ERROR = parseTerminal(tokens, T_Var_id);
         // =
         HANDLE_ERROR = parseTerminal(tokens, T_Assign);
@@ -423,8 +423,13 @@ int rule_Stat(token_list_t *tokens)
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
         
         //codegen inicializace a prirazeni
-        printf("DEFVAR LF@%s\n", var); //pridat podminku nedefinovanosti promenne
-        printf("MOVE LF@%s GF@expRes\n", var);
+        // printf("%d", symtable_lookup(symtables -> vars_table, "$var"));
+        if(symtable_lookup(symtables -> vars_table, var->data) == NULL){
+            printf("DEFVAR LF@%s\n", var->data); //pridat podminku nedefinovanosti promenne
+            symtable_insert(symtables -> vars_table, token_to_symbol(var));
+        }
+        
+        printf("MOVE LF@%s GF@expRes\n", var->data);
         
     }
     // <stat> -> while ( <expr> ) { <st-list> }
@@ -446,20 +451,17 @@ int rule_Stat(token_list_t *tokens)
         //codegen WHILE -> BEGIN
         printf("JUMPIFEQ %s GF@expRes bool@false\n",while_label_end);
         printf("LABEL %s\n", while_label_begin);
-        printf("CREATEFRAME\n");
-        printf("PUSHFRAME\n");
 
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
-        HANDLE_ERROR = rule_StList(tokens);
+        HANDLE_ERROR = rule_StList(tokens, symtables);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
 
         //codegen WHILE -> END
         printf("JUMP %s\n", while_label_begin);
         printf("LABEL %s\n", while_label_end);
-        printf("POPFRAME\n");
         free(while_label_begin);
         free(while_label_end); 
 
@@ -481,35 +483,29 @@ int rule_Stat(token_list_t *tokens)
 
         //codegen IF -> BEGIN
         printf("JUMPIFEQ %s GF@expRes bool@false\n", if_label); 
-        printf("CREATEFRAME\n");
-        printf("PUSHFRAME\n");
 
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
-        HANDLE_ERROR = rule_StList(tokens);
+        HANDLE_ERROR = rule_StList(tokens, symtables);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
 
         //codegen IF -> END, ELSE -> BEGIN
-        printf("POPFRAME\n");
         printf("JUMP %s\n", else_label);
         printf("LABEL %s\n", if_label);
-        printf("CREATEFRAME\n");
-        printf("PUSHFRAME\n");
 
         // else
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Else);
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
-        HANDLE_ERROR = rule_StList(tokens);
+        HANDLE_ERROR = rule_StList(tokens, symtables);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
 
         //codegen ELSE -> END
         printf("LABEL %s\n", else_label);
-        printf("POPFRAME\n");
         free(else_label);
         free(if_label);
         
@@ -632,7 +628,7 @@ int rule_EOF(token_list_t *tokens)
 // <prog> -> <stat> <prog>
 // <prog> -> function func-id ( <params> ) : type { <st-list> } <prog>
 // <prog> -> <eof>
-int rule_Prog(token_list_t *tokens)
+int rule_Prog(token_list_t *tokens, Symtables* symtables)
 {
     // printf("BEGIN PROG\n");
     int error = 0;
@@ -650,9 +646,9 @@ int rule_Prog(token_list_t *tokens)
         ACTIVE_TYPE == T_Keyword_Null)
     {
         // <stat>
-        HANDLE_ERROR = rule_Stat(tokens);
+        HANDLE_ERROR = rule_Stat(tokens, symtables);
         // <prog>
-        HANDLE_ERROR = rule_Prog(tokens);
+        HANDLE_ERROR = rule_Prog(tokens, symtables);
     }
     // <prog> -> function func-id ( <params> ) : type { <st-list> } <prog>
     else if (ACTIVE_TYPE == T_Keyword_Function)
@@ -693,11 +689,11 @@ int rule_Prog(token_list_t *tokens)
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
-        HANDLE_ERROR = rule_StList(tokens);
+        HANDLE_ERROR = rule_StList(tokens, symtables);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
         // <prog>
-        HANDLE_ERROR = rule_Prog(tokens);
+        HANDLE_ERROR = rule_Prog(tokens, symtables);
     }
     // <prog> -> <eof>
     else if (ACTIVE_TYPE == T_End_closing || ACTIVE_TYPE == T_File_end)
@@ -721,15 +717,46 @@ int rule_Prog(token_list_t *tokens)
  * @param tokens Pointer to list of tokens containing input
  * @return int Error code - success (0) or failure (1 = ERR_LEXEME or 2 = ERR_SYNTAX)
  */
-int parser(token_list_t *tokens)
+int parser(token_list_t *tokens, Symtables* symtables)
 {
+
+    // stack* defvarstack = stack_init();
+    // stack* functionstack = stack_init();
+    // while(ACTIVE_TYPE != T_File_end){
+    //     ACTIVE_NEXT;
+    //     if(ACTIVE_TYPE == T_Keyword_Function){
+    //         stack_push(functionstack, NULL, defvarstack);
+    //         free(defvarstack);
+    //         defvarstack = stack_init();
+    //     }
+    //     if(ACTIVE_TYPE == T_Var_id){
+    //         char* defvar = (char*)malloc(sizeof(ACTIVE_DATA));
+    //         strcpy(defvar, ACTIVE_DATA);
+
+    //         ACTIVE_NEXT;
+    //         if(ACTIVE_TYPE == T_Assign || ACTIVE_TYPE == T_Semicolon){
+    //             stack_push(defvarstack, defvar, NULL);
+    //         }
+    //         else{
+    //             free(defvar);
+    //         }
+    //     }
+    // }
+    
+    // print_and_pop(stack_top(functionstack)->defvar_stack);
+    // stack_pop(functionstack);
+    // stack_pop(functio<nstack);
+    // print_and_pop(stack_t>op(functionstack)->defvar_stack);
+
+    // ACTIVE_TOKEN = tokens->firstToken;
+    
     int error = 0;
 
     error = checkProlog(tokens);
     if (error != 0)
         return 1;
     // Begin parsing
-    error = rule_Prog(tokens);
+    error = rule_Prog(tokens, symtables);
 
     return error;
 }

@@ -1,6 +1,4 @@
 <?php
 declare(strict_types=1);
-function bar(string $ahoj):int{
-
-    }
-    
+$var=4;
+$var=1;

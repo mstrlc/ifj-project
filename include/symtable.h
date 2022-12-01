@@ -18,6 +18,11 @@ struct symtable {
     symbol_t **symbols;
 };
 
+typedef struct symtables_type{
+    symtable_t* vars_table;
+    symtable_t* func_table;
+} Symtables;
+
 unsigned long hash(char *name);
 
 symbol_t *token_to_symbol(token_t *token);

@@ -36,7 +36,7 @@ int main()
     symtable = symtable_check_size(symtable);
 
     // Fill symbol table with tokens
-    for (int i = 0; tokens->activeToken->type != T_File_end; tokens->activeToken = tokens->activeToken->next)
+    for (; tokens->activeToken->type != T_File_end; tokens->activeToken = tokens->activeToken->next)
     {
         if (tokens->activeToken->type == T_Identifier ||
             tokens->activeToken->type == T_Var_id ||
@@ -55,9 +55,12 @@ int main()
     tokens->activeToken = tokens->firstToken;
 
 
+    Symtables* symtables = (Symtables*)malloc(sizeof(struct symtables_type));
+    symtables -> vars_table = symtable_init(100);
+    symtables -> func_table = symtable_init(100);
 
     // Call parser
-    error = parser(tokens);
+    error = parser(tokens, symtables);
     if (error != 0)
     {
         error_exit(error, tokens->activeToken);
