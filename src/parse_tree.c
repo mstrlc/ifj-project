@@ -41,7 +41,7 @@ void disposePtree(PTreeNode_t *ptree)
  */
 void insertLeftPtreeNode(PTreeNode_t *ptree, token_t *token)
 {
-    PTreeNode_t *newNode = initPtree(token);
+    PTreeNode_t *newNode = initPtree();
     if(ptree->left == NULL) {
         newNode->parent = ptree;
         ptree->left = newNode;
@@ -59,7 +59,7 @@ void insertLeftPtreeNode(PTreeNode_t *ptree, token_t *token)
  */
 void insertRightPtreeNode(PTreeNode_t *ptree, token_t *token)
 {
-    PTreeNode_t *newNode = initPtree(token);
+    PTreeNode_t *newNode = initPtree();
     if(ptree->right == NULL) {
         newNode->parent = ptree;
         ptree->right = newNode;
@@ -102,7 +102,10 @@ void deletePtreeNode(PTreeNode_t *ptree, token_t *token)
  */
 void printPtreeNode(PTreeNode_t *ptree)
 {
-    printf("%s", ptree->token->data);
+    // if(ptree->token->data != NULL)
+    //     printf("%s", ptree->token->data);
+    if(ptree->token != NULL)
+        printToken(ptree->token);
 }
 
 /**
