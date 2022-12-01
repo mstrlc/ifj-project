@@ -6,8 +6,6 @@
 #include "../include/exp_parser.h"
 #include "../include/error.h"
 
-static int depth = 0;
-
 /**
  * @brief Returns the precedence of the given operator
  *
