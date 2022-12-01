@@ -313,6 +313,7 @@ int rule_Args(token_list_t *tokens)
 }
 
 // <assign> -> <expr>
+// <assign> -> func-id ( <args> )
 int rule_Assign(token_list_t *tokens)
 {
     int error = 0;
