@@ -20,7 +20,6 @@ struct symtable {
 
 typedef struct symtables_type{
     symtable_t* vars_table;
-    symtable_t* func_table;
     symtable_t* vars_table_array[1000];
     int vars_table_index; // oznacuje z jake tabulky se bude cist
     int function_table_index; // prirazuje indexy funkcim

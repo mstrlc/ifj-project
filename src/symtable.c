@@ -208,7 +208,6 @@ void symtable_defvar_print(symtable_t *table){
                 
                 symbol = symbol->next;
             }
-            // printf(" -> NULL \n");
             printf("\n");
         }
     }

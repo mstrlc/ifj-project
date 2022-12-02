@@ -156,14 +156,15 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
 
     parseEpsilon(tokens);
 
-    //codegen HEADER
+    //CODEGEN HEADER
     //printf(".IFJcode22\n");
     printf("DEFVAR GF@expRes\n");
     printf("MOVE GF@expRes bool@false\n");
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
-    // printf("%d", symtables -> vars_table_index);
+
     symtable_defvar_print(symtables->vars_table_array[symtables -> vars_table_index]);
+    //END CODEGEN HEADER
 
     return error;
 }
@@ -424,22 +425,23 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
         
-        //codegen inicializace a prirazeni
-        //defvar se printne jen v pridade, ze neni v tabulce
-        printf("(%d)\n ", symtables->vars_table_index);
+        //CODEGEN var init and assign
         if(symtable_lookup(symtables -> vars_table_array[symtables->vars_table_index], var->data) == NULL){
             //printf("DEFVAR LF@%s\n", var->data); //pridat podminku nedefinovanosti promenne
             symtable_insert(symtables -> vars_table_array[symtables->vars_table_index], token_to_symbol(var));
         }
         
         printf("MOVE LF@%s GF@expRes\n", var->data);
+        //END CODEGEN var init and assign
         
     }
     // <stat> -> while ( <expr> ) { <st-list> }
     else if (ACTIVE_TYPE == T_Keyword_While)
     {
+        //CODEGEN labels init
         char* while_label_end = make_random_label();
         char* while_label_begin = make_random_label();
+        //END CODEGEN labels init
 
         // while
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_While);
@@ -450,10 +452,10 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // )
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
 
-        //TODO dostat DEFVARy pred while loopy :D
-        //codegen WHILE -> BEGIN
+        //CODEGEN WHILE -> BEGIN
         printf("JUMPIFEQ %s GF@expRes bool@false\n",while_label_end);
         printf("LABEL %s\n", while_label_begin);
+        //END CODEGEN WHILE -> BEGIN
 
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
@@ -462,18 +464,21 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
 
-        //codegen WHILE -> END
+        //CODEGEN WHILE -> END
         printf("JUMP %s\n", while_label_begin);
         printf("LABEL %s\n", while_label_end);
         free(while_label_begin);
         free(while_label_end); 
+        //END CODEGEN WHILE -> END
 
     }
     // <stat> -> if ( <expr> ) { <st-list> } else { <st-list> }
     else if (ACTIVE_TYPE == T_Keyword_If)
     {
+        //CODEGEN labels init
         char* if_label = make_random_label();
         char* else_label = make_random_label();
+        //END CODEGEN
 
         // if
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_If);
@@ -484,8 +489,9 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // )
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
 
-        //codegen IF -> BEGIN
+        //CODEGEN IF -> BEGIN
         printf("JUMPIFEQ %s GF@expRes bool@false\n", if_label); 
+        //END CODEGEN IF -> BEGIN
 
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
@@ -494,9 +500,10 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
 
-        //codegen IF -> END, ELSE -> BEGIN
+        //CODEGEN IF -> END, ELSE -> BEGIN
         printf("JUMP %s\n", else_label);
         printf("LABEL %s\n", if_label);
+        //END CODEGEN IF -> END, ELSE -> BEGIN
 
         // else
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Else);
@@ -507,10 +514,11 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
 
-        //codegen ELSE -> END
+        //CODEGEN ELSE -> END
         printf("LABEL %s\n", else_label);
         free(else_label);
         free(if_label);
+        //END CODEGEN ELSE -> END
         
     }
     // <stat> -> return <expr> ;
@@ -690,7 +698,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
             HANDLE_ERROR = ERR_SYNTAX;
         }
 
-        //codegen function body -> start
+        //CODEGEN function body -> start
         printf("CREATEFRAME\n");
         printf("PUSHFRAME\n");
 
@@ -699,16 +707,20 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         
         if(!symtables -> vars_table_array[symtables->vars_table_index]) //jesti je to druhy pruchod tak neinicializuj (bcs by se nam smazali data)
             symtables -> vars_table_array[symtables->vars_table_index] = symtable_init(100);
-
+        // printf("(%d)\n",symtables->vars_table_index);
         symtable_defvar_print(symtables->vars_table_array[symtables->vars_table_index]);
-        
+        //END CODEGEN function body -> start
+
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
         HANDLE_ERROR = rule_StList(tokens, symtables);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
+
+        //CODEGEN function body -> end
         printf("POPFRAME\n");
+        //END CODEGEN function body -> end
 
         // <prog>
         HANDLE_ERROR = rule_Prog(tokens, symtables);
