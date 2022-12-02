@@ -11,6 +11,8 @@
 #include "../include/stack.h"
 #include "../include/common.h"
 #include "../include/error.h"
+#include "../include/parse_tree.h"
+#include "../include/exp_parser.h"
 
 int main()
 {
@@ -82,7 +84,6 @@ int main()
     {
         printf("\n\nParser success\n");
     }
-
 
     freeTokenList(tokens);
     printf("PROGRAM CORRECT\n");

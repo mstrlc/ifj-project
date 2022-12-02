@@ -20,8 +20,10 @@
 #include "../include/error.h"
 #include "../include/stack.h"
 #include "../include/symtable.h"
+#include "../include/parse_tree.h"
+#include "../include/exp_parser.h"
 
-int rule_Prog(token_list_t *tokens, Symtables* symtables);
+int rule_Prog(token_list_t *tokens);
 int rule_ParamsCont(token_list_t *tokens);
 int rule_Params(token_list_t *tokens);
 int rule_ArgsCont(token_list_t *tokens);
@@ -300,7 +302,8 @@ int rule_Expr(token_list_t *tokens)
     // <expr> -> <term>
     if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String)
     {
-        HANDLE_ERROR = rule_Term(tokens);
+        exp_parser(tokens);
+        // HANDLE_ERROR = rule_Term(tokens);
     }
     else
     {
@@ -337,6 +340,7 @@ int rule_Args(token_list_t *tokens)
 }
 
 // <assign> -> <expr>
+// <assign> -> func-id ( <args> )
 int rule_Assign(token_list_t *tokens)
 {
     int error = 0;
