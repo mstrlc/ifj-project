@@ -91,23 +91,19 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
     if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Exp || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_L_r_par || ACTIVE_TYPE == T_Var_id){
         if(ACTIVE_TYPE == T_L_r_par){
             ACTIVE_NEXT;
-            parse_expression_with_tree(tokens, min_precedence, PTree, err_code);
+            PTreeNode_t *left = initPtree();
+            PTree->left = parse_expression_with_tree(tokens, min_precedence, left, err_code);
         }
-        insertLeftPtreeNode(PTree, ACTIVE_TOKEN);
-        ACTIVE_NEXT;
-        while (precedence(ACTIVE_TYPE) >= min_precedence)
-        {
-            token_type_t op = ACTIVE_TYPE;
-            ACTIVE_NEXT;
-            PTreeNode_t *tmp = initPtree();
-            insertRightPtreeNode(PTree, tmp);
-            while (precedence(ACTIVE_TYPE) > precedence(op))
-            {
-                tmp = parse_expression(tokens, precedence(op) + 1, tmp);
-            }
-            insertLeftPtreeNode(tmp, ACTIVE_TOKEN);
+        if(PTree->left == NULL){
+            insertLeftPtreeNode(PTree, ACTIVE_TOKEN);
             ACTIVE_NEXT;
         }
+        else{
+            PTree->token = ACTIVE_TOKEN;
+            ACTIVE_NEXT;
+        }
+        PTreeNode_t *right = initPtree();
+        insertRightPtreeNode(PTree, parse_expression_with_tree(tokens, min_precedence, right, err_code));
     }
     *err_code = EXIT_FAILURE;
 }
