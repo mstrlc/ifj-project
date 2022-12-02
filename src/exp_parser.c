@@ -6,6 +6,8 @@
 #include "../include/exp_parser.h"
 #include "../include/error.h"
 
+PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree, int *err_code);
+
 /**
  * @brief Returns the precedence of the given operator
  *

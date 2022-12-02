@@ -23,7 +23,7 @@
 #include "../include/parse_tree.h"
 #include "../include/exp_parser.h"
 
-int rule_Prog(token_list_t *tokens);
+int rule_Prog(token_list_t *tokens, Symtables* symtables);
 int rule_ParamsCont(token_list_t *tokens);
 int rule_Params(token_list_t *tokens);
 int rule_ArgsCont(token_list_t *tokens);
@@ -782,7 +782,7 @@ int parser(token_list_t *tokens, Symtables* symtables)
     // stack_pop(functio<nstack);
     // print_and_pop(stack_t>op(functionstack)->defvar_stack);
 
-    // ACTIVE_TOKEN = tokens->firstToken;
+    ACTIVE_TOKEN = tokens->firstToken;
     
     int error = 0;
 
