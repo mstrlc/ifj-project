@@ -1,12 +1,26 @@
 <?php
 declare(strict_types=1);
+$var=4;
+$var1=1;
+$var2=4;
+function foo(string $ds):int{
+    $functionVar1=2;
+    $functionVar1=3;
+    $functionVar2=2;
+    $var1=1;
 
-$foo = 332 + 12321;
-$bar = 12321 + 332;
-$ahoj = 321;
+}
+$var=4;
+$var1=1;
+$var4=4;
 
-test1(123);
-test2($identifikator);
-test3(12 + 14);
+function foo(string $cus):string{
+    $fnc2=2;
+    $fnc23=3;
+    $functionVar2=2;
+    $var=1;
 
-?>
+}
+
+
+
