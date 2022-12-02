@@ -54,12 +54,25 @@ int main()
 
     tokens->activeToken = tokens->firstToken;
 
-
+    //Prepare symtables
     Symtables* symtables = (Symtables*)malloc(sizeof(struct symtables_type));
     symtables -> vars_table = symtable_init(100);
     symtables -> func_table = symtable_init(100);
+    symtables -> vars_table_index = 0;
+    symtables -> function_table_index = 0;
+    symtables -> vars_table_array[symtables -> vars_table_index] = symtable_init(100);
 
     // Call parser
+    // nejdebilnejsi ale funkci reseni, prvni pruchod nema kompletni codegen, tak ho skipneme, misto toho, abysme ho negenerovali vubec
+    printf(".IFJcode22\n");
+    printf("JUMP end_of_this_scuffed_codegen\n");
+    error = parser(tokens, symtables);
+    symtables -> vars_table_index = 0;
+    symtables -> function_table_index = 0;
+    printf("LABEL end_of_this_scuffed_codegen\n");
+    ACTIVE_TOKEN = tokens->firstToken;
+
+
     error = parser(tokens, symtables);
     if (error != 0)
     {

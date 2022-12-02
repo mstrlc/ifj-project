@@ -119,7 +119,7 @@ int parseEpsilon(token_list_t *tokens)
  * @param tokens Pointer to list of tokens where prolog is going to be checked
  * @return int Error code (0 = OK, others = error)
  */
-int checkProlog(token_list_t *tokens){
+int checkProlog(token_list_t *tokens, Symtables* symtables){
     int error = 0;
 
     // <?
@@ -157,11 +157,13 @@ int checkProlog(token_list_t *tokens){
     parseEpsilon(tokens);
 
     //codegen HEADER
-    printf(".IFJcode22\n");
+    //printf(".IFJcode22\n");
     printf("DEFVAR GF@expRes\n");
     printf("MOVE GF@expRes bool@false\n");
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
+    // printf("%d", symtables -> vars_table_index);
+    symtable_defvar_print(symtables->vars_table_array[symtables -> vars_table_index]);
 
     return error;
 }
@@ -423,10 +425,11 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
         
         //codegen inicializace a prirazeni
-        // printf("%d", symtable_lookup(symtables -> vars_table, "$var"));
-        if(symtable_lookup(symtables -> vars_table, var->data) == NULL){
-            printf("DEFVAR LF@%s\n", var->data); //pridat podminku nedefinovanosti promenne
-            symtable_insert(symtables -> vars_table, token_to_symbol(var));
+        //defvar se printne jen v pridade, ze neni v tabulce
+        printf("(%d)\n ", symtables->vars_table_index);
+        if(symtable_lookup(symtables -> vars_table_array[symtables->vars_table_index], var->data) == NULL){
+            //printf("DEFVAR LF@%s\n", var->data); //pridat podminku nedefinovanosti promenne
+            symtable_insert(symtables -> vars_table_array[symtables->vars_table_index], token_to_symbol(var));
         }
         
         printf("MOVE LF@%s GF@expRes\n", var->data);
@@ -632,7 +635,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
 {
     // printf("BEGIN PROG\n");
     int error = 0;
-    
+    symtables -> vars_table_index = 0;
 
     // <prog> -> <stat> <prog> .
     if (ACTIVE_TYPE == T_Var_id ||
@@ -686,12 +689,27 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         {
             HANDLE_ERROR = ERR_SYNTAX;
         }
+
+        //codegen function body -> start
+        printf("CREATEFRAME\n");
+        printf("PUSHFRAME\n");
+
+        symtables -> function_table_index++;
+        symtables -> vars_table_index = symtables -> function_table_index; // chceme symtable aktualni funkce
+        
+        if(!symtables -> vars_table_array[symtables->vars_table_index]) //jesti je to druhy pruchod tak neinicializuj (bcs by se nam smazali data)
+            symtables -> vars_table_array[symtables->vars_table_index] = symtable_init(100);
+
+        symtable_defvar_print(symtables->vars_table_array[symtables->vars_table_index]);
+        
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
         HANDLE_ERROR = rule_StList(tokens, symtables);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
+        printf("POPFRAME\n");
+
         // <prog>
         HANDLE_ERROR = rule_Prog(tokens, symtables);
     }
@@ -752,7 +770,7 @@ int parser(token_list_t *tokens, Symtables* symtables)
     
     int error = 0;
 
-    error = checkProlog(tokens);
+    error = checkProlog(tokens, symtables);
     if (error != 0)
         return 1;
     // Begin parsing

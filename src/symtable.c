@@ -191,3 +191,25 @@ void symtable_print(symtable_t *table)
         }
     }
 }
+
+void symtable_defvar_print(symtable_t *table){
+    for (unsigned long i = 0; i < table->size; i++)
+    {
+        symbol_t *symbol = table->symbols[i];
+        if (symbol != NULL)
+        {
+            printf("DEFVAR LF@%s", symbol->name);
+
+            symbol = symbol->next;
+            while (symbol != NULL)
+            {
+                 printf("%s\n", symbol->name);
+
+                
+                symbol = symbol->next;
+            }
+            // printf(" -> NULL \n");
+            printf("\n");
+        }
+    }
+}

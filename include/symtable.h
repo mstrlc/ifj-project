@@ -21,6 +21,9 @@ struct symtable {
 typedef struct symtables_type{
     symtable_t* vars_table;
     symtable_t* func_table;
+    symtable_t* vars_table_array[1000];
+    int vars_table_index; // oznacuje z jake tabulky se bude cist
+    int function_table_index; // prirazuje indexy funkcim
 } Symtables;
 
 unsigned long hash(char *name);
@@ -35,6 +38,8 @@ void symtable_insert(symtable_t *table, symbol_t *symbol);
 symbol_t *symtable_lookup(symtable_t *table, char *name);
 
 void symtable_print(symtable_t *table);
+void symtable_defvar_print(symtable_t *table);
+
 symtable_t* symtable_check_size(symtable_t *table);
 symtable_t* resize(symtable_t *table);
 
