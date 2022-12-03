@@ -70,10 +70,27 @@ int main()
     symtables -> vars_table_index = 0;
     symtables -> function_table_index = 0;
     printf("LABEL end_of_this_scuffed_codegen\n");
-    ACTIVE_TOKEN = tokens->firstToken;
 
+    ACTIVE_TOKEN = tokens->firstToken;
     // DRUHY PRUCHOD
     error = parser(tokens, symtables);
+
+    // NA KONCI PRINTUJEME VESTAVENE FUNKCE
+    printf("JUMP end_of_program\n");
+    FILE    *textfile;
+    char    line[1000];
+     
+    textfile = fopen("src/inbuilt.ifjc22", "r");
+    if(textfile == NULL)
+        return 1;
+     
+    while(fgets(line, 1000, textfile)){
+        printf(line);
+    }
+    printf("LABEL end_of_program\n");
+     
+    fclose(textfile);
+
     if (error != 0)
     {
         error_exit(error, tokens->activeToken);
@@ -86,6 +103,6 @@ int main()
     }
 
     freeTokenList(tokens);
-    printf("PROGRAM CORRECT\n");
+    printf("\n\n\nPROGRAM CORRECT\n");
     exit(error);
 }

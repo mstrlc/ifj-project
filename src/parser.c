@@ -302,8 +302,8 @@ int rule_Expr(token_list_t *tokens)
     // <expr> -> <term>
     if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String)
     {
-        exp_parser(tokens);
-        // HANDLE_ERROR = rule_Term(tokens);
+        //exp_parser(tokens);
+        HANDLE_ERROR = rule_Term(tokens);
     }
     else
     {
@@ -431,7 +431,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         
         //CODEGEN var init and assign
         if(symtable_lookup(symtables -> vars_table_array[symtables->vars_table_index], var->data) == NULL){
-            //printf("DEFVAR LF@%s\n", var->data); //pridat podminku nedefinovanosti promenne
+            printf("DEFVAR LF@%s\n", var->data); //pridat podminku nedefinovanosti promenne
             symtable_insert(symtables -> vars_table_array[symtables->vars_table_index], token_to_symbol(var));
         }
         
@@ -753,36 +753,6 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
  */
 int parser(token_list_t *tokens, Symtables* symtables)
 {
-
-    // stack* defvarstack = stack_init();
-    // stack* functionstack = stack_init();
-    // while(ACTIVE_TYPE != T_File_end){
-    //     ACTIVE_NEXT;
-    //     if(ACTIVE_TYPE == T_Keyword_Function){
-    //         stack_push(functionstack, NULL, defvarstack);
-    //         free(defvarstack);
-    //         defvarstack = stack_init();
-    //     }
-    //     if(ACTIVE_TYPE == T_Var_id){
-    //         char* defvar = (char*)malloc(sizeof(ACTIVE_DATA));
-    //         strcpy(defvar, ACTIVE_DATA);
-
-    //         ACTIVE_NEXT;
-    //         if(ACTIVE_TYPE == T_Assign || ACTIVE_TYPE == T_Semicolon){
-    //             stack_push(defvarstack, defvar, NULL);
-    //         }
-    //         else{
-    //             free(defvar);
-    //         }
-    //     }
-    // }
-    
-    // print_and_pop(stack_top(functionstack)->defvar_stack);
-    // stack_pop(functionstack);
-    // stack_pop(functio<nstack);
-    // print_and_pop(stack_t>op(functionstack)->defvar_stack);
-
-    ACTIVE_TOKEN = tokens->firstToken;
     
     int error = 0;
 
