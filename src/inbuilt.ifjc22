@@ -4,114 +4,115 @@
 DEFVAR GF@ret
 
 # reads
-LABEL GF@reads
+LABEL reads
 READ GF@ret string
 RETURN
 
 #readi
-LABEL GF@readi
+LABEL readi
 READ GF@ret int
 RETURN
 
 #readf
-LABEL GF@readf
+LABEL readf
 READ GF@ret float
 RETURN
 
 #write
-LABEL GF@write
+LABEL write
 CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
 DEFVAR LF@count
 DEFVAR LF@i
-POPS LF@arg
-LABEL LF@write_loop
+MOVE LF@i int@0
+POPS LF@count
+LABEL write_loop
 POPS LF@arg
 WRITE LF@arg
 ADD LF@i LF@i int@1
-JUMPIFNEQ LF@write_loop LF@i LF@count
+JUMPIFNEQ write_loop LF@i LF@count
 POPFRAME
 CLEARS
 RETURN
 
 #floatval
-LABEL GF@floatval
+LABEL floatval
 CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
 DEFVAR LF@type
 POPS LF@arg
 TYPE LF@type LF@arg
-JUMPIFEQ LF@floatval_float LF@type string@float
-JUMPIFEQ LF@floatval_int LF@type string@int
-JUMPIFEQ LF@floatval_null LF@type string@nil
-JUMP LF@floatval_end
-LABEL LF@floatval_float
+JUMPIFEQ floatval_float LF@type string@float
+JUMPIFEQ floatval_int LF@type string@int
+JUMPIFEQ floatval_null LF@type string@nil
+JUMP floatval_end
+LABEL floatval_float
 MOVE GF@ret LF@arg
-JUMP LF@floatval_end
-LABEL LF@floatval_int
+JUMP floatval_end
+LABEL floatval_int
 INT2FLOAT GF@ret LF@arg
-JUMP LF@floatval_end
-LABEL LF@floatval_nil
+JUMP floatval_end
+LABEL floatval_nil
 MOVE GF@ret float@0x0p+0
-JUMP LF@floatval_end
-LABEL LF@floatval_end
+JUMP floatval_end
+LABEL floatval_end
 POPFRAME
 CLEARS
 RETURN
 
 #intval
-LABEL GF@intval
+LABEL intval
 CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
 DEFVAR LF@type
 POPS LF@arg
 TYPE LF@type LF@arg
-JUMPIFEQ LF@intval_int LF@type string@int
-JUMPIFEQ LF@intval_float LF@type string@float
-JUMPIFEQ LF@intval_nil LF@type string@nil
-JUMP LF@floatval_end
-LABEL LF@intval_int
+JUMPIFEQ intval_int LF@type string@int
+JUMPIFEQ intval_float LF@type string@float
+JUMPIFEQ intval_nil LF@type string@nil
+JUMP floatval_end
+LABEL intval_int
 MOVE GF@ret LF@arg
-JUMP LF@intval_end
-LABEL LF@intval_float
+JUMP intval_end
+LABEL intval_float
 FLOAT2INT GF@ret LF@arg
-JUMP LF@intval_end
-LABEL LF@intval_nil
+JUMP intval_end
+LABEL intval_nil
 MOVE GF@ret int@0
-JUMP LF@intval_end
-LABEL LF@intval_end
+JUMP intval_end
+LABEL intval_end
 POPFRAME
 CLEARS
 RETURN
 
 # strval
-LABEL GF@strval
+LABEL strval
 CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
 DEFVAR LF@type
 POPS LF@arg
 TYPE LF@type LF@arg
-JUMPIFEQ LF@strval_string LF@type string@string
-JUMPIFEQ LF@strval_null LF@type string@nil
-JUMP LF@floatval_end
-LABEL LF@strval_string
+JUMPIFEQ strval_string LF@type string@string
+JUMPIFEQ strval_null LF@type string@nil
+JUMP floatval_end
+LABEL strval_string
 MOVE GF@ret LF@arg
-JUMP LF@strval_end
-LABEL LF@strval_nil
+JUMP strval_end
+LABEL strval_nil
 MOVE GF@ret string@
-JUMP LF@strval_end
-LABEL LF@strval_end
+JUMP strval_end
+LABEL strval_end
 POPFRAME
 CLEARS
 RETURN
 
 
 #strlen
-LABEL GF@strlen
+LABEL strlen
 CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
@@ -122,7 +123,7 @@ CLEARS
 RETURN
 
 # substring
-LABEL GF@substring
+LABEL substring
 CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
@@ -144,25 +145,25 @@ GT LF@error LF@arg2 LF@arg3
 GT LF@error LF@arg2 LF@len
 EQ LF@error LF@arg2 LF@len
 GT LF@error LF@arg3 LF@len
-JUMPIFEQ LF@substing_error LF@error bool@true
+JUMPIFEQ substing_error LF@error bool@true
 #end error check
-JUMP LF@substring_loop
-LABEL LF@substring_loop
+JUMP substring_loop
+LABEL substring_loop
 GETCHAR LF@char LF@arg LF@i
 CONCAT GF@ret GF@ret LF@char
 ADD LF@i LF@i int@1
-JUMPIFNEQ LF@substring_loop LF@i LF@arg3
-JUMP LF@substring_end
-LABEL LF@substring_error
+JUMPIFNEQ substring_loop LF@i LF@arg3
+JUMP substring_end
+LABEL substring_error
 MOVE GF@ret string@
-JUMP LF@substring_end
-LABEL LF@substring_end
+JUMP substring_end
+LABEL substring_end
 POPFRAME
 CLEARS
 RETURN
 
 # ord
-LABEL GF@ord
+LABEL ord
 CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
@@ -173,7 +174,7 @@ CLEARS
 RETURN
 
 # chr
-LABEL GF@chr
+LABEL chr
 CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
