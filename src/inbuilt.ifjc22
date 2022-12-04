@@ -40,9 +40,9 @@ DEFVAR LF@arg
 DEFVAR LF@type
 POPS LF@arg
 TYPE LF@type LF@arg
-JUMPIFNEQ  floatval_float LF@type string@float
-JUMPIFNEQ  floatval_int LF@type string@int
-JUMPIFNEQ  floatval_null LF@type string@nil
+JUMPIFEQ floatval_float LF@type string@float
+JUMPIFEQ floatval_int LF@type string@int
+JUMPIFEQ floatval_null LF@type string@nil
 JUMP floatval_end
 LABEL floatval_float
 MOVE GF@ret LF@arg
@@ -66,9 +66,9 @@ DEFVAR LF@arg
 DEFVAR LF@type
 POPS LF@arg
 TYPE LF@type LF@arg
-JUMPIFNEQ  intval_int LF@type string@int
-JUMPIFNEQ  intval_float LF@type string@float
-JUMPIFNEQ  intval_nil LF@type string@nil
+JUMPIFEQ intval_int LF@type string@int
+JUMPIFEQ intval_float LF@type string@float
+JUMPIFEQ intval_nil LF@type string@nil
 JUMP floatval_end
 LABEL intval_int
 MOVE GF@ret LF@arg
@@ -92,8 +92,8 @@ DEFVAR LF@arg
 DEFVAR LF@type
 POPS LF@arg
 TYPE LF@type LF@arg
-JUMPIFNEQ  strval_string LF@type string@string
-JUMPIFNEQ  strval_null LF@type string@nil
+JUMPIFEQ strval_string LF@type string@string
+JUMPIFEQ strval_null LF@type string@nil
 JUMP floatval_end
 LABEL strval_string
 MOVE GF@ret LF@arg
@@ -129,9 +129,9 @@ DEFVAR LF@len
 DEFVAR LF@i
 DEFVAR LF@char
 DEFVAR LF@error
-POPS LF@arg3
-POPS LF@arg2
 POPS LF@arg
+POPS LF@arg2
+POPS LF@arg3
 MOVE LF@i LF@arg2
 STRLEN LF@len LF@arg
 #error check
@@ -141,14 +141,14 @@ GT LF@error LF@arg2 LF@arg3
 GT LF@error LF@arg2 LF@len
 EQ LF@error LF@arg2 LF@len
 GT LF@error LF@arg3 LF@len
-JUMPIFNEQ  substing_error LF@error bool@true
+JUMPIFEQ substing_error LF@error bool@true
 #end error check
 JUMP substring_loop
 LABEL substring_loop
 GETCHAR LF@char LF@arg LF@i
 CONCAT GF@ret GF@ret LF@char
 ADD LF@i LF@i int@1
-JUMPIFNEQ  substring_loop LF@i LF@arg3
+JUMPIFNEQ substring_loop LF@i LF@arg3
 JUMP substring_end
 LABEL substring_error
 MOVE GF@ret string@
@@ -164,7 +164,7 @@ CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
 POPS LF@arg
-STRI2INT GF@ret LF@char int@0
+STRI2INT GF@ret LF@arg int@0
 POPFRAME
 CLEARS
 RETURN

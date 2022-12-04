@@ -409,6 +409,42 @@ int rule_Assign(token_list_t *tokens)
             printf("CALL readf\n");
             printf("MOVE GF@assignedValue GF@ret\n");
         }
+        if(strcmp(functionName, "strlen") == 0){
+            printf("CALL strlen\n");
+            printf("MOVE GF@assignedValue GF@ret\n");
+            argCount = 0; 
+        }
+        if(strcmp(functionName, "strval") == 0){
+            printf("CALL strval\n");
+            printf("MOVE GF@assignedValue GF@ret\n");
+            argCount = 0; 
+        }
+        if(strcmp(functionName, "intval") == 0){
+            printf("CALL intval\n");
+            printf("MOVE GF@assignedValue GF@ret\n");
+            argCount = 0; 
+        }
+        if(strcmp(functionName, "floatval") == 0){
+            printf("CALL floatval\n");
+            printf("MOVE GF@assignedValue GF@ret\n");
+            argCount = 0; 
+        }
+        if(strcmp(functionName, "substring") == 0){
+            printf("CALL substring\n");
+            printf("MOVE GF@assignedValue GF@ret\n");
+            argCount = 0; 
+        }
+        if(strcmp(functionName, "ord") == 0){
+            printf("CALL ord\n");
+            printf("MOVE GF@assignedValue GF@ret\n");
+            argCount = 0; 
+        }
+        if(strcmp(functionName, "chr") == 0){
+            printf("CALL chr\n");
+            printf("MOVE GF@assignedValue GF@ret\n");
+            argCount = 0; 
+        }
+
     }
     else
     {
@@ -605,6 +641,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
 
+        //CODEGEN print argumentu
         if(strcmp(functionName, "write") == 0){
             printf("PUSHS int@%d\n", argCount);
             printf("CALL write\n");
