@@ -1,9 +1,11 @@
 \documentclass[11pt,a4paper]{article}
+\usepackage{float}
 \usepackage[utf8]{inputenc}
 \usepackage[left=2cm,right=2cm,text={18cm,24cm},top=2cm]{geometry}
-\usepackage[english]{babel}
+\usepackage[czech]{babel}
 \usepackage{graphicx}
 \usepackage{verbatim}
+\usepackage{svg}
 \renewcommand{\familydefault}{\sfdefault}
 
 
@@ -15,14 +17,14 @@
 
             \LARGE{
                 \textbf{
-                    Project documentation} \\
-                Compiler for the IFJ22 language} \\
+                    Projektová dokumentace} \\
+                Překladač jazyka IFJ22} \\
                 
             \vspace{2cm}
             
             \Large{
-                Team xstrel03 \\
-                Variant TRP \\
+                Tým xstrel03 \\
+                Varianta TRP \\
             }
                 
             \vspace{2cm}
@@ -43,36 +45,109 @@
 
     \tableofcontents
 
-    \newpage{}
+    \pagebreak{}
 
-    \section{Introduction}
-    V dokumentaci popisujte návrh (části překladače a předávání informací mezi nimi),
-    implementaci (použité datové struktury, tabulku symbolů, generování kódu),
-    vývojový cyk- lus, způsob práce v týmu, speciální použité techniky a algoritmy
-    a různé odchylky od před- nášené látky či tradičních přístupů. Nezapomínejte také
-    citovat literaturu a uvádět refe- rence na čerpané zdroje včetně správné citace
-    převzatých částí (obrázky, magické konstanty, vzorce). Nepopisujte záležitosti
-    obecně známé či přednášené na naší fakultě.
-
-    \section{Division of work}
+    \section{Práce v týmu}
     Rozdělení práce mezi členy týmu (uveďte kdo a jak se podílel na jednotlivých
     částech projektu; povinně zdůvodněte odchylky od rovnoměrného rozdělení bodů).
+    
+    \subsection{Rozdělení práce}
+
+    \subsection*{Matyáš Strelec}
     \begin{itemize}
-        \item \textbf{Matyáš Strelec:}
-        \item \textbf{Ondřej Seidl:}
-        \item \textbf{Maxmilián Nový:}
-        \item \textbf{Dominik Klon:}
+        \item Lexikální analýza
+        \item Syntaktická analýzy
+        \item Dokumentace
     \end{itemize}
 
-    \section{Lexical analysis}
-    Diagram konečného automatu, který specifikuje lexikální analyzátor.
+    \subsection*{Ondřej Seidl}
+    \begin{itemize}
+        \item Implementace tabulky symbolů
+        \item Zpracování výrazů
+    \end{itemize}
 
-    \section{Syntactic analysis}
-    LL-gramatiku,LL-tabulku a precedenční tabulku, podle kterých jste implementovali
-    váš syntaktický analyzátor.
+    \subsection*{Maxmilián Nový}
+    \begin{itemize}
+        \item Návrh LL-gramatiky
+        \item Syntaktická analýza
+    \end{itemize}
 
-    \section{Implementation details}
-    Stručný popis členění implementačního řešení včetně názvů souborů, kde jsou jednotlivé
-    části včetně povinných implementovaných metod překladače k nalezení.
+    \subsection*{Dominik Klon}
+    \begin{itemize}
+        \item Generování kódu
+    \end{itemize}
+
+    \subsection{Odchylky od rozvnoměrného rozdělení}
+    
+
+    \pagebreak{}
+
+    \section{Lexikální analýza}
+
+    \subsection{Datové struktury}
+    Implementace lexikální analýzy je obsažena v souborech \verb|lexer.c| a \verb|lexer.h|.
+    Pro potřeby lexikálního analyzátoru byly vytvořeny datové struktury které pomáhají při
+    práci s tokeny a konečným automatem. Výčtový typ \verb|fsm_state_t| obsahuje všechny možné
+    stavy konečného automatu dle návrhu, výčtový typ \verb|token_type_t| definuje typy tokenů.
+    \\ \\
+    Struktura \verb|token_t| obsahuje informace o tokenu, jeho typ, pozici v souboru, délku,
+    a jeho předchůdce a následníka ve spojovém seznamu. Struktura \verb|token_list_t| obsahuje
+    ukazatele na první, poslední, a aktuální token.
+
+    \subsection{Funkce}
+    Všechny funkce jsou ve zdrojových souborech popsané v komentářích, včetně jejich funkcionality, parametrů a návratových hodnot.
+    \\ \\
+    Funkce lexeru volaná z hlavního programu je funkce \verb|fillTokenList()|, která jako parametr
+    dostává ukazatel na strukturu \verb|token_list_t|, kterou naplní seznamem tokenů pomocí volání
+    funkce \verb|getNextToken()|. Funkce \verb|getNextToken()| je volána v cyklu, dokud není dosažen token
+    typu konec souboru.
+    \\ \\
+    Funkce \verb|getNextToken()| je implementována pomocí konečného automatu. Dle posloupnosti znaků na vstupu
+    určuje typ a vyplňuje data tokenu. V případě, že je na vstupu znak, který nelze podle automatu dále číst,
+    je kontrolováno, jestli momentální stav automatu je koncový, pokud ano, token je validní.
+    Dále jsou rozpoznána klíčová slova a odstraněny úvozovky z řetězců. Pokud automat není v koncovém stavu,
+    ale na vstup přijde znak, který automat nemůže přečíst, funkce vrací chybu 1.
+    \\ \\
+    Dále soubor obsahuje funkce na práci se seznamem tokenů jako vázaným seznamem a funkce pro ladění.
+
+    \subsection{Diagram konečného automatu}
+    Vizte obrázek \ref{fig:fsm}.
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[height=0.97\textheight]{fsm.jpg}
+        \caption{Diagram konečného automatu vytvořený nástrojem \texttt{Graphviz}}
+        \label{fig:fsm}
+    \end{figure}
+
+    \pagebreak{}
+    
+    \section{Syntaktická analýza}
+    
+    \subsection{Implementace}
+
+    \subsection{LL-gramatika}
+
+    \subsection{LL-tabulka}
+
+    \subsection{Precedenční tabulka}
+
+
+    \section{Sémantická analýza}
+
+
+    \section{Tabulka symbolů}
+
+
+    \section{Generování kódu}
+
+
+    \section{Zpracování výrazů}
+
+
+    \section{Chybové hlášení}
+
+
+    \section{Hlavní program}
 
 \end{document}
