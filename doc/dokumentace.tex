@@ -5,9 +5,9 @@
 \usepackage[czech]{babel}
 \usepackage{graphicx}
 \usepackage{verbatim}
+\usepackage{fancyvrb}
 \usepackage{svg}
 \renewcommand{\familydefault}{\sfdefault}
-
 
 \begin{document}
     \begin{titlepage}
@@ -69,7 +69,7 @@
     \subsection*{Maxmilián Nový}
     \begin{itemize}
         \item Návrh LL-gramatiky
-        \item Syntaktická analýza
+        \item Vestavěné funkce
     \end{itemize}
 
     \subsection*{Dominik Klon}
@@ -95,6 +95,7 @@
     ukazatele na první, poslední, a aktuální token.
 
     \subsection{Funkce}
+
     Všechny funkce jsou ve zdrojových souborech popsané v komentářích, včetně jejich funkcionality, parametrů a návratových hodnot.
     \\ \\
     Funkce lexeru volaná z hlavního programu je funkce \verb|fillTokenList()|, která jako parametr
@@ -127,6 +128,50 @@
     \subsection{Implementace}
 
     \subsection{LL-gramatika}
+    Pro jazyk IFJ22 byla navržena následující gramatika.
+    \begin{Verbatim}
+1:  <prog> -> <stat> <prog>
+2:  <prog> -> function func-id ( <params> ) : type { <st-list> } <prog>
+3:  <prog> -> <eof>
+
+4:  <eof> -> ?> EOF
+5:  <eof> -> EOF
+
+6: <params-cont> -> , type $id <params-cont>
+7: <params-cont> -> eps
+
+8: <params> -> type $id <params-cont>
+9: <params> -> eps
+
+10: <args-cont> -> , <term> <args-cont>
+11: <args-cont> -> 
+
+12: <args> -> <term> <args-cont>
+13: <args> -> eps
+
+14: <stat> -> $id = <assign> ;
+15: <stat> -> while ( <expr> ) { <st-list> }
+16: <stat> -> if ( <expr> ) { <st-list> } else { <st-list> }
+17: <stat> -> return <expr> ;
+18: <stat> -> <expr> ;
+19: <stat> -> func-id ( <args> ) ;
+
+20: <st-list> -> <stat> <st-list>
+21: <st-list> -> eps
+
+22: <assign> -> <expr>
+23: <assign> -> func-id ( <args> )
+
+24: <term> -> $id
+25: <term> -> val
+    \end{Verbatim}
+    \subsection*{Poznámky}
+        \texttt{\$id} - identifikátor proměnné\\
+        \texttt{func-id} - identifikátor funkce\\
+        \texttt{val} - číselný nebo řetězcový literál \\
+        \texttt{type} - datový typ (\texttt{int}, \texttt{double}, \texttt{string}) \\
+        \texttt{func-id} - identifikátor funkce \\
+        \texttt{eps} - $\varepsilon$ \\
 
     \subsection{LL-tabulka}
 
