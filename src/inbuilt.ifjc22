@@ -1,8 +1,4 @@
-.IFJcode22
-
 # global return variable
-DEFVAR GF@ret
-
 # reads
 LABEL reads
 READ GF@ret string
@@ -25,13 +21,13 @@ PUSHFRAME
 DEFVAR LF@arg
 DEFVAR LF@count
 DEFVAR LF@i
-MOVE LF@i int@0
 POPS LF@count
+MOVE LF@i int@0
 LABEL write_loop
 POPS LF@arg
 WRITE LF@arg
 ADD LF@i LF@i int@1
-JUMPIFNEQ write_loop LF@i LF@count
+JUMPIFNEQ  write_loop LF@i LF@count
 POPFRAME
 CLEARS
 RETURN
@@ -171,7 +167,7 @@ CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
 POPS LF@arg
-STRI2INT GF@ret LF@char int@0
+STRI2INT GF@ret LF@arg int@0
 POPFRAME
 CLEARS
 RETURN
