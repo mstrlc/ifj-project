@@ -14,8 +14,7 @@
 
 
 typedef struct stack_elem{
-    char* defvar;
-    struct stack* defvar_stack;
+    char* stack_str;
 } stack_elem;
 
 typedef struct stack{
@@ -25,7 +24,7 @@ typedef struct stack{
 
 stack* stack_init();
 
-void stack_push(stack* s, char* defvar, stack* defvar_stack);
+void stack_push(stack* s, char* stack_str);
 
 void  stack_pop(stack* s);
 
