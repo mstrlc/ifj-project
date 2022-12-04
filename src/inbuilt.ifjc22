@@ -38,20 +38,18 @@ CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
 DEFVAR LF@type
+MOVE GF@ret float@0x0p+0
 POPS LF@arg
 TYPE LF@type LF@arg
 JUMPIFEQ floatval_float LF@type string@float
 JUMPIFEQ floatval_int LF@type string@int
-JUMPIFEQ floatval_null LF@type string@nil
+JUMPIFEQ floatval_end LF@type string@nil
 JUMP floatval_end
 LABEL floatval_float
 MOVE GF@ret LF@arg
 JUMP floatval_end
 LABEL floatval_int
 INT2FLOAT GF@ret LF@arg
-JUMP floatval_end
-LABEL floatval_nil
-MOVE GF@ret float@0x0p+0
 JUMP floatval_end
 LABEL floatval_end
 POPFRAME
@@ -64,6 +62,7 @@ CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
 DEFVAR LF@type
+MOVE GF@ret int@0
 POPS LF@arg
 TYPE LF@type LF@arg
 JUMPIFEQ intval_int LF@type string@int
@@ -76,9 +75,6 @@ JUMP intval_end
 LABEL intval_float
 FLOAT2INT GF@ret LF@arg
 JUMP intval_end
-LABEL intval_nil
-MOVE GF@ret int@0
-JUMP intval_end
 LABEL intval_end
 POPFRAME
 CLEARS
@@ -90,16 +86,14 @@ CREATEFRAME
 PUSHFRAME
 DEFVAR LF@arg
 DEFVAR LF@type
+MOVE GF@ret string@
 POPS LF@arg
 TYPE LF@type LF@arg
 JUMPIFEQ strval_string LF@type string@string
-JUMPIFEQ strval_null LF@type string@nil
+JUMPIFEQ strval_end LF@type string@nil
 JUMP floatval_end
 LABEL strval_string
 MOVE GF@ret LF@arg
-JUMP strval_end
-LABEL strval_nil
-MOVE GF@ret string@
 JUMP strval_end
 LABEL strval_end
 POPFRAME
