@@ -137,6 +137,7 @@ POPS LF@arg3
 POPS LF@arg2
 POPS LF@arg
 MOVE LF@i LF@arg2
+MOVE GF@ret string@
 STRLEN LF@len LF@arg
 #error check
 LT LF@error LF@arg2 int@0
@@ -145,17 +146,19 @@ GT LF@error LF@arg2 LF@arg3
 GT LF@error LF@arg2 LF@len
 EQ LF@error LF@arg2 LF@len
 GT LF@error LF@arg3 LF@len
-JUMPIFEQ substing_error LF@error bool@true
+JUMPIFEQ substring_end LF@error bool@true
 #end error check
-JUMP substring_loop
-LABEL substring_loop
+# arg2 == arg3
 GETCHAR LF@char LF@arg LF@i
 CONCAT GF@ret GF@ret LF@char
+JUMPIFEQ substring_end LF@i LF@arg3
+# arg2 != arg3
+JUMP substring_loop
+LABEL substring_loop
 ADD LF@i LF@i int@1
+GETCHAR LF@char LF@arg LF@i
+CONCAT GF@ret GF@ret LF@char
 JUMPIFNEQ substring_loop LF@i LF@arg3
-JUMP substring_end
-LABEL substring_error
-MOVE GF@ret string@
 JUMP substring_end
 LABEL substring_end
 POPFRAME
