@@ -122,4 +122,4 @@ void printPtree(PTreeNode_t *ptree)
     if (ptree->right != NULL) {
         printPtree(ptree->right);
     }
-}   
+}

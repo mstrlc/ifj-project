@@ -61,5 +61,7 @@ char *errorToString(int error)
         return "Other semantic error";
     case ERR_INTERNAL:
         return "Internal error";
+    default:
+        return "Unknown error";
     }
 }
