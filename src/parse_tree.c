@@ -8,11 +8,11 @@
  */
 PTreeNode_t *initPtree()
 {
-    PTreeNode_t *ptree = (PTreeNode_t *)malloc(sizeof(PTreeNode_t));
+    PTreeNode_t *ptree = malloc(sizeof(PTreeNode_t));
     ptree->token = NULL;
     ptree->left = NULL;
     ptree->right = NULL;
-    ptree->parent = NULL;
+    ptree->active = NULL;
     return ptree;
 }
 
@@ -34,39 +34,31 @@ void disposePtree(PTreeNode_t *ptree)
 }
 
 /**
- * @brief Inserts a new node to the left of the current node
+ * @brief Inserts a new node to the left of the active node
  * 
  * @param ptree pointer to the current node
  * @param token pointer to the token to be inserted
  */
-void insertLeftPtreeNode(PTreeNode_t *ptree, token_t *token)
+PTreeNode_t * insertLeftPtreeNode(PTreeNode_t *active, token_t *token)
 {
     PTreeNode_t *newNode = initPtree();
-    if(ptree->left == NULL) {
-        newNode->parent = ptree;
-        ptree->left = newNode;
-    }
-    else {
-        insertLeftPtreeNode(ptree->left, token);
-    }   
+    newNode->token = token;
+    active->left = newNode;
+    return newNode;
 }
 
 /**
- * @brief Inserts a new node to the right of the current node
+ * @brief Inserts a new node to the right of the active node
  * 
  * @param ptree pointer to the current node
  * @param token pointer to the token to be inserted
  */
-void insertRightPtreeNode(PTreeNode_t *ptree, token_t *token)
+PTreeNode_t * insertRightPtreeNode(PTreeNode_t *active, token_t *token)
 {
     PTreeNode_t *newNode = initPtree();
-    if(ptree->right == NULL) {
-        newNode->parent = ptree;
-        ptree->right = newNode;
-    }
-    else {
-        insertRightPtreeNode(ptree->right, token);
-    }
+    newNode->token = token;
+    active->right = newNode;
+    return newNode;
 }
 
 /**
@@ -104,8 +96,7 @@ void printPtreeNode(PTreeNode_t *ptree)
 {
     // if(ptree->token->data != NULL)
     //     printf("%s", ptree->token->data);
-    if(ptree->token != NULL)
-        printToken(ptree->token);
+    printToken(ptree->token);
 }
 
 /**
@@ -115,11 +106,17 @@ void printPtreeNode(PTreeNode_t *ptree)
  */
 void printPtree(PTreeNode_t *ptree)
 {
+    
     if (ptree->left != NULL) {
+        printf("Printing left: \n");
         printPtree(ptree->left);
     }
-    printPtreeNode(ptree);
+    if(ptree->token != NULL){
+        printf("Printing root: \n");
+        printPtreeNode(ptree);
+    }
     if (ptree->right != NULL) {
+        printf("Printing right: \n");
         printPtree(ptree->right);
     }
 }   

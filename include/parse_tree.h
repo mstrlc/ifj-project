@@ -6,7 +6,7 @@ typedef struct PTree PTreeNode_t;
 
 struct PTree {
     token_t *token;
-    PTreeNode_t *parent;
+    PTreeNode_t *active;
     PTreeNode_t *left;
     PTreeNode_t *right;
 } PTree;
@@ -15,9 +15,9 @@ PTreeNode_t *initPtree();
 
 void disposePtree(PTreeNode_t *ptree);
 
-void insertLeftPtreeNode(PTreeNode_t *ptree, token_t *token);
+PTreeNode_t * insertLeftPtreeNode(PTreeNode_t *ptree, token_t *token);
 
-void insertRightPtreeNode(PTreeNode_t *ptree, token_t *token);
+PTreeNode_t * insertRightPtreeNode(PTreeNode_t *ptree, token_t *token);
 
 void deletePtreeNode(PTreeNode_t *ptree, token_t *token);
 

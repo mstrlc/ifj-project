@@ -6,7 +6,7 @@
 #include "../include/exp_parser.h"
 #include "../include/error.h"
 
-PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree, int *err_code);
+PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree);
 
 /**
  * @brief Returns the precedence of the given operator
@@ -35,77 +35,72 @@ int precedence(token_type_t operator)
     case T_Not_equal:
     case T_Equal:
         return 1;
+    case T_Int:
+    case T_Float:
+    case T_String:
+    case T_Var_id:
+        return 0;
     default:
         return -1;
     }
 }
 
 /**
- * @brief Parses the expression
- * 
- * uses @nameparse_expression() function to build parse tree
+ * @brief Parses the expression uses parse_expression() function to build parse tree
  *
  * @param tokens list of tokens
  * @return int EXIT_SUCCESS or EXIT_FAILURE
  */
 int exp_parser(token_list_t *tokens)
 {
-    int error = 0;
+    int error = EXIT_SUCCESS;
     PTreeNode_t *PTree = initPtree();
-    PTree = parse_expression_with_tree(tokens, 1, PTree, &error);
-    printPtree(PTree);
-    return 0;
+    PTree = parse_expression_with_tree(tokens, 1, PTree);\
+    if(PTree != NULL)
+    {
+        printPtree(PTree);
+        disposePtree(PTree);
+    }
+    else
+    {
+        error = EXIT_FAILURE;
+    }
+    return error;
     
-}
+} 
 
 /**
- * @brief Parses an expression
+ * @brief Parses an expression, builds a parse tree and returns it
  *
- * Goes through the token list and builds a parse tree from it
- *
- * @param tokens list of tokens
+ * @param tokens list of tokens starting with the first token of the expression
  * @param min_precedence minimum precedence 
  * @param PTree initialized parse tree
  * @return PTreeNode_t*
  */
-PTreeNode_t *parse_expression(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree)
-{
-    insertLeftPtreeNode(PTree, ACTIVE_TOKEN);
-    ACTIVE_NEXT;
-    while (precedence(ACTIVE_TYPE) >= min_precedence)
-    {
-        token_type_t op = ACTIVE_TYPE;
-        ACTIVE_NEXT;
-        PTreeNode_t *tmp = initPtree();
-        insertRightPtreeNode(PTree, tmp);
-        while (precedence(ACTIVE_TYPE) > precedence(op))
-        {
-            tmp = parse_expression(tokens, precedence(op) + 1, tmp);
-        }
-        insertLeftPtreeNode(tmp, ACTIVE_TOKEN);
-        ACTIVE_NEXT;
-    }
-    return PTree;
-}
+PTreeNode_t *parse_expression(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree);
 
-PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree, int *err_code)
+/**
+ * @brief Parses an expression and builds a parse tree simultaneously
+ * 
+ * Use ACTIVE_NEXT to shift the active token
+ * Use ACTIVE_PREV to shift the active token back
+ * Use ACTIVE_TYPE to get the type of the active token
+ * Use ACTIVE_TOKEN to acces the active token
+ * Use insertLeftPtreeNode(Ptree, token) to insert a new node to the left of the active node
+ * Use insertRightPtreeNode(Ptree, token) to insert a new node to the right of the active node
+ * Use PTree->token = ACTIVE_TOKEN to set the token of the active node
+ * use PTree->active = to set the active node to another node
+ * use precedence(token_type_t operator) to get the precedence of an operator
+ * use PTree = InitPtree() to initialize a new parse tree node
+ * end if ACTIVE_TYPE != T_var_id or T_int or T_float or T_string or T_L_r_par or T_R_r_par or T_Smaller or T_Smaller_eq or T_Larger or T_Larger_eq or T_Not_equal or T_Equal or T_Concat or T_Mul or T_Div or T_Plus or T_Minus
+ * 
+ * @param tokens 
+ * @param min_precedence 
+ * @param PTree 
+ * @return PTreeNode_t* 
+ */
+PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree)
 {
-    if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Exp || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_L_r_par || ACTIVE_TYPE == T_Var_id){
-        if(ACTIVE_TYPE == T_L_r_par){
-            ACTIVE_NEXT;
-            PTreeNode_t *left = initPtree();
-            PTree->left = parse_expression_with_tree(tokens, min_precedence, left, err_code);
-        }
-        if(PTree->left == NULL){
-            insertLeftPtreeNode(PTree, ACTIVE_TOKEN);
-            ACTIVE_NEXT;
-        }
-        else{
-            PTree->token = ACTIVE_TOKEN;
-            ACTIVE_NEXT;
-        }
-        PTreeNode_t *right = initPtree();
-        insertRightPtreeNode(PTree, parse_expression_with_tree(tokens, min_precedence, right, err_code));
-    }
-    *err_code = EXIT_FAILURE;
+    PTreeNode_t *result = NULL;
+    
 }
