@@ -62,6 +62,7 @@ int main()
     symtables -> actual_table_index = 0;
     symtables -> function_table_index = 0;
     symtables -> vars_table_array[symtables -> actual_table_index] = symtable_init(100);
+    symtables -> function_table = symtable_init(100);
 
     // PRVNI PRUCHOD
     printf(".IFJcode22\n");
