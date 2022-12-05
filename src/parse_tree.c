@@ -3,7 +3,7 @@
 
 /**
  * @brief Initializes a new parse tree node
- * 
+ *
  * @return PTreeNode_t* pointer to the new parse tree node
  */
 PTreeNode_t *initPtree()
@@ -16,18 +16,19 @@ PTreeNode_t *initPtree()
     return ptree;
 }
 
-
 /**
  * @brief Disposes parse tree node
- * 
+ *
  * @param ptree pointer to the parse tree node to be disposed of
  */
 void disposePtree(PTreeNode_t *ptree)
 {
-    if (ptree->left != NULL) {
+    if (ptree->left != NULL)
+    {
         disposePtree(ptree->left);
     }
-    if (ptree->right != NULL) {
+    if (ptree->right != NULL)
+    {
         disposePtree(ptree->right);
     }
     free(ptree);
@@ -35,11 +36,11 @@ void disposePtree(PTreeNode_t *ptree)
 
 /**
  * @brief Inserts a new node to the left of the active node
- * 
+ *
  * @param ptree pointer to the current node
  * @param token pointer to the token to be inserted
  */
-PTreeNode_t * insertLeftPtreeNode(PTreeNode_t *active, token_t *token)
+PTreeNode_t *insertLeftPtreeNode(PTreeNode_t *active, token_t *token)
 {
     PTreeNode_t *newNode = initPtree();
     newNode->token = token;
@@ -47,7 +48,7 @@ PTreeNode_t * insertLeftPtreeNode(PTreeNode_t *active, token_t *token)
     return newNode;
 }
 
-PTreeNode_t * makeOpNode(PTreeNode_t *left, PTreeNode_t *right, PTreeNode_t *op)
+PTreeNode_t *makeOpNode(PTreeNode_t *left, PTreeNode_t *right, PTreeNode_t *op)
 {
     PTreeNode_t *newNode = initPtree();
     newNode->token = op->token;
@@ -58,11 +59,11 @@ PTreeNode_t * makeOpNode(PTreeNode_t *left, PTreeNode_t *right, PTreeNode_t *op)
 
 /**
  * @brief Inserts a new node to the right of the active node
- * 
+ *
  * @param ptree pointer to the current node
  * @param token pointer to the token to be inserted
  */
-PTreeNode_t * insertRightPtreeNode(PTreeNode_t *active, token_t *token)
+PTreeNode_t *insertRightPtreeNode(PTreeNode_t *active, token_t *token)
 {
     PTreeNode_t *newNode = initPtree();
     newNode->token = token;
@@ -72,25 +73,33 @@ PTreeNode_t * insertRightPtreeNode(PTreeNode_t *active, token_t *token)
 
 /**
  * @brief Deletes a node from the parse tree
- * 
+ *
  * @param ptree pointer to the node to be deleted
  * @param token pointer to the token to be deleted
  */
 void deletePtreeNode(PTreeNode_t *ptree, token_t *token)
 {
-    if (ptree->left != NULL) {
-        if (ptree->left->token->type == token->type) {
+    if (ptree->left != NULL)
+    {
+        if (ptree->left->token->type == token->type)
+        {
             disposePtree(ptree->left);
             ptree->left = NULL;
-        } else {
+        }
+        else
+        {
             deletePtreeNode(ptree->left, token);
         }
     }
-    if (ptree->right != NULL) {
-        if (ptree->right->token->type == token->type) {
+    if (ptree->right != NULL)
+    {
+        if (ptree->right->token->type == token->type)
+        {
             disposePtree(ptree->right);
             ptree->right = NULL;
-        } else {
+        }
+        else
+        {
             deletePtreeNode(ptree->right, token);
         }
     }
@@ -98,33 +107,59 @@ void deletePtreeNode(PTreeNode_t *ptree, token_t *token)
 
 /**
  * @brief Prints a node of the parse tree
- * 
+ *
  * @param ptree pointer to the node to be printed
  */
 void printPtreeNode(PTreeNode_t *ptree)
 {
-    // if(ptree->token->data != NULL)
-    //     printf("%s", ptree->token->data);
-    // printToken(ptree->token);
+    if (ptree->token->data != NULL)
+        printf("%s", ptree->token->data);
+    printToken(ptree->token);
 }
 
 /**
  * @brief Prints the parse tree
- * 
+ *
  * @param ptree pointer to the root of the parse tree
  */
 void printPtree(PTreeNode_t *ptree)
 {
-    if (ptree->left != NULL) {
-        // printf("Printing left: \n");
+    if (ptree->left != NULL)
+    {
         printPtree(ptree->left);
     }
-    if (ptree->right != NULL) {
-        // printf("Printing right: \n");
+    if (ptree->right != NULL)
+    {
         printPtree(ptree->right);
     }
-        if(ptree->token != NULL){
-        // printf("Printing root: \n");
-        printf("%s  ", ptree->token->data);
+    if (ptree->token != NULL)
+    {
+        if(ptree->token->type == T_Var_id)
+        {
+            printf("PUSHS LF@%s\n", ptree->token->data);
+        }
+        else if(ptree->token->type == T_Int || ptree->token->type == T_Float || ptree->token->type == T_String)
+        {
+            printf("PUSHS LF@%s\n", ptree->token->data);
+        }
+        else
+        {
+            if(ptree->token->type == T_Plus)
+            {
+                printf("ADDS\n");
+            }
+            else if(ptree->token->type == T_Minus)
+            {
+                printf("SUBS\n");
+            }
+            else if(ptree->token->type == T_Mul)
+            {
+                printf("MULS\n");
+            }
+            else if(ptree->token->type == T_Div)
+            {
+                printf("DIVS\n");
+            }
+        }
     }
 }

@@ -346,9 +346,7 @@ int rule_Expr(token_list_t *tokens)
     // <expr> -> <term>
     if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_L_r_par)
     {
-        //exp_parser(tokens);
         HANDLE_ERROR = exp_parser(tokens);
-        //HANDLE_ERROR = rule_Term(tokens);
     }
     else
     {
@@ -405,7 +403,7 @@ int rule_Assign(token_list_t *tokens)
     // <assign> -> <expr>
     if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_L_r_par)
     {
-        HANDLE_ERROR = rule_Expr(tokens);
+        HANDLE_ERROR = exp_parser(tokens);
     }
     // <assign> -> func-id ( <args> )
     else if (ACTIVE_TYPE == T_Identifier)
@@ -417,7 +415,7 @@ int rule_Assign(token_list_t *tokens)
         HANDLE_ERROR = parseTerminal(tokens, T_L_r_par);
         // <args>
         HANDLE_ERROR = rule_Args(tokens);
-        // )
+        // )make
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
 
         //prepsat do makra kdyz zbyde cas
