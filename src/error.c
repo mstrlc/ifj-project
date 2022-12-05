@@ -28,8 +28,7 @@
 
 int error_exit(int code, token_t *token)
 {
-    int len = strlen(token->data)/2+2;
-    fprintf(stderr, "Error %d (%s) on line %d:\n'%s\'\n%*.*s\n", code, errorToString(code), token->line, token->data, len, len, "^");
+    fprintf(stderr, "Error %d (%s) on line %d near '%s'\n", code, errorToString(code), token->line, token->data);
     return code;
 }
 

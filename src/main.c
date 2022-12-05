@@ -74,7 +74,7 @@ int main()
 
     ACTIVE_TOKEN = tokens->firstToken;
     // DRUHY PRUCHOD
-    error = parser(tokens, symtables);
+    HANDLE_ERROR = parser(tokens, symtables, 2);
 
     // PRINT VESTAVENYCH FUNKCI
     printf("JUMP end_of_program\n");
