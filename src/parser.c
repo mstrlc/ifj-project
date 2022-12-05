@@ -324,7 +324,7 @@ int rule_Expr(token_list_t *tokens)
     int error = 0;
 
     // <expr> -> <term>
-    if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String)
+    if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_L_r_par)
     {
         //exp_parser(tokens);
         HANDLE_ERROR = exp_parser(tokens);
