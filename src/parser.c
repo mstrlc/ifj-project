@@ -24,8 +24,8 @@
 #include "../include/exp_parser.h"
 
 int rule_Prog(token_list_t *tokens, Symtables* symtables);
-int rule_ParamsCont(token_list_t *tokens);
-int rule_Params(token_list_t *tokens);
+int rule_ParamsCont(token_list_t *tokens, Symtables* symtables);
+int rule_Params(token_list_t *tokens, Symtables* symtables);
 int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack* arg_stack );
 int rule_Val(token_list_t *tokens);
 int rule_Args(token_list_t *tokens);
@@ -166,7 +166,7 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
 
-    symtable_defvar_print(symtables->vars_table_array[symtables -> actual_table_index]);
+    symtable_defvar_print(symtables->vars_table_array[symtables -> active_table_index]);
     //END CODEGEN HEADER
 
     return error;
@@ -174,7 +174,8 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
 
 // <params-cont> -> , type $id <params-cont>
 // <params-cont> ->
-int rule_ParamsCont(token_list_t *tokens)
+int argCount = 0; 
+int rule_ParamsCont(token_list_t *tokens, Symtables* symtables)
 {
     int error = 0;
 
@@ -203,10 +204,18 @@ int rule_ParamsCont(token_list_t *tokens)
         {
             HANDLE_ERROR = ERR_SYNTAX;
         }
+
+        //priradime defvary parametru do vars_table funkce
+        if(symtable_lookup(symtables -> vars_table_array[symtables->active_table_index], ACTIVE_DATA) == NULL){
+            symtable_insert(symtables -> vars_table_array[symtables->active_table_index], token_to_symbol(ACTIVE_TOKEN));
+        }
+
+        printf("POPS LF@%s\n", ACTIVE_DATA);
+
         // $id
         HANDLE_ERROR = parseTerminal(tokens, T_Var_id);
         // <params-cont>
-        HANDLE_ERROR = rule_ParamsCont(tokens);
+        HANDLE_ERROR = rule_ParamsCont(tokens, symtables);
     }
     // <params-cont> ->
     else if (ACTIVE_TYPE == T_R_r_par)
@@ -223,7 +232,7 @@ int rule_ParamsCont(token_list_t *tokens)
 
 // <params> -> type $id <params-cont>
 // <params> ->
-int rule_Params(token_list_t *tokens)
+int rule_Params(token_list_t *tokens, Symtables* symtables)
 {
     int error = 0;
 
@@ -252,9 +261,18 @@ int rule_Params(token_list_t *tokens)
             HANDLE_ERROR = ERR_SYNTAX;
         }
         // $id
+
+        //priradime defvary parametru do vars_table funkce
+        if(symtable_lookup(symtables -> vars_table_array[symtables->active_table_index], ACTIVE_DATA) == NULL){
+            symtable_insert(symtables -> vars_table_array[symtables->active_table_index], token_to_symbol(ACTIVE_TOKEN));
+        }
+
+        printf("POPS LF@%s\n", ACTIVE_DATA);
+        argCount = 0; // nevim proc tohle ovlivnuje argCount, kdyz jsme v parametrech, ale bez tohohle to nefunguje
+
         HANDLE_ERROR = parseTerminal(tokens, T_Var_id);
         // <params-cont>
-        HANDLE_ERROR = rule_ParamsCont(tokens);
+        HANDLE_ERROR = rule_ParamsCont(tokens, symtables);
     }
     // <params> ->
     else if (ACTIVE_TYPE == T_R_r_par)
@@ -275,6 +293,7 @@ int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack
 {
     int error = 0;
 
+    // pushujeme argumenty pred volanim funkce ve spravnem formatu
     *argCount = *argCount + 1;
     char* push_arg_command = malloc(sizeof(char)*100);
     if(arg_value->type == T_String){
@@ -290,9 +309,8 @@ int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack
         sprintf(push_arg_command, "PUSHS LF@%s",arg_value->data);
     }
 
+    //pushneme volani PUSHS do staku, jelikoz popovani stack nam pak nasledne zaruci to, ze se budou PUSHS generovat ve spravnem poradi
     stack_push(arg_stack, push_arg_command);
-
-    // printf("PUSHS string@%s\n",arg_value->data);
 
 
     // <args-cont> -> , <term> <args-cont>
@@ -340,13 +358,14 @@ int rule_Expr(token_list_t *tokens)
 
 // <args> -> <term> <args-cont>
 // <args> -> 
-int argCount = 0; // 
+
 int rule_Args(token_list_t *tokens)
 {
     int error = 0;
     
-    
     token_t* arg_value = ACTIVE_TOKEN;
+    
+    // do pole budeme pushovat prikazy ifjcode22 na PUSHovani do stacku, jelikoz pak je budeme potrebovat vyprintovat v obracenem poradi
     stack* arg_stack = stack_init();
 
     if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Var_id)
@@ -366,6 +385,7 @@ int rule_Args(token_list_t *tokens)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+    // printujeme argumenty v obracenem poradi, nez byly predany do funkce v ifj22, jelikoz ifjcode22 stack
     while(!stack_is_empty(arg_stack)){
         printf("%s\n", stack_top(arg_stack)->stack_str);
         stack_pop(arg_stack);
@@ -399,10 +419,11 @@ int rule_Assign(token_list_t *tokens)
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
 
         //prepsat do makra kdyz zbyde cas
+        //volani vestavenych funkci, ktere maji navratovou hodnotu
         if(strcmp(functionName, "reads") == 0){
             printf("CALL reads\n");
             printf("MOVE GF@assignedVal GF@ret\n");
-            printf("MOVE GF@ret nil@nil\n");
+            printf("MOVE GF@ret nil@nil\n"); // po kazdem prirazeni je treba resetovat GF@ret na NULL, protoze funkce bez navratove hodnoty musi vracet NULL
         }
         else if(strcmp(functionName, "readi") == 0){
             printf("CALL readi\n");
@@ -532,12 +553,14 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
         
         //CODEGEN var init and assign
-        if(symtable_lookup(symtables -> vars_table_array[symtables->actual_table_index], var->data) == NULL){
-            printf("DEFVAR LF@%s\n", var->data); //pridat podminku nedefinovanosti promenne
-            symtable_insert(symtables -> vars_table_array[symtables->actual_table_index], token_to_symbol(var));
+        // do aktivni tabulky indexu vloz variable
+        if(symtable_lookup(symtables -> vars_table_array[symtables->active_table_index], var->data) == NULL){
+            symtable_insert(symtables -> vars_table_array[symtables->active_table_index], token_to_symbol(var));
         }
-        //END CODEGEN var init and assign
+
+        // presun vysledek z exp_parseru do promenne
         printf("MOVE LF@%s GF@assignedVal\n", var->data);
+        //END CODEGEN var init and assign
         
     }
     // <stat> -> while ( <expr> ) { <st-list> }
@@ -633,6 +656,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Return);
         // <expr>
         HANDLE_ERROR = rule_Expr(tokens);
+        //presun vysledek z exp_parseru do navratove hodnoty
         printf("MOVE GF@ret GF@assignedVal\n");
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
@@ -660,7 +684,8 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
 
-        //CODEGEN print argumentu
+        //CODEGEN volani funkce bez navratove hodnoty
+        // vestavena funkce write potrebuje znat pocet passovanych argumentu
         if(strcmp(functionName, "write") == 0){
             printf("PUSHS int@%d\n", argCount);
             printf("CALL write\n");
@@ -760,7 +785,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
 {
     // printf("BEGIN PROG\n");
     int error = 0;
-    symtables -> actual_table_index = 0;
+    symtables -> active_table_index = 0;
 
     // <prog> -> <stat> <prog> .
     if (ACTIVE_TYPE == T_Var_id ||
@@ -789,6 +814,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         char* functionName = ACTIVE_DATA;
         char* end_of_function = make_random_label();
 
+        // funkci musime preskocit pokud ji nevolame
         printf("JUMP %s\n", end_of_function);
         
         // labely ktere vygeneroval prvni pruchod nedokaze uvodni jump preskocit
@@ -803,20 +829,23 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         printf("CREATEFRAME\n");
         printf("PUSHFRAME\n");
 
+        // funkce ma vlastni lokalni defvary, proto ji priradime vlastni index v poli vars_table_array
         symtables -> function_table_index++;
-        symtables -> actual_table_index = symtables -> function_table_index; // chceme symtable aktualni funkce
+        symtables -> active_table_index = symtables -> function_table_index; // chceme symtable aktualni funkce
         
-        if(!symtables -> vars_table_array[symtables->actual_table_index]) //jesti je to druhy pruchod tak neinicializuj (bcs by se nam smazali data)
-            symtables -> vars_table_array[symtables->actual_table_index] = symtable_init(100);
-        // printf("(%d)\n",symtables->actual_table_index);
-        symtable_defvar_print(symtables->vars_table_array[symtables->actual_table_index]);
+        //pokud symtable s timto indexem neexistuje tak ji vytvor (osetreni druheho pruchodu)
+        if(!symtables -> vars_table_array[symtables->active_table_index])
+            symtables -> vars_table_array[symtables->active_table_index] = symtable_init(100);
+
+        //vyprintuj vsechny defvary z daneho indexu, tzn pri druhem pruchodu bude na zacatku kazde funkce print vsech jejich defvaru
+        symtable_defvar_print(symtables->vars_table_array[symtables->active_table_index]);
         //END CODEGEN function body -> start
 
         HANDLE_ERROR = parseTerminal(tokens, T_Identifier);
         // (
         HANDLE_ERROR = parseTerminal(tokens, T_L_r_par);
         // <params>
-        HANDLE_ERROR = rule_Params(tokens);
+        HANDLE_ERROR = rule_Params(tokens, symtables);
         // )
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
         // :

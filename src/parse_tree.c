@@ -105,7 +105,7 @@ void printPtreeNode(PTreeNode_t *ptree)
 {
     // if(ptree->token->data != NULL)
     //     printf("%s", ptree->token->data);
-    printToken(ptree->token);
+    // printToken(ptree->token);
 }
 
 /**
@@ -117,15 +117,15 @@ void printPtree(PTreeNode_t *ptree)
 {
     
     if (ptree->left != NULL) {
-        printf("Printing left: \n");
+        // printf("Printing left: \n");
         printPtree(ptree->left);
     }
     if(ptree->token != NULL){
-        printf("Printing root: \n");
+        // printf("Printing root: \n");
         printPtreeNode(ptree);
     }
     if (ptree->right != NULL) {
-        printf("Printing right: \n");
+        // printf("Printing right: \n");
         printPtree(ptree->right);
     }
 }
