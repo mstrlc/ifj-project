@@ -787,6 +787,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
 {
     // printf("BEGIN PROG\n");
     int error = 0;
+    // kdyz nejsme ve funkci, tak chceme aktivni nultou tabulku symbolu (main tabulka)
     symtables -> active_table_index = 0;
 
     // <prog> -> <stat> <prog> .
@@ -826,12 +827,9 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         // funkci musime preskocit pokud ji nevolame
         printf("JUMP %s\n", end_of_function);
         
-        // labely ktere vygeneroval prvni pruchod nedokaze uvodni jump preskocit
-        // tenhle if funguje jako code gen, pokud budeme chtit pridat semantickou kontrolu vicenasobne definice funkce, musime dodat informaci o druhe pruchodu a podminit codegen tim
-        if(!symtable_lookup(symtables -> function_table, ACTIVE_DATA)){
-            symtable_insert(symtables -> function_table, token_to_symbol(ACTIVE_TOKEN));
-        }
-        else{
+        //labely by se nepreskocili end_of_scuffed_codegen jumpem, takze se nesmi vubec generovat v prvnim pruchodu
+        if(pass == 2)
+        {
             printf("LABEL %s\n", functionName);
         }
 
