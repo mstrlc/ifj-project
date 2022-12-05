@@ -676,6 +676,23 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
     {
         char* functionName = ACTIVE_DATA;
         // func-id
+        // Check if exists
+        if (pass == 2 && symtable_lookup(symtables->function_table, ACTIVE_DATA) == NULL
+        && strcmp(ACTIVE_DATA, "reads") != 0
+        && strcmp(ACTIVE_DATA, "readi") != 0
+        && strcmp(ACTIVE_DATA, "readf") != 0
+        && strcmp(ACTIVE_DATA, "write") != 0
+        && strcmp(ACTIVE_DATA, "floatval") != 0
+        && strcmp(ACTIVE_DATA, "intval") != 0
+        && strcmp(ACTIVE_DATA, "strval") != 0
+        && strcmp(ACTIVE_DATA, "strlen") != 0
+        && strcmp(ACTIVE_DATA, "substring") != 0
+        && strcmp(ACTIVE_DATA, "ord") != 0
+        && strcmp(ACTIVE_DATA, "chr") != 0)
+        {
+            error_exit(ERR_UNDEF_REDEF_FUN, ACTIVE_TOKEN);
+            exit(ERR_UNDEF_REDEF_FUN);
+        }
         HANDLE_ERROR = parseTerminal(tokens, T_Identifier);
         // (
         HANDLE_ERROR = parseTerminal(tokens, T_L_r_par);
