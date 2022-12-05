@@ -37,17 +37,6 @@ int rule_Assign(token_list_t *tokens);
 int rule_Term(token_list_t *tokens);
 int rule_Expr(token_list_t *tokens);
 
-/**
- * @brief Parse token, used in prolog
- * 
- * If the active token matches the given type, parse it and move to the next one,
- * including whitespace and comments. Else, return error.
- * 
- * @param tokens Pointer to list of tokens to be parsed
- * @param type Type of token to be parsed
- * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_SYNTAX)
- */
-
  //pomocne funkce 
  char* make_random_label(){
     char const abeceda[]= "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -63,6 +52,16 @@ int rule_Expr(token_list_t *tokens);
 }
 
 
+/**
+ * @brief Parse token, used in prolog
+ * 
+ * If the active token matches the given type, parse it and move to the next one,
+ * including whitespace and comments. Else, return error.
+ * 
+ * @param tokens Pointer to list of tokens to be parsed
+ * @param type Type of token to be parsed
+ * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_SYNTAX)
+ */
 int parseProlog(token_list_t *tokens, token_type_t type)
 {
     if (ACTIVE_TYPE == type)
@@ -171,6 +170,11 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
     symtable_defvar_print(symtables->vars_table_array[symtables -> active_table_index]);
     //END CODEGEN HEADER
 
+    if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
 }
 
@@ -229,7 +233,13 @@ int rule_ParamsCont(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <params> -> type $id <params-cont>
@@ -286,7 +296,13 @@ int rule_Params(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <args> -> <term> <args-cont>
@@ -335,7 +351,13 @@ int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <expr> -> <term>
@@ -353,7 +375,13 @@ int rule_Expr(token_list_t *tokens)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+    if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <args> -> <term> <args-cont>
@@ -391,7 +419,13 @@ int rule_Args(token_list_t *tokens)
         stack_pop(arg_stack);
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <assign> -> <expr>
@@ -490,7 +524,13 @@ int rule_Assign(token_list_t *tokens)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <st-list> -> <stat> <st-list>
@@ -526,7 +566,13 @@ int rule_StList(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <stat> -> $id = <assign> ;
@@ -712,13 +758,18 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
             printf("CALL %s\n", functionName);
         }
     }
-
     else
     {
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+    if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <term> -> $id
@@ -744,7 +795,13 @@ int rule_Term(token_list_t *tokens)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <eof> -> ?> <eof>
@@ -792,7 +849,13 @@ int rule_EOF(token_list_t *tokens)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <prog> -> <stat> <prog>
@@ -925,7 +988,13 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 /**
