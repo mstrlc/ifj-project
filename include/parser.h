@@ -39,14 +39,13 @@ typedef enum err_code
    parser_err,
    lexer_err,
    semantic_err,
-   pass
 } ERR_CODE;
 
 // err_type next_check(token_t* t);
 
 // err_type next_check_type(token_type_t* token_type, token_type_t* valid_type);
 
-int parser(token_list_t *tokens, Symtables* symtables);
+int parser(token_list_t *tokens, Symtables* symtables, int whichPass);
 
 int check_args(token_t *token);
 

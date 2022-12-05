@@ -23,6 +23,8 @@
 #include "../include/parse_tree.h"
 #include "../include/exp_parser.h"
 
+static int pass;
+
 int rule_Prog(token_list_t *tokens, Symtables* symtables);
 int rule_ParamsCont(token_list_t *tokens);
 int rule_Params(token_list_t *tokens);
@@ -785,6 +787,13 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Function);
         // func-id
 
+        // Check for function redefinition
+        if(pass == 1 && symtable_lookup(symtables->function_table, ACTIVE_DATA) != NULL)
+        {
+            error = error_exit(ERR_UNDEF_REDEF_FUN, ACTIVE_TOKEN);
+            exit(error);
+        }
+
         //CODEGEN function body -> start
         char* functionName = ACTIVE_DATA;
         char* end_of_function = make_random_label();
@@ -883,16 +892,16 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
  * @param tokens Pointer to list of tokens containing input
  * @return int Error code - success (0) or failure (1 = ERR_LEXEME or 2 = ERR_SYNTAX)
  */
-int parser(token_list_t *tokens, Symtables* symtables)
+int parser(token_list_t *tokens, Symtables* symtables, int whichPass)
 {
-    
     int error = 0;
+    pass = whichPass;
 
-    error = checkProlog(tokens, symtables);
+    HANDLE_ERROR = checkProlog(tokens, symtables);
     if (error != 0)
         return 1;
     // Begin parsing
-    error = rule_Prog(tokens, symtables);
+    HANDLE_ERROR = rule_Prog(tokens, symtables);
 
     return error;
 }
