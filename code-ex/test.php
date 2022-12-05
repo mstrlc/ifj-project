@@ -1,8 +1,11 @@
 <?php
 declare(strict_types=1);
-while($dsa){
-    $var = reads();
-    write($var);
-    $res = strlen($var);
-    write($res);
+$var = foo();
+function foo():string{
+
+        $var = strlen("AHOJ");
+        return $var;
+    
 }
+write($var);
+

@@ -129,9 +129,9 @@ DEFVAR LF@len
 DEFVAR LF@i
 DEFVAR LF@char
 DEFVAR LF@error
-POPS LF@arg3
-POPS LF@arg2
 POPS LF@arg
+POPS LF@arg2
+POPS LF@arg3
 MOVE LF@i LF@arg2
 MOVE GF@ret string@
 STRLEN LF@len LF@arg

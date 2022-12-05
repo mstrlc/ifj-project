@@ -34,7 +34,6 @@ void print_and_pop(stack* s){
     }
 }
 
-// v prvnim pruchodu dostaneme defvars obracene - liny nato implementovat queue 
 stack* stack_reverse(stack* s){
     stack* revStack = stack_init();
     while(!stack_is_empty(s)){
