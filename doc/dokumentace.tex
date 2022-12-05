@@ -7,6 +7,9 @@
 \usepackage{verbatim}
 \usepackage{fancyvrb}
 \usepackage{svg}
+\usepackage{rotating}
+
+
 \renewcommand{\familydefault}{\sfdefault}
 
 \begin{document}
@@ -175,8 +178,72 @@
 
     \subsection{LL-tabulka}
 
-    \subsection{Precedenční tabulka}
+    \renewcommand{\familydefault}{\ttdefault}
 
+    \begin{table}[h!]
+        \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|}
+            \hline
+                                             & \begin{sideways}function   \ \end{sideways}
+                                                        & \begin{sideways}func-id\end{sideways}   
+                                                                    & \begin{sideways}(\end{sideways}
+                                                                            & \begin{sideways})\end{sideways}
+                                                                                    & \begin{sideways}:\end{sideways}
+                                                                                            & \begin{sideways}type\end{sideways}
+                                                                                                    & \begin{sideways}\{\end{sideways}
+                                                                                                            & \begin{sideways}\}\end{sideways}
+                                                                                                                    & \begin{sideways}?\textgreater{}\end{sideways}
+                                                                                                                                        & \begin{sideways}EOF\end{sideways}
+                                                                                                                                                & \begin{sideways},\end{sideways}
+                                                                                                                                                        & \begin{sideways}\$id\end{sideways}
+                                                                                                                                                                & \begin{sideways}=\end{sideways}
+                                                                                                                                                                    & \begin{sideways}; \end{sideways}
+                                                                                                                                                                        & \begin{sideways}while \end{sideways}
+                                                                                                                                                                                & \begin{sideways}\textless{}expr\textgreater{}\end{sideways}
+                                                                                                                                                                                                                & \begin{sideways}if\end{sideways}
+                                                                                                                                                                                                                        & \begin{sideways}else\end{sideways}
+                                                                                                                                                                                                                                 & \begin{sideways}return\end{sideways}
+                                                                                                                                                                                                                                            & \begin{sideways}val\end{sideways} \\ \hline
+        \textless{}prog\textgreater{}        & 2        & 1         &       &       &      &        &       &       & 3                 & 3     &       & 1     &   &   & 1     & 1                             & 1     &        & 1        &         \\ \hline
+        \textless{}eof\textgreater{}         &          &           &       &       &      &        &       &       & 4                 & 5     &       &       &   &   &       &                               &       &        &          &         \\ \hline
+        \textless{}params-cont\textgreater{} &          &           &       & 7     &      &        &       &       &                   &       & 6     &       &   &   &       &                               &       &        &          &         \\ \hline
+        \textless{}params\textgreater{}      &          &           &       & 9     &      & 8      &       &       &                   &       &       &       &   &   &       &                               &       &        &          &         \\ \hline
+        \textless{}args-cont\textgreater{}   &          &           &       & 11    &      &        &       &       &                   &       & 10    &       &   &   &       &                               &       &        &          &         \\ \hline
+        \textless{}args\textgreater{}        &          &           &       & 13    &      &        &       &       &                   &       &       & 12    &   &   &       &                               &       &        &          & 12      \\ \hline
+        \textless{}stat\textgreater{}        &          & 19        &       &       &      &        &       &       &                   &       &       & 14    &   &   & 15    & 18                            & 16    &        & 17       &         \\ \hline
+        \textless{}st-list\textgreater{}     &          & 20        &       &       &      &        &       & 21    &                   &       &       & 20    &   &   & 20    & 20                            & 20    &        & 20       &         \\ \hline
+        \textless{}assign\textgreater{}      &          & 23        &       &       &      &        &       &       &                   &       &       &       &   &   &       & 22                            &       &        &          &         \\ \hline
+        \textless{}term\textgreater{}        &          &           &       &       &      &        &       &       &                   &       &       & 24    &   &   &       &                               &       &        &          & 25      \\ \hline
+    \end{tabular}
+    \end{table}
+
+    \renewcommand{\familydefault}{\sfdefault}
+
+    \subsection{Precedenční tabulka}
+    \renewcommand{\familydefault}{\ttdefault}
+
+    \begin{table}[h!]
+        \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|}
+        \hline
+                        & *              & /              & +              & -              & .              & \textless{}    & \textgreater{} & \textless{}=   & \textgreater{}= & ===            & !==            & (           & )              & var         & \$             \\ \hline
+        *               & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{}  & \textgreater{} & \textgreater{} & \textless{} & \textgreater{} & \textless{} & \textgreater{} \\ \hline
+        /               & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{}  & \textgreater{} & \textgreater{} & \textless{} & \textgreater{} & \textless{} & \textgreater{} \\ \hline
+        +               & \textless{}    & \textless{}    & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{}  & \textgreater{} & \textgreater{} & \textless{} & \textgreater{} & \textless{} & \textgreater{} \\ \hline
+        -               & \textless{}    & \textless{}    & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{}  & \textgreater{} & \textgreater{} & \textless{} & \textgreater{} & \textless{} & \textgreater{} \\ \hline
+        .               & \textless{}    & \textless{}    & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{}  & \textgreater{} & \textgreater{} & \textless{} & \textgreater{} & \textless{} & \textgreater{} \\ \hline
+        \textless{}     & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{}  & \textgreater{} & \textgreater{} & \textless{} & \textgreater{} & \textless{} & \textgreater{} \\ \hline
+        \textgreater{}  & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{}  & \textgreater{} & \textgreater{} & \textless{} & \textgreater{} & \textless{} & \textgreater{} \\ \hline
+        \textless{}=    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{}  & \textgreater{} & \textgreater{} & \textless{} & \textgreater{} & \textless{} & \textgreater{} \\ \hline
+        \textgreater{}= & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{}  & \textgreater{} & \textgreater{} & \textless{} & \textgreater{} & \textless{} & \textgreater{} \\ \hline
+        ===             & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}     & \textgreater{} & \textgreater{} & \textless{} & \textgreater{} & \textless{} & \textgreater{} \\ \hline
+        !==             & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}     & \textgreater{} & \textgreater{} & \textless{} & \textgreater{} & \textless{} & \textgreater{} \\ \hline
+        (               & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}     & \textless{}    & \textless{}    & \textless{} & =              & \textless{} &                \\ \hline
+        )               & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{}  & \textgreater{} & \textgreater{} &             & \textgreater{} &             & \textgreater{} \\ \hline
+        var             & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{} & \textgreater{}  & \textgreater{} & \textgreater{} &             & \textgreater{} &             & \textgreater{} \\ \hline
+        \$              & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}    & \textless{}     & \textless{}    & \textless{}    & \textless{} &                & \textless{} &                \\ \hline
+        \end{tabular}
+        \end{table}
+        
+        \renewcommand{\familydefault}{\sfdefault}
 
     \section{Sémantická analýza}
 
