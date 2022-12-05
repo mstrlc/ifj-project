@@ -30,7 +30,7 @@ int main()
     }
     else
     {
-        printf("Lexer success\n");
+        // printf("Lexer success\n");
     }
 
     // Initialize symbol table
@@ -49,31 +49,50 @@ int main()
             symtable_insert(symtable, token_to_symbol(tokens->activeToken));
         }
     }
-    symtable_print(symtable);
+    // symtable_print(symtable);
 
     void *aa = symtable_lookup(symtable, "$d");
-    printf("aa: %p\n\n", aa);
+    // printf("aa: %p\n\n", aa);
 
     tokens->activeToken = tokens->firstToken;
 
     //Prepare symtables
     Symtables* symtables = (Symtables*)malloc(sizeof(struct symtables_type));
     symtables -> vars_table = symtable_init(100);
-    symtables -> vars_table_index = 0;
+    symtables -> actual_table_index = 0;
     symtables -> function_table_index = 0;
-    symtables -> vars_table_array[symtables -> vars_table_index] = symtable_init(100);
+    symtables -> vars_table_array[symtables -> actual_table_index] = symtable_init(100);
+    symtables -> function_table = symtable_init(100);
 
     // PRVNI PRUCHOD
     printf(".IFJcode22\n");
     printf("JUMP end_of_this_scuffed_codegen\n"); // nejdebilnejsi ale funkci reseni, prvni pruchod nema kompletni codegen, tak ho skipneme, misto toho, abysme ho negenerovali vubec
     error = parser(tokens, symtables);
-    symtables -> vars_table_index = 0;
+    symtables -> actual_table_index = 0;
     symtables -> function_table_index = 0;
     printf("LABEL end_of_this_scuffed_codegen\n");
-    ACTIVE_TOKEN = tokens->firstToken;
 
+    ACTIVE_TOKEN = tokens->firstToken;
     // DRUHY PRUCHOD
     error = parser(tokens, symtables);
+
+    // PRINT VESTAVENYCH FUNKCI
+    printf("JUMP end_of_program\n");
+    FILE    *textfile;
+    char    line[1000];
+     
+    textfile = fopen("src/inbuilt.ifjc22", "r");
+    if(textfile == NULL)
+        return 1;
+     
+    while(fgets(line, 1000, textfile)){
+        printf(line);
+    }
+    printf("LABEL end_of_program\n");
+     
+    fclose(textfile);
+
+    //ERROR HANDLE
     if (error != 0)
     {
         error_exit(error, tokens->activeToken);
@@ -82,10 +101,10 @@ int main()
     }
     else
     {
-        printf("\n\nParser success\n");
+        // printf("\n\nParser success\n");
     }
 
     freeTokenList(tokens);
-    printf("PROGRAM CORRECT\n");
+    // printf("\n\n\nPROGRAM CORRECT\n");
     exit(error);
 }

@@ -1,36 +1,34 @@
-<prog> -> <stat> <prog> .
-<prog> -> function func-id ( <params> ) : type { <st-list> } <prog> .
-<prog> -> <eof> .
+<prog> -> <stat> <prog>
+<prog> -> function func-id ( <params> ) : type { <st-list> } <prog>
+<prog> -> <eof>
 
-<eof> -> ?> EOF .
-<eof> -> EOF .
+<eof> -> ?> EOF
+<eof> -> EOF
 
-<params-cont> -> , type $id <params-cont> .
-<params-cont> ->	.
+<params-cont> -> , type $id <params-cont>
+<params-cont> -> ε
 
-<params> -> type $id <params-cont> .
-<params> ->	.
+<params> -> type $id <params-cont>
+<params> -> ε
 
-<args-cont> -> , <term> <args-cont> .
-<args-cont> ->  .
+<args-cont> -> , <term> <args-cont>
+<args-cont> -> 
 
-<args> -> <term> <args-cont> .
-<args> ->  .
+<args> -> <term> <args-cont>
+<args> -> ε
 
-<stat> -> $id = <assign> ; .
-<stat> -> while ( <expr> ) { <st-list> } .
-<stat> -> if ( <expr> ) { <st-list> } else { <st-list> } .
-<stat> -> return <expr> ; .
-<stat> -> <expr> ; .
-<stat> -> func-id ( <args> ) ; .
+<stat> -> $id = <assign> ;
+<stat> -> while ( <expr> ) { <st-list> }
+<stat> -> if ( <expr> ) { <st-list> } else { <st-list> }
+<stat> -> return <expr> ;
+<stat> -> <expr> ;
+<stat> -> func-id ( <args> ) ;
 
-<st-list> -> <stat> <st-list> .
-<st-list> -> . 
+<st-list> -> <stat> <st-list>
+<st-list> -> ε
 
-<assign> -> <expr> .
-<assign> -> func-id ( <args> ) .
+<assign> -> <expr>
+<assign> -> func-id ( <args> )
 
-<term> -> $id .
-<term> -> val .
-
-<expr> -> E .
+<term> -> $id
+<term> -> val

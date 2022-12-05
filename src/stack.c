@@ -6,12 +6,11 @@ stack* stack_init(){
     return s;
 }
 
-void stack_push(stack* s, char* defvar, stack* defvar_stack){
+void stack_push(stack* s, char* stack_str){
     if (s->top < BRACKET_STACK_MAX ) {
         s->top++;
         stack_elem* elem = (stack_elem*)malloc(sizeof(stack_elem));
-        elem -> defvar = defvar;
-        elem -> defvar_stack = defvar_stack;
+        elem -> stack_str = stack_str;
         s->dataArray[s->top] = elem;
     }
 }
@@ -30,16 +29,15 @@ bool stack_is_empty(stack* s){
 
 void print_and_pop(stack* s){
     while(!stack_is_empty(s)){
-        printf("%s\n", stack_top(s)->defvar);
+        printf("%s\n", stack_top(s)->stack_str);
         stack_pop(s);
     }
 }
 
-// v prvnim pruchodu dostaneme defvars obracene - liny nato implementovat queue 
 stack* stack_reverse(stack* s){
     stack* revStack = stack_init();
     while(!stack_is_empty(s)){
-        stack_push(revStack, stack_top(s)->defvar, stack_top(s)->defvar_stack);
+        stack_push(revStack, stack_top(s)->stack_str);
         stack_pop(s);
     }
     return revStack;
