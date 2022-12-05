@@ -1,11 +1,14 @@
 <?php
 declare(strict_types=1);
-$var = foo();
-function foo():string{
 
-        $var = strlen("AHOJ");
-        return $var;
+function foo(int $var2, int $var3):string{
+    write($var2);
+    write($var3);
+    $var2 = readi();
+    $var3 = readi();
+    foo($var2, $var3);
     
 }
-write($var);
-
+$var2 = readi();
+$var3 = readi();
+foo($var2, $var3);

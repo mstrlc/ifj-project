@@ -1,6 +1,8 @@
+#include <stdbool.h>
 #include "lexer.h"
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
+
 
 typedef struct symbol symbol_t;
 typedef struct symbol {
@@ -9,6 +11,9 @@ typedef struct symbol {
     token_type_t type;
     symbol_t *next;
     symbol_t *prev;
+    bool func_is_defined;
+    int func_param_count;
+    bool var_is_initialized;
 }symbol;
 
 typedef struct symtable symtable_t;
@@ -22,7 +27,7 @@ typedef struct symtables_type{
     symtable_t* vars_table;
     symtable_t* vars_table_array[1000];
     symtable_t* function_table; 
-    int actual_table_index; // oznacuje z jake tabulky se bude cist
+    int active_table_index; // oznacuje z jake tabulky se bude cist
     int function_table_index; // prirazuje indexy funkcim
 } Symtables;
 

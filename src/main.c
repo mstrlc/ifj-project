@@ -51,7 +51,7 @@ int main()
     }
     // symtable_print(symtable);
 
-    void *aa = symtable_lookup(symtable, "$d");
+    // void *aa = symtable_lookup(symtable, "$d");
     // printf("aa: %p\n\n", aa);
 
     tokens->activeToken = tokens->firstToken;
@@ -59,22 +59,22 @@ int main()
     //Prepare symtables
     Symtables* symtables = (Symtables*)malloc(sizeof(struct symtables_type));
     symtables -> vars_table = symtable_init(100);
-    symtables -> actual_table_index = 0;
+    symtables -> active_table_index = 0;
     symtables -> function_table_index = 0;
-    symtables -> vars_table_array[symtables -> actual_table_index] = symtable_init(100);
+    symtables -> vars_table_array[symtables -> active_table_index] = symtable_init(100);
     symtables -> function_table = symtable_init(100);
 
     // PRVNI PRUCHOD
     printf(".IFJcode22\n");
     printf("JUMP end_of_this_scuffed_codegen\n"); // nejdebilnejsi ale funkci reseni, prvni pruchod nema kompletni codegen, tak ho skipneme, misto toho, abysme ho negenerovali vubec
-    error = parser(tokens, symtables);
-    symtables -> actual_table_index = 0;
+    error = parser(tokens, symtables, 1);
+    symtables -> active_table_index = 0;
     symtables -> function_table_index = 0;
     printf("LABEL end_of_this_scuffed_codegen\n");
 
     ACTIVE_TOKEN = tokens->firstToken;
     // DRUHY PRUCHOD
-    error = parser(tokens, symtables);
+    HANDLE_ERROR = parser(tokens, symtables, 2);
 
     // PRINT VESTAVENYCH FUNKCI
     printf("JUMP end_of_program\n");
