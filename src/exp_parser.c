@@ -99,8 +99,52 @@ PTreeNode_t *parse_expression(token_list_t *tokens, int min_precedence, PTreeNod
  * @param PTree 
  * @return PTreeNode_t* 
  */
+
+
+static int bracket_L_counter = 0;
 PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree)
 {
-    PTreeNode_t *result = NULL;
-    
+    //int error = EXIT_SUCCESS;
+    PTreeNode_t *a = PTree;
+    if(ACTIVE_TYPE == T_L_r_par){
+        bracket_L_counter++;
+    }
+    else{
+    a->token = ACTIVE_TOKEN;
+    }
+    ACTIVE_NEXT;
+    if(ACTIVE_TYPE == T_Plus || ACTIVE_TYPE == T_Minus || ACTIVE_TYPE == T_Mul || ACTIVE_TYPE == T_Div || ACTIVE_TYPE == T_Concat || ACTIVE_TYPE == T_Not_equal || ACTIVE_TYPE == T_Equal || ACTIVE_TYPE == T_Larger || ACTIVE_TYPE == T_Larger_eq || ACTIVE_TYPE == T_Smaller || ACTIVE_TYPE == T_Smaller_eq){
+        while (1){
+            if(ACTIVE_TYPE == T_Plus || ACTIVE_TYPE == T_Minus || ACTIVE_TYPE == T_Mul || ACTIVE_TYPE == T_Div || ACTIVE_TYPE == T_Concat || ACTIVE_TYPE == T_Not_equal || ACTIVE_TYPE == T_Equal || ACTIVE_TYPE == T_Larger || ACTIVE_TYPE == T_Larger_eq || ACTIVE_TYPE == T_Smaller || ACTIVE_TYPE == T_Smaller_eq){
+                PTreeNode_t *op = initPtree();
+                op->token = ACTIVE_TOKEN;
+                ACTIVE_NEXT;
+                PTreeNode_t *b = initPtree();
+                if(ACTIVE_TYPE == T_L_r_par){
+                    ACTIVE_NEXT;
+                    bracket_L_counter++;
+                    b = parse_expression_with_tree(tokens, min_precedence, b);
+                }
+                else{
+                    b->token = ACTIVE_TOKEN;
+                }
+                a = makeOpNode(a, b, op);
+                ACTIVE_NEXT;
+            }
+            else{
+                return a;
+            }
+        }
+    }
+    else if (ACTIVE_TYPE == T_R_r_par){
+        bracket_L_counter--;
+        if(bracket_L_counter < 0){
+            printf("Missing right bracket");
+            return NULL;
+        }
+        return a;
+    }
+    else{
+    return a;
+    }
 }

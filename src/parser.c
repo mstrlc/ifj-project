@@ -327,7 +327,8 @@ int rule_Expr(token_list_t *tokens)
     if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String)
     {
         //exp_parser(tokens);
-        HANDLE_ERROR = rule_Term(tokens);
+        HANDLE_ERROR = exp_parser(tokens);
+        //HANDLE_ERROR = rule_Term(tokens);
     }
     else
     {

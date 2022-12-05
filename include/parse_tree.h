@@ -19,6 +19,8 @@ PTreeNode_t * insertLeftPtreeNode(PTreeNode_t *ptree, token_t *token);
 
 PTreeNode_t * insertRightPtreeNode(PTreeNode_t *ptree, token_t *token);
 
+PTreeNode_t * makeOpNode(PTreeNode_t *left, PTreeNode_t *right, PTreeNode_t *op);
+
 void deletePtreeNode(PTreeNode_t *ptree, token_t *token);
 
 void printPtreeNode(PTreeNode_t *ptree);

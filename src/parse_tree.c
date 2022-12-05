@@ -47,6 +47,15 @@ PTreeNode_t * insertLeftPtreeNode(PTreeNode_t *active, token_t *token)
     return newNode;
 }
 
+PTreeNode_t * makeOpNode(PTreeNode_t *left, PTreeNode_t *right, PTreeNode_t *op)
+{
+    PTreeNode_t *newNode = initPtree();
+    newNode->token = op->token;
+    newNode->left = left;
+    newNode->right = right;
+    return newNode;
+}
+
 /**
  * @brief Inserts a new node to the right of the active node
  * 
