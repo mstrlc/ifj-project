@@ -648,6 +648,38 @@ int getNextToken(token_t *token)
         token->data = string;
     }
 
+    // Change string escape sequences to their actual characters
+    if (token->type == T_String)
+    {
+        char *string = malloc(sizeof(char) * (strlen(token->data) * 2));
+        // malloc
+        size_t j = 0;
+        for (size_t i = 0; i < strlen(token->data); i++)
+        {
+            if((token->data[i] >= 0 && token->data[i] <= 32) || token->data[i] == 35 || token->data[i] == 92)
+            {
+                int escape = token->data[i];
+                string[j] = '\\';
+                j++;
+                string[j] = '0';
+                j++;
+                string[j] = escape/10 + '0';
+                j++;
+                string[j] = escape%10 + '0';
+                j++;
+            }
+            else
+            {
+                string[j] = token->data[i];
+                j++;
+            }
+        }
+        string[j] = '\0';
+        free(token->data);
+        token->data = string;
+    }
+
+
     // Return error if lexeme is not recognized as valid
     if (token->type == T_Error)
     {
