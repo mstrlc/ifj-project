@@ -812,14 +812,11 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Function);
         // func-id
 
-        // Check function redefinition
-        if(pass == 1)
+        // Check for function redefinition
+        if(pass == 1 && symtable_lookup(symtables->function_table, ACTIVE_DATA) != NULL)
         {
-            if(symtable_lookup(symtables->function_table, ACTIVE_DATA) != NULL)
-            {
-                error_exit(ERR_UNDEF_REDEF_FUN, ACTIVE_TOKEN);
-                exit(ERR_UNDEF_REDEF_FUN);
-            }
+            error = error_exit(ERR_UNDEF_REDEF_FUN, ACTIVE_TOKEN);
+            exit(error);
         }
 
         //CODEGEN function body -> start
@@ -924,17 +921,16 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
  * @param tokens Pointer to list of tokens containing input
  * @return int Error code - success (0) or failure (1 = ERR_LEXEME or 2 = ERR_SYNTAX)
  */
-int parser(token_list_t *tokens, Symtables* symtables, int passNumber)
+int parser(token_list_t *tokens, Symtables* symtables, int whichPass)
 {
-    
     int error = 0;
-    pass = passNumber;
+    pass = whichPass;
 
-    error = checkProlog(tokens, symtables);
+    HANDLE_ERROR = checkProlog(tokens, symtables);
     if (error != 0)
         return 1;
     // Begin parsing
-    error = rule_Prog(tokens, symtables);
+    HANDLE_ERROR = rule_Prog(tokens, symtables);
 
     return error;
 }

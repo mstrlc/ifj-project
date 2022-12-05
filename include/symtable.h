@@ -1,6 +1,8 @@
+#include <stdbool.h>
 #include "lexer.h"
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
+
 
 typedef struct symbol symbol_t;
 typedef struct symbol {
@@ -9,6 +11,9 @@ typedef struct symbol {
     token_type_t type;
     symbol_t *next;
     symbol_t *prev;
+    bool func_is_defined;
+    int func_param_count;
+    bool var_is_initialized;
 }symbol;
 
 typedef struct symtable symtable_t;
