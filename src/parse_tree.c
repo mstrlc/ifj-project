@@ -134,13 +134,19 @@ void printPtree(PTreeNode_t *ptree)
     }
     if (ptree->token != NULL)
     {
-        if(ptree->token->type == T_Var_id)
+         if(ptree->token->type == T_Var_id)
         {
             printf("PUSHS LF@%s\n", ptree->token->data);
         }
-        else if(ptree->token->type == T_Int || ptree->token->type == T_Float || ptree->token->type == T_String)
+        else if(ptree->token->type == T_Int)
         {
-            printf("PUSHS LF@%s\n", ptree->token->data);
+            printf("PUSHS int@%s\n", ptree->token->data);
+        }
+        else if(ptree->token->type == T_Float){
+            printf("PUSHS float@%s\n", ptree->token->data);
+        }
+        else if(ptree->token->type == T_String){
+            printf("PUSHS string@%s\n", ptree->token->data);
         }
         else
         {
@@ -158,7 +164,11 @@ void printPtree(PTreeNode_t *ptree)
             }
             else if(ptree->token->type == T_Div)
             {
-                printf("DIVS\n");
+                printf("IDIVS\n");
+            }
+            else if(ptree->token->type == T_Equal)
+            {
+                printf("EQS\n");
             }
         }
     }

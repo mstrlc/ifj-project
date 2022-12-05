@@ -897,6 +897,10 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
             error = error_exit(ERR_UNDEF_REDEF_FUN, ACTIVE_TOKEN);
             exit(error);
         }
+        else{
+            symtable_insert(symtables->function_table, token_to_symbol(ACTIVE_TOKEN));
+        }
+
 
         //CODEGEN function body -> start
         char* functionName = ACTIVE_DATA;
