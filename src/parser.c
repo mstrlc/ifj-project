@@ -381,9 +381,9 @@ int rule_Assign(token_list_t *tokens)
     int error = 0;
 
     // <assign> -> <expr>
-    if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
+    if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_L_r_par)
     {
-        error = rule_Expr(tokens);
+        HANDLE_ERROR = rule_Expr(tokens);
     }
     // <assign> -> func-id ( <args> )
     else if (ACTIVE_TYPE == T_Identifier)
