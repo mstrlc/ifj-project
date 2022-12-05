@@ -82,18 +82,6 @@ PTreeNode_t *parse_expression(token_list_t *tokens, int min_precedence, PTreeNod
 /**
  * @brief Parses an expression and builds a parse tree simultaneously
  * 
- * Use ACTIVE_NEXT to shift the active token
- * Use ACTIVE_PREV to shift the active token back
- * Use ACTIVE_TYPE to get the type of the active token
- * Use ACTIVE_TOKEN to acces the active token
- * Use insertLeftPtreeNode(Ptree, token) to insert a new node to the left of the active node
- * Use insertRightPtreeNode(Ptree, token) to insert a new node to the right of the active node
- * Use PTree->token = ACTIVE_TOKEN to set the token of the active node
- * use PTree->active = to set the active node to another node
- * use precedence(token_type_t operator) to get the precedence of an operator
- * use PTree = InitPtree() to initialize a new parse tree node
- * end if ACTIVE_TYPE != T_var_id or T_int or T_float or T_string or T_L_r_par or T_R_r_par or T_Smaller or T_Smaller_eq or T_Larger or T_Larger_eq or T_Not_equal or T_Equal or T_Concat or T_Mul or T_Div or T_Plus or T_Minus
- * 
  * @param tokens 
  * @param min_precedence 
  * @param PTree 
@@ -131,18 +119,27 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
                 a = makeOpNode(a, b, op);
                 ACTIVE_NEXT;
             }
+            else if(ACTIVE_TYPE == T_R_r_par){
+                ACTIVE_NEXT;
+                if(ACTIVE_TYPE == T_Semicolon){
+                    return a;
+                }
+                else{
+                    return parse_expression_with_tree(tokens, min_precedence, a);
+                }
+                if(bracket_L_counter > 0){
+                    bracket_L_counter--;
+                    return a;
+                }
+                else{
+                    printf("Missing right bracket");
+                    return NULL;
+                }
+            }
             else{
                 return a;
             }
         }
-    }
-    else if (ACTIVE_TYPE == T_R_r_par){
-        bracket_L_counter--;
-        if(bracket_L_counter < 0){
-            printf("Missing right bracket");
-            return NULL;
-        }
-        return a;
     }
     else{
     return a;

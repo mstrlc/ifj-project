@@ -23,7 +23,7 @@
 #include "../include/parse_tree.h"
 #include "../include/exp_parser.h"
 
-static int pass;
+int pass;
 
 int rule_Prog(token_list_t *tokens, Symtables* symtables);
 int rule_ParamsCont(token_list_t *tokens, Symtables* symtables);
@@ -344,11 +344,9 @@ int rule_Expr(token_list_t *tokens)
     int error = 0;
 
     // <expr> -> <term>
-    if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String)
+    if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_L_r_par)
     {
-        //exp_parser(tokens);
         HANDLE_ERROR = exp_parser(tokens);
-        //HANDLE_ERROR = rule_Term(tokens);
     }
     else
     {
@@ -405,7 +403,7 @@ int rule_Assign(token_list_t *tokens)
     // <assign> -> <expr>
     if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_L_r_par)
     {
-        HANDLE_ERROR = rule_Expr(tokens);
+        HANDLE_ERROR = exp_parser(tokens);
     }
     // <assign> -> func-id ( <args> )
     else if (ACTIVE_TYPE == T_Identifier)
@@ -417,7 +415,7 @@ int rule_Assign(token_list_t *tokens)
         HANDLE_ERROR = parseTerminal(tokens, T_L_r_par);
         // <args>
         HANDLE_ERROR = rule_Args(tokens);
-        // )
+        // )make
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
 
         //prepsat do makra kdyz zbyde cas
@@ -676,6 +674,23 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
     {
         char* functionName = ACTIVE_DATA;
         // func-id
+        // Check if exists
+        if (pass == 2 && symtable_lookup(symtables->function_table, ACTIVE_DATA) == NULL
+        && strcmp(ACTIVE_DATA, "reads") != 0
+        && strcmp(ACTIVE_DATA, "readi") != 0
+        && strcmp(ACTIVE_DATA, "readf") != 0
+        && strcmp(ACTIVE_DATA, "write") != 0
+        && strcmp(ACTIVE_DATA, "floatval") != 0
+        && strcmp(ACTIVE_DATA, "intval") != 0
+        && strcmp(ACTIVE_DATA, "strval") != 0
+        && strcmp(ACTIVE_DATA, "strlen") != 0
+        && strcmp(ACTIVE_DATA, "substring") != 0
+        && strcmp(ACTIVE_DATA, "ord") != 0
+        && strcmp(ACTIVE_DATA, "chr") != 0)
+        {
+            error_exit(ERR_UNDEF_REDEF_FUN, ACTIVE_TOKEN);
+            exit(ERR_UNDEF_REDEF_FUN);
+        }
         HANDLE_ERROR = parseTerminal(tokens, T_Identifier);
         // (
         HANDLE_ERROR = parseTerminal(tokens, T_L_r_par);
