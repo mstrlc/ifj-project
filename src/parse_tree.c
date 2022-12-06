@@ -148,6 +148,9 @@ void printPtree(PTreeNode_t *ptree)
         else if(ptree->token->type == T_String){
             printf("PUSHS string@%s\n", ptree->token->data);
         }
+        else if(ptree->token->type == T_Keyword_Null){
+            printf("PUSHS nil@nil\n");
+        }
         else
         {
             if(ptree->token->type == T_Plus)
