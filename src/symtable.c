@@ -280,17 +280,14 @@ void symtable_defvar_print(symtable_t *table){
         symbol_t *symbol = table->symbols[i];
         if (symbol != NULL)
         {
-            printf("DEFVAR LF@%s", symbol->name);
+            printf("DEFVAR LF@%s\n", symbol->name);
 
             symbol = symbol->next;
             while (symbol != NULL)
             {
-                 printf("%s\n", symbol->name);
-
-                
+                 printf("DEFVAR LF@%s\n", symbol->name);
                 symbol = symbol->next;
             }
-            printf("\n");
         }
     }
 }

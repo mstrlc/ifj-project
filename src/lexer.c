@@ -18,7 +18,6 @@
 
 #include "../include/lexer.h"
 #include "../include/error.h"
-#include "../include/common.h"
 
 char *stateToString(fsm_state_t state);
 char *typeToString(token_type_t type);
@@ -251,7 +250,7 @@ void charToToken(char c, token_t *token)
     {
         token->length++;
         token->data = realloc(token->data, token->length * sizeof(char));
-        if(token->data == NULL)
+        if (token->data == NULL)
         {
             error_exit(ERR_INTERNAL, token);
             exit(ERR_INTERNAL);
@@ -269,7 +268,9 @@ void charToToken(char c, token_t *token)
  *
  * Load next token from standard input to given token pointer,
  * token must be allocated before calling this function,
- * decides on token type using the state machine
+ * decides on token type using the state machine.
+ * Handle string escape sequences and special characters.
+ *
  *
  * @param token Pointer to token into which data is loaded
  * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_LEXEME or ERR_INTERNAL)
@@ -661,18 +662,60 @@ int getNextToken(token_t *token)
         size_t j = 0;
         for (size_t i = 0; i < strlen(token->data); i++)
         {
-            if((token->data[i] >= 0 && token->data[i] <= 32) || token->data[i] == 35 || token->data[i] == 92)
+            if ((token->data[i] >= 0 && token->data[i] <= 32) || token->data[i] == 35)
             {
                 int escape = token->data[i];
                 string[j] = '\\';
                 j++;
                 string[j] = '0';
                 j++;
-                string[j] = escape/10 + '0';
+                string[j] = escape / 10 + '0';
                 j++;
-                string[j] = escape%10 + '0';
+                string[j] = escape % 10 + '0';
                 j++;
             }
+            else if (token->data[i] == '\\')
+            {
+                string[j] = '\\';
+                j++;
+            }
+            else if (token->data[i] == 'n' && token->data[i - 1] == '\\')
+            {
+                string[j] = '0';
+                j++;
+                string[j] = '1';
+                j++;
+                string[j] = '0';
+                j++;
+            }
+            else if (token->data[i] == 't' && token->data[i - 1] == '\\')
+            {
+                string[j] = '0';
+                j++;
+                string[j] = '0';
+                j++;
+                string[j] = '9';
+                j++;
+            }
+            else if (token->data[i] == '"' && token->data[i - 1] == '\\')
+            {
+                string[j] = '0';
+                j++;
+                string[j] = '3';
+                j++;
+                string[j] = '4';
+                j++;
+            }
+            else if (token->data[i] == '\\' && token->data[i - 1] == '\\')
+            {
+                string[j] = '0';
+                j++;
+                string[j] = '9';
+                j++;
+                string[j] = '2';
+                j++;
+            }
+
             else
             {
                 string[j] = token->data[i];
@@ -683,7 +726,6 @@ int getNextToken(token_t *token)
         free(token->data);
         token->data = string;
     }
-
 
     // Return error if lexeme is not recognized as valid
     if (token->type == T_Error)
@@ -740,23 +782,15 @@ void printTokenList(token_list_t *list)
 int fillTokenList(token_list_t *list)
 {
     token_t *token = malloc(sizeof(token_t));
-    int exitCode;
+    int error;
     do
     {
-        exitCode = getNextToken(token);
-        if (exitCode == EXIT_SUCCESS)
+        error = getNextToken(token);
+        if (error == EXIT_SUCCESS)
         {
             list->firstToken = token;
             while (token->type != T_File_end)
             {
-                // if (token->type == T_Whitespace || token->type == T_Block_comment || token->type == T_Line_comment)
-                // {
-                //     exitCode = getNextToken(token);
-                //     if (exitCode != EXIT_SUCCESS)
-                //         return exitCode;
-                //     else
-                //         continue;
-                // }
                 token_t *next = malloc(sizeof(token_t));
                 token_t *temp = token;
                 token->next = next;
@@ -764,10 +798,10 @@ int fillTokenList(token_list_t *list)
                 token->prev = temp;
                 list->activeToken = token;
                 list->lastToken = token;
-                exitCode = getNextToken(token);
-                if (exitCode != EXIT_SUCCESS)
+                error = getNextToken(token);
+                if (error != EXIT_SUCCESS)
                 {
-                    return exitCode;
+                    return error;
                 }
             }
         }
@@ -819,27 +853,29 @@ void initTokenList(token_list_t *list)
     list->activeToken = NULL;
 }
 
-
 /**
  * @brief Get top token from list
- * 
+ *
  * @param list Pointer to list of tokens
  * @return token_t* Pointer to top token
  */
 
-token_t *TopToken(token_list_t *list){
+token_t *TopToken(token_list_t *list)
+{
     return list->lastToken;
 }
 
 /**
  * @brief Pop top token from list
- * 
+ *
  * @param list Pointer to list of tokens
  * @return int Error code
  */
 
-int PopToken(token_list_t *list){
-    if(TopToken(list) != NULL){
+int PopToken(token_list_t *list)
+{
+    if (TopToken(list) != NULL)
+    {
         token_t *temp = TopToken(list);
         list->lastToken = temp->prev;
         free(temp);
@@ -851,18 +887,21 @@ int PopToken(token_list_t *list){
 
 /**
  * @brief Push token to list
- * 
+ *
  * @param list Pointer to list of tokens
  * @param token Pointer to token to be pushed
  * @return int Error code
  */
 
-int PushToken(token_list_t *list, token_t *token){
-    if(TopToken(list) == NULL){
+int PushToken(token_list_t *list, token_t *token)
+{
+    if (TopToken(list) == NULL)
+    {
         list->lastToken = token;
         return EXIT_SUCCESS;
     }
-    else{
+    else
+    {
         token_t *temp = TopToken(list);
         temp->next = token;
         token->prev = temp;

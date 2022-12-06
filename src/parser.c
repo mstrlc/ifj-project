@@ -25,6 +25,20 @@
 
 int pass;
 
+void print_line_till_end(token_list_t *tokens){
+int next = 0;
+        while(strcmp(ACTIVE_DATA, "\n"))
+        {
+            printf("%s ", ACTIVE_DATA);
+            ACTIVE_NEXT_WS;
+            next++;
+        }
+        for(int i = 0; i < next; i++)
+        {
+            ACTIVE_PREV_WS;
+        }
+}
+
 int rule_Prog(token_list_t *tokens, Symtables* symtables);
 int rule_ParamsCont(token_list_t *tokens, Symtables* symtables);
 int rule_Params(token_list_t *tokens, Symtables* symtables);
@@ -1083,4 +1097,165 @@ int parser(token_list_t *tokens, Symtables* symtables, int whichPass)
     HANDLE_ERROR = rule_Prog(tokens, symtables);
 
     return error;
+}
+
+
+void printBuiltIn(){
+
+    printf(" \
+JUMP end_of_program\n\
+LABEL reads\n\
+READ GF@ret string\n\
+RETURN \n\
+LABEL readi\n\
+READ GF@ret int\n\
+RETURN\n\
+LABEL readf\n\
+READ GF@ret float\n\
+RETURN\n\
+LABEL write\n\
+CREATEFRAME\n\
+PUSHFRAME\n\
+DEFVAR LF@arg\n\
+DEFVAR LF@count\n\
+DEFVAR LF@i\n\
+POPS LF@count\n\
+MOVE LF@i int@0\n\
+LABEL write_loop\n\
+POPS LF@arg\n\
+WRITE LF@arg\n\
+ADD LF@i LF@i int@1\n\
+JUMPIFNEQ write_loop LF@i LF@count\n\
+POPFRAME\n\
+CLEARS\n\
+RETURN\n\
+LABEL floatval\n\
+CREATEFRAME\n\
+PUSHFRAME\n\
+DEFVAR LF@arg\n\
+DEFVAR LF@type\n\
+MOVE GF@ret float@0x0p+0\n\
+POPS LF@arg\n\
+TYPE LF@type LF@arg\n\
+JUMPIFEQ floatval_float LF@type string@float\n\
+JUMPIFEQ floatval_int LF@type string@int\n\
+JUMPIFEQ floatval_end LF@type string@nil\n\
+JUMP floatval_end\n\
+LABEL floatval_float\n\
+MOVE GF@ret LF@arg\n\
+JUMP floatval_end\n\
+LABEL floatval_int\n\
+INT2FLOAT GF@ret LF@arg\n\
+JUMP floatval_end\n\
+LABEL floatval_end\n\
+POPFRAME\n\
+CLEARS\n\
+RETURN\n\
+LABEL intval\n\
+CREATEFRAME\n\
+PUSHFRAME\n\
+DEFVAR LF@arg\n\
+DEFVAR LF@type\n\
+MOVE GF@ret int@0\n\
+POPS LF@arg\n\
+TYPE LF@type LF@arg\n\
+JUMPIFEQ intval_int LF@type string@int\n\
+JUMPIFEQ intval_float LF@type string@float\n\
+JUMPIFEQ intval_nil LF@type string@nil\n\
+JUMP floatval_end\n\
+LABEL intval_int\n\
+MOVE GF@ret LF@arg\n\
+JUMP intval_end\n\
+LABEL intval_float\n\
+FLOAT2INT GF@ret LF@arg\n\
+JUMP intval_end\n\
+LABEL intval_end\n\
+POPFRAME\n\
+CLEARS\n\
+RETURN\n\
+LABEL strval\n\
+CREATEFRAME\n\
+PUSHFRAME\n\
+DEFVAR LF@arg\n\
+DEFVAR LF@type\n\
+MOVE GF@ret string@\n\
+POPS LF@arg\n\
+TYPE LF@type LF@arg\n\
+JUMPIFEQ strval_string LF@type string@string\n\
+JUMPIFEQ strval_end LF@type string@nil\n\
+JUMP floatval_end\n\
+LABEL strval_string\n\
+MOVE GF@ret LF@arg\n\
+JUMP strval_end\n\
+LABEL strval_end\n\
+POPFRAME\n\
+CLEARS\n\
+RETURN\n\
+LABEL strlen\n\
+CREATEFRAME\n\
+PUSHFRAME\n\
+DEFVAR LF@arg\n\
+POPS LF@arg\n\
+STRLEN GF@ret LF@arg\n\
+POPFRAME\n\
+CLEARS\n\
+RETURN\n\
+LABEL substring\n\
+CREATEFRAME\n\
+PUSHFRAME\n\
+DEFVAR LF@arg\n\
+DEFVAR LF@arg2\n\
+DEFVAR LF@arg3\n\
+DEFVAR LF@len\n\
+DEFVAR LF@i\n\
+DEFVAR LF@char\n\
+DEFVAR LF@error\n\
+POPS LF@arg\n\
+POPS LF@arg2\n\
+POPS LF@arg3\n\
+MOVE LF@i LF@arg2\n\
+MOVE GF@ret string@\n\
+STRLEN LF@len LF@arg\n\
+LT LF@error LF@arg2 int@0\n\
+LT LF@error LF@arg3 int@0\n\
+GT LF@error LF@arg2 LF@arg3\n\
+GT LF@error LF@arg2 LF@len\n\
+EQ LF@error LF@arg2 LF@len\n\
+GT LF@error LF@arg3 LF@len\n\
+JUMPIFEQ substring_end LF@error bool@true\n\
+GETCHAR LF@char LF@arg LF@i\n\
+CONCAT GF@ret GF@ret LF@char\n\
+JUMPIFEQ substring_end LF@i LF@arg3\n\
+JUMP substring_loop\n\
+LABEL substring_loop\n\
+ADD LF@i LF@i int@1\n\
+GETCHAR LF@char LF@arg LF@i\n\
+CONCAT GF@ret GF@ret LF@char\n\
+JUMPIFNEQ substring_loop LF@i LF@arg3\n\
+JUMP substring_end\n\
+LABEL substring_end\n\
+POPFRAME\n\
+CLEARS\n\
+RETURN\n\
+LABEL ord\n\
+CREATEFRAME\n\
+PUSHFRAME\n\
+DEFVAR LF@arg\n\
+POPS LF@arg\n\
+STRI2INT GF@ret LF@arg int@0\n\
+POPFRAME\n\
+CLEARS\n\
+RETURN\n\
+LABEL chr\n\
+CREATEFRAME\n\
+PUSHFRAME\n\
+DEFVAR LF@arg\n\
+POPS LF@arg\n\
+INT2CHAR GF@ret LF@arg\n\
+POPFRAME\n\
+CLEARS\n\
+RETURN\n\
+LABEL end_of_program\n\
+\n\
+");
 }

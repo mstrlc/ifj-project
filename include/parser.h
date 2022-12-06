@@ -41,6 +41,8 @@ typedef enum err_code
    semantic_err,
 } ERR_CODE;
 
+void print_line_till_end(token_list_t *tokens);
+
 // err_type next_check(token_t* t);
 
 // err_type next_check_type(token_type_t* token_type, token_type_t* valid_type);
@@ -51,4 +53,5 @@ int check_args(token_t *token);
 
 int check_call_args(token_t *token);
 
+void printBuiltIn();
 #endif
