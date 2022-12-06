@@ -213,7 +213,7 @@ void printPtree(PTreeNode_t *ptree)
             {
                 printf("POPS GF@op1\n");
                 printf("POPS GF@op2\n");
-                printf("CONCAT GF@op1 GF@op1 GF@op2\n");
+                printf("CONCAT GF@op1 GF@op2 GF@op1\n");
                 printf("PUSHS GF@op1\n");
             }
         }
