@@ -41,7 +41,7 @@ int next = 0;
 int rule_Prog(token_list_t *tokens, Symtables* symtables);
 int rule_ParamsCont(token_list_t *tokens, Symtables* symtables);
 int rule_Params(token_list_t *tokens, Symtables* symtables);
-int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack* arg_stack );
+int rule_ArgsCont(token_list_t *tokens, token_t* arg_value, stack* arg_stack );
 int rule_Val(token_list_t *tokens);
 int rule_Args(token_list_t *tokens);
 int rule_Stat(token_list_t *tokens, Symtables* symtables);
@@ -335,12 +335,12 @@ int rule_Params(token_list_t *tokens, Symtables* symtables)
 
 // <args> -> <term> <args-cont>
 // <args> -> 
-int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack* arg_stack )
+int rule_ArgsCont(token_list_t *tokens, token_t* arg_value, stack* arg_stack )
 {
     int error = 0;
 
     // pushujeme argumenty pred volanim funkce ve spravnem formatu
-    *argCount = *argCount + 1;
+    argCount++;
     char* push_arg_command = malloc(sizeof(char)*100);
     if(push_arg_command == NULL){
         error_exit(ERR_INTERNAL, ACTIVE_TOKEN);
@@ -370,7 +370,7 @@ int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack
         HANDLE_ERROR = rule_Term(tokens);
         
        
-        HANDLE_ERROR = rule_ArgsCont(tokens, argCount, arg_value, arg_stack );
+        HANDLE_ERROR = rule_ArgsCont(tokens, arg_value, arg_stack );
     }
     // <args-cont> ->
     else if (ACTIVE_TYPE == T_R_r_par)
@@ -431,7 +431,7 @@ int rule_Args(token_list_t *tokens)
         // <val>
         HANDLE_ERROR = rule_Term(tokens);
         // <args-cont>
-        HANDLE_ERROR = rule_ArgsCont(tokens, &argCount, arg_value, arg_stack);
+        HANDLE_ERROR = rule_ArgsCont(tokens, arg_value, arg_stack);
     }
     // <args> ->
     else if (ACTIVE_TYPE == T_R_r_par)
@@ -507,7 +507,7 @@ int rule_Assign(token_list_t *tokens, Symtables *symtables)
                 exit(ERR_WRONG_PARAM_RET);
             }
         }
-
+        argCount = 0;
         //prepsat do makra kdyz zbyde cas
         //volani vestavenych funkci, ktere maji navratovou hodnotu
         if(strcmp(functionName, "reads") == 0){
@@ -840,8 +840,10 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
                     exit(ERR_WRONG_PARAM_RET);
                 }
             }
+            argCount = 0;
             printf("CALL %s\n", functionName);
         }
+
     }
     else
     {
