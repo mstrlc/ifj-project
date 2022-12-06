@@ -1019,8 +1019,8 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = rule_Params(tokens, symtables);
 
         // Saves num of params into symtable
-        symbol_t * function = symtable_lookup(symtables -> function_table, functionName);
-        function -> func_param_count = paramCount;
+        symbol_t * functionParams = symtable_lookup(symtables -> function_table, functionName);
+        functionParams -> func_param_count = paramCount;
         paramCount = 0;
         // )
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
