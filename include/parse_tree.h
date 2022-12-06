@@ -1,4 +1,5 @@
 #include "../include/lexer.h"
+#include "../include/parser.h"
 #ifndef PARSE_TREE_H
 #define PARSER_TREE_H
 
