@@ -184,7 +184,7 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
     printf("MOVE GF@assignedVal bool@true\n"); // je pro debug bez assignu
     printf("DEFVAR GF@op1\n"); // pro concat op
     printf("DEFVAR GF@op2\n"); // pro concat op
-    printf("DEFVAR GF@reType\n"); //for checking return type
+    printf("DEFVAR GF@retType\n"); //for checking return type
     printf("DEFVAR GF@realRetType\n");
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
