@@ -1047,7 +1047,7 @@ LABEL write_loop\n\
 POPS LF@arg\n\
 WRITE LF@arg\n\
 ADD LF@i LF@i int@1\n\
-JUMPIFNEQ  write_loop LF@i LF@count\n\
+JUMPIFNEQ write_loop LF@i LF@count\n\
 POPFRAME\n\
 CLEARS\n\
 RETURN\n\
