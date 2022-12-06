@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 $var1 = 0;
-foo($var1);
-function foo(int $var): void{
-    write($var);
-    $var = $var + 1;
-    foo($var);  
+$str = "EZ FULL BODY    ";
+$strRes = "";
+while($var1 < 10 ){
+    $strRes = $strRes . $str;
+    $var1 = $var1 + 1;
+    write($var1, " ");
 }
+write($strRes);   

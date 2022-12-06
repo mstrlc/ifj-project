@@ -170,6 +170,42 @@ void printPtree(PTreeNode_t *ptree)
             {
                 printf("EQS\n");
             }
+            else if(ptree->token->type == T_Not_equal)
+            {
+                printf("EQS\n");
+                printf("NOTS\n");
+                /*
+                POP op1
+                POP op2
+                EQ op1 op1 op2
+                PUSH op1
+                */
+            }
+            else if(ptree->token->type == T_Smaller)
+            {
+                printf("LTS\n");
+            }
+            else if(ptree->token->type == T_Smaller_eq)
+            {
+                printf("GTS\n");
+                printf("NOTS\n");
+            }
+            else if(ptree->token->type == T_Larger)
+            {
+                printf("GTS\n");
+            }
+            else if(ptree->token->type == T_Larger_eq)
+            {
+                printf("LTS\n");
+                printf("NOTS\n");
+            }
+            else if(ptree->token->type == T_Concat)
+            {
+                printf("POPS GF@op1\n");
+                printf("POPS GF@op2\n");
+                printf("CONCAT GF@op1 GF@op1 GF@op2\n");
+                printf("PUSHS GF@op1\n");
+            }
         }
     }
 }
