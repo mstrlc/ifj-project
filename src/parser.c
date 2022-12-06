@@ -166,6 +166,8 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
     printf("MOVE GF@assignedVal bool@true\n"); // je pro debug bez assignu
     printf("DEFVAR GF@op1\n"); // pro concat op
     printf("DEFVAR GF@op2\n"); // pro concat op
+    printf("DEFVAR GF@reType\n"); //for checking return type
+    printf("DEFVAR GF@realRetType\n");
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
 
@@ -544,7 +546,30 @@ int rule_Assign(token_list_t *tokens, Symtables *symtables)
             printf("CALL %s\n", functionName);
             printf("MOVE GF@assignedVal GF@ret\n");
             printf("MOVE GF@ret nil@nil\n");
-            argCount = 0; 
+            argCount = 0;
+
+            //checks return type of func
+            symbol_t *function = symtable_lookup(symtables->function_table, functionName);
+            if(function -> func_ret_type == T_Keyword_Int){
+                printf("MOVE GF@retType string@int\n");
+                printf("TYPE GF@realRetType GF@assignedVal\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
+            else if(function -> func_ret_type == T_Keyword_Float){
+                printf("MOVE GF@retType string@float\n");
+                printf("TYPE GF@realRetType GF@assignedVal\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
+            else if(function -> func_ret_type == T_Keyword_String){
+                printf("MOVE GF@retType string@string\n");
+                printf("TYPE GF@realRetType GF@assignedVal\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
+            else if(function -> func_ret_type == T_Keyword_Void){
+                printf("MOVE GF@retType string@nil\n");
+                printf("TYPE GF@realRetType GF@assignedVal\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
         }
 
     }
@@ -975,6 +1000,11 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         // :
         HANDLE_ERROR = parseTerminal(tokens, T_Colon);
         // type
+
+        //saving function return type
+        symbol_t *function = symtable_lookup(symtables -> function_table, functionName);
+        function -> func_ret_type = ACTIVE_TYPE;
+
         if (ACTIVE_TYPE == T_Keyword_Int)
         {
             HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Int);
@@ -995,7 +1025,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         {
             HANDLE_ERROR = ERR_SYNTAX;
         }
-  
+
 
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
