@@ -49,6 +49,8 @@ int rule_StList(token_list_t *tokens, Symtables* symtables);
 int rule_Assign(token_list_t *tokens, Symtables* symtables);
 int rule_Term(token_list_t *tokens);
 int rule_Expr(token_list_t *tokens, Symtables* symtables);
+int argCount = 0;
+int paramCount =0;
 
  //pomocne funkce 
  char* make_random_label(){
@@ -200,7 +202,7 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
 
 // <params-cont> -> , type $id <params-cont>
 // <params-cont> ->
-int argCount = 0; 
+ 
 int rule_ParamsCont(token_list_t *tokens, Symtables* symtables)
 {
     int error = 0;
@@ -239,6 +241,7 @@ int rule_ParamsCont(token_list_t *tokens, Symtables* symtables)
         printf("POPS LF@%s\n", ACTIVE_DATA);
 
         // $id
+        paramCount++;
         HANDLE_ERROR = parseTerminal(tokens, T_Var_id);
         // <params-cont>
         HANDLE_ERROR = rule_ParamsCont(tokens, symtables);
@@ -301,6 +304,7 @@ int rule_Params(token_list_t *tokens, Symtables* symtables)
 
         printf("POPS LF@%s\n", ACTIVE_DATA);
         argCount = 0; // nevim proc tohle ovlivnuje argCount, kdyz jsme v parametrech, ale bez tohohle to nefunguje
+        paramCount++; //saves number of params
 
         HANDLE_ERROR = parseTerminal(tokens, T_Var_id);
         // <params-cont>
@@ -1013,6 +1017,11 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = parseTerminal(tokens, T_L_r_par);
         // <params>
         HANDLE_ERROR = rule_Params(tokens, symtables);
+
+        // Saves num of params into symtable
+        symbol_t * function = symtable_lookup(symtables -> function_table, functionName);
+        function -> func_param_count = paramCount;
+        paramCount = 0;
         // )
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
         // :
