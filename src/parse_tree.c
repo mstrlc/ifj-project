@@ -4,7 +4,6 @@
  * @author Dominik Klon xklond00
  * @brief Implementation of parse tree used in expression parser and also code generator
  * IFJ project 2022
- * 
  */
 #include "../include/parse_tree.h"
 #include "../include/symtable.h"

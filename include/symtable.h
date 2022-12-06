@@ -1,3 +1,9 @@
+/**
+ * @file symtable.h
+ * @author Ondřej Seidl xseidl06
+ * @brief Interface of symbol table
+ * IFJ project 2022
+ */
 #include <stdbool.h>
 #include "lexer.h"
 #ifndef SYMTABLE_H
