@@ -5,11 +5,13 @@
  * @brief Implementation of parse tree used in expression parser and also code generator
  * IFJ project 2022
  */
+
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "../include/parse_tree.h"
 #include "../include/symtable.h"
 #include "../include/error.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 /**
  * @brief Initializes a new parse tree node
@@ -155,7 +157,7 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
          if(ptree->token->type == T_Var_id)
         {
             //check if variable is defined
-            if (symtable_lookup(symtables -> vars_table, ptree->token->data) == NULL){
+            if (symtable_lookup(symtables -> vars_table_array[symtables -> active_table_index], ptree->token->data) == NULL){
                 error_exit(ERR_UNDEF_VAR, ptree->token);
                 exit(ERR_UNDEF_VAR);
             }
