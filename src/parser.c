@@ -1259,6 +1259,8 @@ INT2CHAR GF@ret LF@arg\n\
 POPFRAME\n\
 CLEARS\n\
 RETURN\n\
+LABEL wrongParamReturn\n\
+EXIT int@4\n\
 LABEL end_of_program\n\
 \n\
 ");
