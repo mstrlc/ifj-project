@@ -99,6 +99,9 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
                 op->token = ACTIVE_TOKEN;
                 ACTIVE_NEXT;
                 PTreeNode_t *b = initPtree();
+                if(ACTIVE_TYPE == T_Plus || ACTIVE_TYPE == T_Minus || ACTIVE_TYPE == T_Mul || ACTIVE_TYPE == T_Div || ACTIVE_TYPE == T_Concat || ACTIVE_TYPE == T_Not_equal || ACTIVE_TYPE == T_Equal || ACTIVE_TYPE == T_Larger || ACTIVE_TYPE == T_Larger_eq || ACTIVE_TYPE == T_Smaller || ACTIVE_TYPE == T_Smaller_eq){
+                    return NULL;        
+                }
                 if(ACTIVE_TYPE == T_L_r_par){
                     ACTIVE_NEXT;
                     bracket_L_counter++;
@@ -119,7 +122,8 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
                         return a;
                     }
                     else{
-                        return NULL;
+                        ACTIVE_PREV
+                        return a;
                     }
                 }
                 else{
