@@ -502,10 +502,6 @@ int rule_Assign(token_list_t *tokens, Symtables *symtables)
                 error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
                 exit(ERR_WRONG_PARAM_RET);
             }
-            else{
-                func -> func_param_count = argCount;
-            }
-
         }
 
         //prepsat do makra kdyz zbyde cas
@@ -838,9 +834,6 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
                 if (func != NULL && func -> func_param_count != argCount){
                     error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
                     exit(ERR_WRONG_PARAM_RET);
-                }
-                else{
-                    func -> func_param_count = argCount;
                 }
             }
             printf("CALL %s\n", functionName);
