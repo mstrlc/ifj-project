@@ -111,7 +111,6 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
                     b = parse_expression_with_tree(tokens, min_precedence, b);
                 }
                 else if(currernt_prec > prev_prec){
-                    printf("%d > %d\n", precedence(op->token->type), prev_prec);
                     b->token = ACTIVE_TOKEN;
                     a->right = makeOpNode(a->right, b, op);
                 }
