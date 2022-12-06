@@ -388,7 +388,7 @@ int rule_Expr(token_list_t *tokens, Symtables* symtables)
     int error = 0;
 
     // <expr> -> <term>
-    if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_L_r_par)
+    if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_L_r_par || ACTIVE_TYPE == T_Keyword_Null)
     {
         HANDLE_ERROR = exp_parser(tokens, symtables);
     }
