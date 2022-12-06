@@ -68,13 +68,25 @@ int main()
     printf(".IFJcode22\n");
     printf("JUMP end_of_this_scuffed_codegen\n"); // nejdebilnejsi ale funkci reseni, prvni pruchod nema kompletni codegen, tak ho skipneme, misto toho, abysme ho negenerovali vubec
     error = parser(tokens, symtables, 1);
+    if (error != 0)
+    {
+        error_exit(error, tokens->activeToken);
+        freeTokenList(tokens);
+        exit(error);
+    }
     symtables -> active_table_index = 0;
     symtables -> function_table_index = 0;
     printf("LABEL end_of_this_scuffed_codegen\n");
 
     ACTIVE_TOKEN = tokens->firstToken;
     // DRUHY PRUCHOD
-    HANDLE_ERROR = parser(tokens, symtables, 2);
+    error = parser(tokens, symtables, 2);
+    if (error != 0)
+    {
+        error_exit(error, tokens->activeToken);
+        freeTokenList(tokens);
+        exit(error);
+    }
 
     // PRINT VESTAVENYCH FUNKCI
     printf("JUMP end_of_program\n");

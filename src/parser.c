@@ -37,17 +37,6 @@ int rule_Assign(token_list_t *tokens, Symtables* symtables);
 int rule_Term(token_list_t *tokens);
 int rule_Expr(token_list_t *tokens);
 
-/**
- * @brief Parse token, used in prolog
- * 
- * If the active token matches the given type, parse it and move to the next one,
- * including whitespace and comments. Else, return error.
- * 
- * @param tokens Pointer to list of tokens to be parsed
- * @param type Type of token to be parsed
- * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_SYNTAX)
- */
-
  //pomocne funkce 
  char* make_random_label(){
     char const abeceda[]= "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -63,6 +52,16 @@ int rule_Expr(token_list_t *tokens);
 }
 
 
+/**
+ * @brief Parse token, used in prolog
+ * 
+ * If the active token matches the given type, parse it and move to the next one,
+ * including whitespace and comments. Else, return error.
+ * 
+ * @param tokens Pointer to list of tokens to be parsed
+ * @param type Type of token to be parsed
+ * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_SYNTAX)
+ */
 int parseProlog(token_list_t *tokens, token_type_t type)
 {
     if (ACTIVE_TYPE == type)
@@ -162,15 +161,22 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
 
     //CODEGEN HEADER
     //printf(".IFJcode22\n");
-    printf("DEFVAR GF@assignedVal\n");
-    printf("DEFVAR GF@ret\n");
-    printf("MOVE GF@assignedVal bool@true\n");
+    printf("DEFVAR GF@assignedVal\n"); // univerzalni promenna pro predavani hodnoty
+    printf("DEFVAR GF@ret\n"); // return val pro funkce
+    printf("MOVE GF@assignedVal bool@true\n"); // je pro debug bez assignu
+    printf("DEFVAR GF@op1\n"); // pro concat op
+    printf("DEFVAR GF@op2\n"); // pro concat op
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
 
     symtable_defvar_print(symtables->vars_table_array[symtables -> active_table_index]);
     //END CODEGEN HEADER
 
+    if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
 }
 
@@ -229,7 +235,13 @@ int rule_ParamsCont(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <params> -> type $id <params-cont>
@@ -286,7 +298,13 @@ int rule_Params(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <args> -> <term> <args-cont>
@@ -335,7 +353,13 @@ int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <expr> -> <term>
@@ -353,7 +377,13 @@ int rule_Expr(token_list_t *tokens)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+    if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <args> -> <term> <args-cont>
@@ -391,7 +421,13 @@ int rule_Args(token_list_t *tokens)
         stack_pop(arg_stack);
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <assign> -> <expr>
@@ -517,7 +553,13 @@ int rule_Assign(token_list_t *tokens, Symtables *symtables)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <st-list> -> <stat> <st-list>
@@ -553,7 +595,13 @@ int rule_StList(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <stat> -> $id = <assign> ;
@@ -596,8 +644,9 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         //CODEGEN labels init
         char* while_label_end = make_random_label();
         char* while_label_begin = make_random_label();
+        printf("LABEL %s\n", while_label_begin);
         //END CODEGEN labels init
-
+    
         // while
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_While);
         // (
@@ -605,13 +654,10 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // <expr>
         HANDLE_ERROR = rule_Expr(tokens);
         // )
-        HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
-
         //CODEGEN WHILE -> BEGIN
         printf("JUMPIFEQ %s GF@assignedVal bool@false\n",while_label_end);
-        printf("LABEL %s\n", while_label_begin);
         //END CODEGEN WHILE -> BEGIN
-
+        HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
@@ -747,13 +793,18 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
             printf("CALL %s\n", functionName);
         }
     }
-
     else
     {
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+    if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <term> -> $id
@@ -779,7 +830,13 @@ int rule_Term(token_list_t *tokens)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <eof> -> ?> <eof>
@@ -827,7 +884,13 @@ int rule_EOF(token_list_t *tokens)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 // <prog> -> <stat> <prog>
@@ -837,6 +900,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
 {
     // printf("BEGIN PROG\n");
     int error = 0;
+    // kdyz nejsme ve funkci, tak chceme aktivni nultou tabulku symbolu (main tabulka)
     symtables -> active_table_index = 0;
 
     // <prog> -> <stat> <prog> .
@@ -868,6 +932,10 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
             error = error_exit(ERR_UNDEF_REDEF_FUN, ACTIVE_TOKEN);
             exit(error);
         }
+        else{
+            symtable_insert(symtables->function_table, token_to_symbol(ACTIVE_TOKEN));
+        }
+
 
         //CODEGEN function body -> start
         char* functionName = ACTIVE_DATA;
@@ -876,12 +944,9 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         // funkci musime preskocit pokud ji nevolame
         printf("JUMP %s\n", end_of_function);
         
-        // labely ktere vygeneroval prvni pruchod nedokaze uvodni jump preskocit
-        // tenhle if funguje jako code gen, pokud budeme chtit pridat semantickou kontrolu vicenasobne definice funkce, musime dodat informaci o druhe pruchodu a podminit codegen tim
-        if(!symtable_lookup(symtables -> function_table, ACTIVE_DATA)){
-            symtable_insert(symtables -> function_table, token_to_symbol(ACTIVE_TOKEN));
-        }
-        else{
+        //labely by se nepreskocili end_of_scuffed_codegen jumpem, takze se nesmi vubec generovat v prvnim pruchodu
+        if(pass == 2)
+        {
             printf("LABEL %s\n", functionName);
         }
 
@@ -960,7 +1025,13 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = ERR_SYNTAX;
     }
 
+        if(error != 0)
+    {
+        error_exit(error, ACTIVE_TOKEN);
+        exit(error);
+    }
     return error;
+
 }
 
 /**

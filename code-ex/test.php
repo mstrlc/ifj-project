@@ -1,14 +1,11 @@
 <?php
 declare(strict_types=1);
-
-function foo(int $var2, int $var3):string{
-    write($var2);
-    write($var3);
-    $var2 = readi();
-    $var3 = readi();
-    foo($var2, $var3);
-    
+$var1 = 0;
+$str = "EZ FULL BODY    ";
+$strRes = "";
+while($var1 < 10 ){
+    $strRes = $strRes . $str;
+    $var1 = $var1 + 1;
+    write($var1, " ");
 }
-$var2 = readi();
-$var3 = readi();
-foo($var2, $var3);
+write($strRes);   
