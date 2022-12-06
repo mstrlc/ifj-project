@@ -251,6 +251,11 @@ void charToToken(char c, token_t *token)
     {
         token->length++;
         token->data = realloc(token->data, token->length * sizeof(char));
+        if (token->data == NULL)
+        {
+            error_exit(ERR_INTERNAL, token);
+            exit(ERR_INTERNAL);
+        }
 
         if (token->data != NULL)
         {
@@ -656,18 +661,60 @@ int getNextToken(token_t *token)
         size_t j = 0;
         for (size_t i = 0; i < strlen(token->data); i++)
         {
-            if((token->data[i] >= 0 && token->data[i] <= 32) || token->data[i] == 35 || token->data[i] == 92)
+            if ((token->data[i] >= 0 && token->data[i] <= 32) || token->data[i] == 35)
             {
                 int escape = token->data[i];
                 string[j] = '\\';
                 j++;
                 string[j] = '0';
                 j++;
-                string[j] = escape/10 + '0';
+                string[j] = escape / 10 + '0';
                 j++;
-                string[j] = escape%10 + '0';
+                string[j] = escape % 10 + '0';
                 j++;
             }
+            else if (token->data[i] == '\\')
+            {
+                string[j] = '\\';
+                j++;
+            }
+            else if (token->data[i] == 'n' && token->data[i - 1] == '\\')
+            {
+                string[j] = '0';
+                j++;
+                string[j] = '1';
+                j++;
+                string[j] = '0';
+                j++;
+            }
+            else if (token->data[i] == 't' && token->data[i - 1] == '\\')
+            {
+                string[j] = '0';
+                j++;
+                string[j] = '0';
+                j++;
+                string[j] = '9';
+                j++;
+            }
+            else if (token->data[i] == '"' && token->data[i - 1] == '\\')
+            {
+                string[j] = '0';
+                j++;
+                string[j] = '3';
+                j++;
+                string[j] = '4';
+                j++;
+            }
+            else if (token->data[i] == '\\' && token->data[i - 1] == '\\')
+            {
+                string[j] = '0';
+                j++;
+                string[j] = '9';
+                j++;
+                string[j] = '2';
+                j++;
+            }
+
             else
             {
                 string[j] = token->data[i];
@@ -678,7 +725,6 @@ int getNextToken(token_t *token)
         free(token->data);
         token->data = string;
     }
-
 
     // Return error if lexeme is not recognized as valid
     if (token->type == T_Error)
@@ -814,27 +860,29 @@ void initTokenList(token_list_t *list)
     list->activeToken = NULL;
 }
 
-
 /**
  * @brief Get top token from list
- * 
+ *
  * @param list Pointer to list of tokens
  * @return token_t* Pointer to top token
  */
 
-token_t *TopToken(token_list_t *list){
+token_t *TopToken(token_list_t *list)
+{
     return list->lastToken;
 }
 
 /**
  * @brief Pop top token from list
- * 
+ *
  * @param list Pointer to list of tokens
  * @return int Error code
  */
 
-int PopToken(token_list_t *list){
-    if(TopToken(list) != NULL){
+int PopToken(token_list_t *list)
+{
+    if (TopToken(list) != NULL)
+    {
         token_t *temp = TopToken(list);
         list->lastToken = temp->prev;
         free(temp);
@@ -846,18 +894,21 @@ int PopToken(token_list_t *list){
 
 /**
  * @brief Push token to list
- * 
+ *
  * @param list Pointer to list of tokens
  * @param token Pointer to token to be pushed
  * @return int Error code
  */
 
-int PushToken(token_list_t *list, token_t *token){
-    if(TopToken(list) == NULL){
+int PushToken(token_list_t *list, token_t *token)
+{
+    if (TopToken(list) == NULL)
+    {
         list->lastToken = token;
         return EXIT_SUCCESS;
     }
-    else{
+    else
+    {
         token_t *temp = TopToken(list);
         temp->next = token;
         token->prev = temp;

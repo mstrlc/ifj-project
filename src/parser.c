@@ -161,9 +161,11 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
 
     //CODEGEN HEADER
     //printf(".IFJcode22\n");
-    printf("DEFVAR GF@assignedVal\n");
-    printf("DEFVAR GF@ret\n");
-    printf("MOVE GF@assignedVal bool@true\n");
+    printf("DEFVAR GF@assignedVal\n"); // univerzalni promenna pro predavani hodnoty
+    printf("DEFVAR GF@ret\n"); // return val pro funkce
+    printf("MOVE GF@assignedVal bool@true\n"); // je pro debug bez assignu
+    printf("DEFVAR GF@op1\n"); // pro concat op
+    printf("DEFVAR GF@op2\n"); // pro concat op
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
 
@@ -638,8 +640,9 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         //CODEGEN labels init
         char* while_label_end = make_random_label();
         char* while_label_begin = make_random_label();
+        printf("LABEL %s\n", while_label_begin);
         //END CODEGEN labels init
-
+    
         // while
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_While);
         // (
@@ -647,13 +650,10 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // <expr>
         HANDLE_ERROR = rule_Expr(tokens);
         // )
-        HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
-
         //CODEGEN WHILE -> BEGIN
         printf("JUMPIFEQ %s GF@assignedVal bool@false\n",while_label_end);
-        printf("LABEL %s\n", while_label_begin);
         //END CODEGEN WHILE -> BEGIN
-
+        HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
