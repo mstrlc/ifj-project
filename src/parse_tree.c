@@ -126,10 +126,12 @@ void printPtree(PTreeNode_t *ptree)
 {
     if (ptree->left != NULL)
     {
+        printf("printing left\n");
         printPtree(ptree->left);
     }
     if (ptree->right != NULL)
     {
+        printf("printing right\n");
         printPtree(ptree->right);
     }
     if (ptree->token != NULL)
