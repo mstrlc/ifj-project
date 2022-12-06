@@ -1,16 +1,21 @@
 /**
  * @file parse_tree.c
- * @author Ondřej Seidl xseidl06
- * @author Dominik Klon xklond00
- * @brief Implementation of parse tree used in expression parser and also code generator
+ * 
+ * Implementation of parse tree used in expression parser and also code generator
+ * 
  * IFJ project 2022
  * 
+ * @author Ondřej Seidl xseidl06
+ * @author Dominik Klon xklond00
+ * 
  */
+
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "../include/parse_tree.h"
 #include "../include/symtable.h"
 #include "../include/error.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 /**
  * @brief Initializes a new parse tree node
