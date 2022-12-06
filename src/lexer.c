@@ -251,6 +251,11 @@ void charToToken(char c, token_t *token)
     {
         token->length++;
         token->data = realloc(token->data, token->length * sizeof(char));
+        if(token->data == NULL)
+        {
+            error_exit(ERR_INTERNAL, token);
+            exit(ERR_INTERNAL);
+        }
 
         if (token->data != NULL)
         {
