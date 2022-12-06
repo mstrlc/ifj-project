@@ -4,6 +4,7 @@
  * @brief Interface of parse_tree * IFJ project 2022
  */
 #include "../include/lexer.h"
+#include "../include/symtable.h"
 #ifndef PARSE_TREE_H
 #define PARSER_TREE_H
 
@@ -31,6 +32,6 @@ void deletePtreeNode(PTreeNode_t *ptree, token_t *token);
 
 void printPtreeNode(PTreeNode_t *ptree);
 
-void printPtree(PTreeNode_t *ptree);
+void printPtree(PTreeNode_t *ptree, Symtables *symtables);
 
 #endif

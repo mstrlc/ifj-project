@@ -8,7 +8,9 @@
  * @author <xstrel03> Matyáš Strelec
  *
  */
+
 #include <stdlib.h>
+
 #ifndef LEXER_H
 #define LEXER_H
 
@@ -69,7 +71,7 @@ typedef enum fsm_state_t
 
 /**
  * @brief Types of tokens
- * 
+ *
  */
 typedef enum token_type_t
 {
@@ -123,7 +125,7 @@ typedef enum token_type_t
 
 /**
  * @brief Token structure
- * 
+ *
  */
 typedef struct token_t
 {
@@ -137,7 +139,7 @@ typedef struct token_t
 
 /**
  * @brief Token list structure
- * 
+ *
  */
 typedef struct token_list_t
 {

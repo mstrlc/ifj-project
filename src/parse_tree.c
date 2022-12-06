@@ -7,6 +7,8 @@
  * 
  */
 #include "../include/parse_tree.h"
+#include "../include/symtable.h"
+#include "../include/error.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -139,21 +141,26 @@ void printPtreeNode(PTreeNode_t *ptree)
  *
  * @param ptree pointer to the root of the parse tree
  */
-void printPtree(PTreeNode_t *ptree)
+void printPtree(PTreeNode_t *ptree, Symtables *symtables)
 {
     if (ptree->left != NULL)
     {
-        printPtree(ptree->left);
+        printPtree(ptree->left, symtables);
     }
     if (ptree->right != NULL)
     {
-        printPtree(ptree->right);
+        printPtree(ptree->right, symtables);
     }
     if (ptree->token != NULL)
     {
          if(ptree->token->type == T_Var_id)
         {
-            printf("PUSHS LF@%s\n", ptree->token->data);
+            //check if variable is defined
+            if (symtable_lookup(symtables -> vars_table, ptree->token->data) == NULL){
+                error_exit(ERR_UNDEF_VAR, ptree->token);
+                exit(ERR_UNDEF_VAR);
+            }
+            printf("PUSHS LF@%s\n", ptree->token->data);   
         }
         else if(ptree->token->type == T_Int)
         {
