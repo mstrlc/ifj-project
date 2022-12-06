@@ -161,7 +161,7 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
          if(ptree->token->type == T_Var_id)
         {
             //check if variable is defined
-            if (symtable_lookup(symtables -> vars_table, ptree->token->data) == NULL){
+            if (symtable_lookup(symtables -> vars_table_array[symtables -> active_table_index], ptree->token->data) == NULL){
                 error_exit(ERR_UNDEF_VAR, ptree->token);
                 exit(ERR_UNDEF_VAR);
             }
