@@ -368,6 +368,17 @@ int rule_Expr(token_list_t *tokens)
     // <expr> -> <term>
     if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_L_r_par)
     {
+        int next = 0;
+        while(strcmp(ACTIVE_DATA, "\n"))
+        {
+            printf("%s ", ACTIVE_DATA);
+            ACTIVE_NEXT_WS;
+            next++;
+        }
+        for(int i = 0; i < next; i++)
+        {
+            ACTIVE_PREV_WS;
+        }
         HANDLE_ERROR = exp_parser(tokens);
     }
     else
@@ -437,6 +448,18 @@ int rule_Assign(token_list_t *tokens)
     // <assign> -> <expr>
     if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_L_r_par)
     {
+        int next = 0;
+        while(strcmp(ACTIVE_DATA, "\n"))
+        {
+            printf("%s ", ACTIVE_DATA);
+            ACTIVE_NEXT_WS;
+            next++;
+        }
+        printf("\n");
+        for(int i = 0; i < next; i++)
+        {
+            ACTIVE_PREV_WS;
+        }
         HANDLE_ERROR = exp_parser(tokens);
     }
     // <assign> -> func-id ( <args> )

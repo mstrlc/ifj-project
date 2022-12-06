@@ -70,16 +70,6 @@ int exp_parser(token_list_t *tokens)
 } 
 
 /**
- * @brief Parses an expression, builds a parse tree and returns it
- *
- * @param tokens list of tokens starting with the first token of the expression
- * @param min_precedence minimum precedence 
- * @param PTree initialized parse tree
- * @return PTreeNode_t*
- */
-PTreeNode_t *parse_expression(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree);
-
-/**
  * @brief Parses an expression and builds a parse tree simultaneously
  * 
  * @param tokens 
@@ -87,8 +77,6 @@ PTreeNode_t *parse_expression(token_list_t *tokens, int min_precedence, PTreeNod
  * @param PTree 
  * @return PTreeNode_t* 
  */
-
-
 static int bracket_L_counter = 0;
 PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree)
 {
