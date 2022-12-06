@@ -1,3 +1,9 @@
+/**
+ * @file exp_parser.c
+ * @author Ondřej Seidl xseidl06
+ * @brief Implementation of expression parser
+ * IFJ project 2022
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +17,7 @@
  *
  * Higher precedence means the operator is evaluated first
  *
- * @param int precedence
+ * @param operator token type of the operator
  * @return int
  */
 int precedence(token_type_t operator)
@@ -49,7 +55,7 @@ int precedence(token_type_t operator)
  * @param tokens list of tokens
  * @return int EXIT_SUCCESS or EXIT_FAILURE
  */
-int exp_parser(token_list_t *tokens)
+int exp_parser(token_list_t *tokens, Symtables *symtables)
 {
     int error = EXIT_SUCCESS;
     PTreeNode_t *PTree = initPtree();
@@ -57,8 +63,8 @@ int exp_parser(token_list_t *tokens)
     if(PTree != NULL)
     {
         printPtree(PTree);
-        printf("POPS GF@assignedVal\n"); 
-        disposePtree(PTree);
+        printf("POPS GF@assignedVal\n");
+        disposePtree(PTree); 
     }
     else
     {
@@ -68,6 +74,8 @@ int exp_parser(token_list_t *tokens)
     
 } 
 
+//bracelet_L_counter is used to count the number of left brackets in the expression
+static int bracket_L_counter = 0;
 /**
  * @brief Parses an expression and builds a parse tree simultaneously
  * 
@@ -76,9 +84,9 @@ int exp_parser(token_list_t *tokens)
  * @param PTree 
  * @return PTreeNode_t* 
  */
-static int bracket_L_counter = 0;
 PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree)
 {
+    //Setting the precedence as the highest possible for the first operator
     int prev_prec = 4;
     int currernt_prec = 0;
     //Getting the first operand
@@ -94,8 +102,10 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
         a->token = ACTIVE_TOKEN;
     }
     ACTIVE_NEXT;
+    //condition for the end of the expression
     if(ACTIVE_TYPE == T_Plus || ACTIVE_TYPE == T_Minus || ACTIVE_TYPE == T_Mul || ACTIVE_TYPE == T_Div || ACTIVE_TYPE == T_Concat || ACTIVE_TYPE == T_Not_equal || ACTIVE_TYPE == T_Equal || ACTIVE_TYPE == T_Larger || ACTIVE_TYPE == T_Larger_eq || ACTIVE_TYPE == T_Smaller || ACTIVE_TYPE == T_Smaller_eq)
     {
+        //while loop ended by returns
         while (1)
         {
             if(ACTIVE_TYPE == T_Plus || ACTIVE_TYPE == T_Minus || ACTIVE_TYPE == T_Mul || ACTIVE_TYPE == T_Div || ACTIVE_TYPE == T_Concat || ACTIVE_TYPE == T_Not_equal || ACTIVE_TYPE == T_Equal || ACTIVE_TYPE == T_Larger || ACTIVE_TYPE == T_Larger_eq || ACTIVE_TYPE == T_Smaller || ACTIVE_TYPE == T_Smaller_eq)
@@ -114,6 +124,7 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
                 {
                     return NULL;        
                 }
+                //if the next token is a left bracket, the function is called recursively
                 if(ACTIVE_TYPE == T_L_r_par)
                 {
                     ACTIVE_NEXT;
@@ -121,11 +132,13 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
                     b = parse_expression_with_tree(tokens, min_precedence, b);
                     a = makeOpNode(a, b, op);
                 }
+                //if the current operator has higher precedence
                 else if(currernt_prec > prev_prec)
                 {
                     b->token = ACTIVE_TOKEN;
                     a->right = makeOpNode(a->right, b, op);
                 }
+                //if the current operator has lower precedence
                 else
                 {
                     b->token = ACTIVE_TOKEN;
@@ -134,21 +147,24 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
                 prev_prec = currernt_prec;
                 ACTIVE_NEXT;
             }
+            //if the next token is a right bracket
             else if(ACTIVE_TYPE == T_R_r_par)
             {
                 bracket_L_counter--;
                 ACTIVE_NEXT;
+                //checks if the next token is a semicolon
                 if(ACTIVE_TYPE == T_Semicolon)
                 {
+                    //checks if it is and all of the brackets are closed, the function returns the parse tree
                     if(bracket_L_counter == 0)
                     {
                         ACTIVE_PREV;
                         return a;
-                    }
+                    }   
                     else
                     {
                         ACTIVE_PREV
-                        return a;
+                        return NULL;
                     }
                 }
                 else

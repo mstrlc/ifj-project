@@ -6,6 +6,14 @@ stack* stack_init(){
     return s;
 }
 
+void stack_dispose(stack* s){
+    while(!stack_is_empty(s)){
+        free(stack_top(s));
+        stack_pop(s);
+    }
+    free(s);
+}
+
 void stack_push(stack* s, char* stack_str){
     if (s->top < BRACKET_STACK_MAX ) {
         s->top++;

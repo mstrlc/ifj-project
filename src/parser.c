@@ -55,6 +55,9 @@ int rule_Expr(token_list_t *tokens);
  char* make_random_label(){
     char const abeceda[]= "abcdefghijklmnopqrstuvwxyz0123456789";
     char* output = malloc(sizeof(char)*8);
+    if(output == NULL){
+        error_exit(ERR_INTERNAL, NULL);
+    }  
     int random;
     output[0] = 'L';
     for(int i = 1; i<8; i++){
@@ -330,6 +333,9 @@ int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack
     // pushujeme argumenty pred volanim funkce ve spravnem formatu
     *argCount = *argCount + 1;
     char* push_arg_command = malloc(sizeof(char)*100);
+    if(push_arg_command == NULL){
+        error_exit(ERR_INTERNAL, ACTIVE_TOKEN);
+    }
     if(arg_value->type == T_String){
         sprintf(push_arg_command, "PUSHS string@%s",arg_value->data);
     }
@@ -366,7 +372,6 @@ int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack
     {
         HANDLE_ERROR = ERR_SYNTAX;
     }
-
         if(error != 0)
     {
         error_exit(error, ACTIVE_TOKEN);
@@ -434,7 +439,7 @@ int rule_Args(token_list_t *tokens)
         printf("%s\n", stack_top(arg_stack)->stack_str);
         stack_pop(arg_stack);
     }
-
+    stack_dispose(arg_stack);
         if(error != 0)
     {
         error_exit(error, ACTIVE_TOKEN);

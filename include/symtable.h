@@ -3,7 +3,6 @@
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 
-
 typedef struct symbol symbol_t;
 typedef struct symbol {
     int line;
@@ -16,6 +15,7 @@ typedef struct symbol {
     bool var_is_initialized;
 }symbol;
 
+// Symbol table
 typedef struct symtable symtable_t;
 struct symtable {
     size_t size;
@@ -27,8 +27,8 @@ typedef struct symtables_type{
     symtable_t* vars_table;
     symtable_t* vars_table_array[1000];
     symtable_t* function_table; 
-    int active_table_index; // oznacuje z jake tabulky se bude cist
-    int function_table_index; // prirazuje indexy funkcim
+    int active_table_index; // marks active table to read from
+    int function_table_index; // assigns indexes to functions in funcion table
 } Symtables;
 
 unsigned long hash(char *name);

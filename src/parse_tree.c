@@ -1,3 +1,11 @@
+/**
+ * @file parse_tree.c
+ * @author Ondřej Seidl xseidl06
+ * @author Dominik Klon xklond00
+ * @brief Implementation of parse tree used in expression parser and also code generator
+ * IFJ project 2022
+ * 
+ */
 #include "../include/parse_tree.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +26,7 @@ PTreeNode_t *initPtree()
 }
 
 /**
- * @brief Disposes parse tree node
+ * @brief frees the memory allocated for the parse tree
  *
  * @param ptree pointer to the parse tree node to be disposed of
  */
@@ -49,6 +57,14 @@ PTreeNode_t *insertLeftPtreeNode(PTreeNode_t *active, token_t *token)
     return newNode;
 }
 
+/**
+ * @brief Creates a new node with the operator as root and operands as children 
+ *
+ * @param left pointer to the left child node
+ * @param right pointer to the right child node
+ * @param op pointer to the operator node
+ * @return PTreeNode_t* pointer to the new node
+ */
 PTreeNode_t *makeOpNode(PTreeNode_t *left, PTreeNode_t *right, PTreeNode_t *op)
 {
     PTreeNode_t *newNode = initPtree();
