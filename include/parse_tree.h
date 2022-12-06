@@ -4,6 +4,7 @@
  * @brief Interface of parse tree used in expression parser and also code generator
  * IFJ project 2022
  */
+#include "../include/parser.h"
 #include "../include/symtable.h"
 #include "../include/lexer.h"
 #ifndef PARSE_TREE_H

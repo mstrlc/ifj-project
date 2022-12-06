@@ -49,6 +49,8 @@ void print_line_till_end(token_list_t *tokens);
 
 // err_type next_check_type(token_type_t* token_type, token_type_t* valid_type);
 
+char* make_random_label();
+
 int parser(token_list_t *tokens, Symtables* symtables, int whichPass);
 
 int check_args(token_t *token);

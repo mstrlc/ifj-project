@@ -182,9 +182,13 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
     printf("DEFVAR GF@assignedVal\n"); // univerzalni promenna pro predavani hodnoty
     printf("DEFVAR GF@ret\n"); // return val pro funkce
     printf("MOVE GF@assignedVal bool@true\n"); // je pro debug bez assignu
-    printf("DEFVAR GF@op1\n"); // pro concat op
-    printf("DEFVAR GF@op2\n"); // pro concat op
+
+    printf("DEFVAR GF@op1\n"); // pro operace v expressionu
+    printf("DEFVAR GF@op2\n"); // pro operace v expressionu
+    printf("DEFVAR GF@op3\n"); // pro operace v expressionu
+    printf("DEFVAR GF@op4\n"); // pro operace v expressionu
     printf("DEFVAR GF@retType\n"); //for checking return type
+
     printf("DEFVAR GF@realRetType\n");
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
