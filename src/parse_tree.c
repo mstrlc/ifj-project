@@ -126,40 +126,17 @@ void printPtree(PTreeNode_t *ptree)
 {
     if (ptree->left != NULL)
     {
+        printf("printing left\n");
         printPtree(ptree->left);
     }
     if (ptree->right != NULL)
     {
+        printf("printing right\n");
         printPtree(ptree->right);
     }
     if (ptree->token != NULL)
     {
-        if(ptree->token->type == T_Var_id)
-        {
-            printf("PUSHS LF@%s\n", ptree->token->data);
-        }
-        else if(ptree->token->type == T_Int || ptree->token->type == T_Float || ptree->token->type == T_String)
-        {
-            printf("PUSHS LF@%s\n", ptree->token->data);
-        }
-        else
-        {
-            if(ptree->token->type == T_Plus)
-            {
-                printf("ADDS\n");
-            }
-            else if(ptree->token->type == T_Minus)
-            {
-                printf("SUBS\n");
-            }
-            else if(ptree->token->type == T_Mul)
-            {
-                printf("MULS\n");
-            }
-            else if(ptree->token->type == T_Div)
-            {
-                printf("DIVS\n");
-            }
-        }
+        printf("printing root\n");
+        printPtreeNode(ptree);
     }
 }

@@ -63,7 +63,7 @@ int exp_parser(token_list_t *tokens)
     }
     else
     {
-        error = EXIT_FAILURE;
+        error = 37;
     }
     return error;
     
@@ -96,6 +96,8 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
     PTreeNode_t *a = PTree;
     if(ACTIVE_TYPE == T_L_r_par){
         bracket_L_counter++;
+        ACTIVE_NEXT;
+        a = parse_expression_with_tree(tokens, min_precedence, a);
     }
     else{
     a->token = ACTIVE_TOKEN;
