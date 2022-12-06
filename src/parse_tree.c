@@ -1,5 +1,6 @@
 #include "../include/parse_tree.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * @brief Initializes a new parse tree node
@@ -143,7 +144,7 @@ void printPtree(PTreeNode_t *ptree)
             printf("PUSHS int@%s\n", ptree->token->data);
         }
         else if(ptree->token->type == T_Float){
-            printf("PUSHS float@%s\n", ptree->token->data);
+            printf("PUSHS float@%a\n", atof(ptree->token->data));
         }
         else if(ptree->token->type == T_String){
             printf("PUSHS string@%s\n", ptree->token->data);
