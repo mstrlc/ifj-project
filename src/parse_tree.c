@@ -1,5 +1,6 @@
 #include "../include/parse_tree.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 /**
  * @brief Initializes a new parse tree node
