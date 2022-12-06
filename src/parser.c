@@ -25,6 +25,20 @@
 
 int pass;
 
+void print_line_till_end(token_list_t *tokens){
+int next = 0;
+        while(strcmp(ACTIVE_DATA, "\n"))
+        {
+            printf("%s ", ACTIVE_DATA);
+            ACTIVE_NEXT_WS;
+            next++;
+        }
+        for(int i = 0; i < next; i++)
+        {
+            ACTIVE_PREV_WS;
+        }
+}
+
 int rule_Prog(token_list_t *tokens, Symtables* symtables);
 int rule_ParamsCont(token_list_t *tokens, Symtables* symtables);
 int rule_Params(token_list_t *tokens, Symtables* symtables);
@@ -1047,7 +1061,7 @@ LABEL write_loop\n\
 POPS LF@arg\n\
 WRITE LF@arg\n\
 ADD LF@i LF@i int@1\n\
-JUMPIFNEQ  write_loop LF@i LF@count\n\
+JUMPIFNEQ write_loop LF@i LF@count\n\
 POPFRAME\n\
 CLEARS\n\
 RETURN\n\

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 // Hlavni telo programu
 write("Zadejte cislo pro vypocet faktorialu: ");
-a = readi();
+//a = readi();
 
 // Definice funkce pro vypocet hodnoty faktorialu
 function factorial(int $n) : int {
