@@ -63,15 +63,9 @@ int exp_parser(token_list_t *tokens, Symtables *symtables)
     PTree = parse_expression_with_tree(tokens, 1, PTree);\
     if(PTree != NULL)
     {
-<<<<<<< HEAD
-        printPtree(PTree);
-        printf("POPS GF@assignedVal\n");
-        disposePtree(PTree); 
-=======
         printPtree(PTree, symtables);
         printf("POPS GF@assignedVal\n"); 
         disposePtree(PTree);
->>>>>>> 6aec937cfea6939622bd44ec0f09c5587d540460
     }
     else
     {

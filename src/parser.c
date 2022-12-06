@@ -16,7 +16,6 @@
 #include <stdbool.h>
 
 #include "../include/parser.h"
-#include "../include/common.h"
 #include "../include/error.h"
 #include "../include/stack.h"
 #include "../include/symtable.h"
