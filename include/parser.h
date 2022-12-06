@@ -29,6 +29,8 @@
            ACTIVE_TYPE == T_Line_comment)            \
         tokens->activeToken = tokens->activeToken->prev;
 
+
+
 // Do not overwrite error code if it is already set
 #define HANDLE_ERROR \
     if (error == 0)  \

@@ -1,5 +1,11 @@
+/**
+ * @file parse_tree.h
+ * @author Ondřej Seidl xseidl06
+ * @brief Interface of parse_tree * IFJ project 2022
+ */
 #include "../include/lexer.h"
 #include "../include/parser.h"
+#include "../include/symtable.h"
 #ifndef PARSE_TREE_H
 #define PARSER_TREE_H
 
@@ -11,6 +17,7 @@ struct PTree {
     PTreeNode_t *left;
     PTreeNode_t *right;
 } PTree;
+
 
 PTreeNode_t *initPtree();
 
@@ -26,6 +33,6 @@ void deletePtreeNode(PTreeNode_t *ptree, token_t *token);
 
 void printPtreeNode(PTreeNode_t *ptree);
 
-void printPtree(PTreeNode_t *ptree);
+void printPtree(PTreeNode_t *ptree, Symtables *symtables);
 
 #endif

@@ -24,6 +24,8 @@ typedef struct stack{
 
 stack* stack_init();
 
+void stack_dispose(stack* s);
+
 void stack_push(stack* s, char* stack_str);
 
 void  stack_pop(stack* s);

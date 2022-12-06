@@ -1,6 +1,21 @@
-#include "../include/parse_tree.h"
+/**
+ * @file parse_tree.c
+ * 
+ * Implementation of parse tree used in expression parser and also code generator
+ * 
+ * IFJ project 2022
+ * 
+ * @author Ondřej Seidl xseidl06
+ * @author Dominik Klon xklond00
+ * 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "../include/parse_tree.h"
+#include "../include/symtable.h"
+#include "../include/error.h"
 
 /**
  * @brief Initializes a new parse tree node
@@ -18,7 +33,7 @@ PTreeNode_t *initPtree()
 }
 
 /**
- * @brief Disposes parse tree node
+ * @brief frees the memory allocated for the parse tree
  *
  * @param ptree pointer to the parse tree node to be disposed of
  */
@@ -49,6 +64,14 @@ PTreeNode_t *insertLeftPtreeNode(PTreeNode_t *active, token_t *token)
     return newNode;
 }
 
+/**
+ * @brief Creates a new node with the operator as root and operands as children 
+ *
+ * @param left pointer to the left child node
+ * @param right pointer to the right child node
+ * @param op pointer to the operator node
+ * @return PTreeNode_t* pointer to the new node
+ */
 PTreeNode_t *makeOpNode(PTreeNode_t *left, PTreeNode_t *right, PTreeNode_t *op)
 {
     PTreeNode_t *newNode = initPtree();
@@ -123,21 +146,26 @@ void printPtreeNode(PTreeNode_t *ptree)
  *
  * @param ptree pointer to the root of the parse tree
  */
-void printPtree(PTreeNode_t *ptree)
+void printPtree(PTreeNode_t *ptree, Symtables *symtables)
 {
     if (ptree->left != NULL)
     {
-        printPtree(ptree->left);
+        printPtree(ptree->left, symtables);
     }
     if (ptree->right != NULL)
     {
-        printPtree(ptree->right);
+        printPtree(ptree->right, symtables);
     }
     if (ptree->token != NULL)
     {
          if(ptree->token->type == T_Var_id)
         {
-            printf("PUSHS LF@%s\n", ptree->token->data);
+            //check if variable is defined
+            if (symtable_lookup(symtables -> vars_table_array[symtables -> active_table_index], ptree->token->data) == NULL){
+                error_exit(ERR_UNDEF_VAR, ptree->token);
+                exit(ERR_UNDEF_VAR);
+            }
+            printf("PUSHS LF@%s\n", ptree->token->data);   
         }
         else if(ptree->token->type == T_Int)
         {

@@ -18,7 +18,6 @@
 
 #include "../include/lexer.h"
 #include "../include/error.h"
-#include "../include/common.h"
 
 char *stateToString(fsm_state_t state);
 char *typeToString(token_type_t type);
@@ -269,7 +268,9 @@ void charToToken(char c, token_t *token)
  *
  * Load next token from standard input to given token pointer,
  * token must be allocated before calling this function,
- * decides on token type using the state machine
+ * decides on token type using the state machine.
+ * Handle string escape sequences and special characters.
+ *
  *
  * @param token Pointer to token into which data is loaded
  * @return int Error code - success (EXIT_SUCCESS) or failure (ERR_LEXEME or ERR_INTERNAL)
@@ -781,23 +782,15 @@ void printTokenList(token_list_t *list)
 int fillTokenList(token_list_t *list)
 {
     token_t *token = malloc(sizeof(token_t));
-    int exitCode;
+    int error;
     do
     {
-        exitCode = getNextToken(token);
-        if (exitCode == EXIT_SUCCESS)
+        error = getNextToken(token);
+        if (error == EXIT_SUCCESS)
         {
             list->firstToken = token;
             while (token->type != T_File_end)
             {
-                // if (token->type == T_Whitespace || token->type == T_Block_comment || token->type == T_Line_comment)
-                // {
-                //     exitCode = getNextToken(token);
-                //     if (exitCode != EXIT_SUCCESS)
-                //         return exitCode;
-                //     else
-                //         continue;
-                // }
                 token_t *next = malloc(sizeof(token_t));
                 token_t *temp = token;
                 token->next = next;
@@ -805,10 +798,10 @@ int fillTokenList(token_list_t *list)
                 token->prev = temp;
                 list->activeToken = token;
                 list->lastToken = token;
-                exitCode = getNextToken(token);
-                if (exitCode != EXIT_SUCCESS)
+                error = getNextToken(token);
+                if (error != EXIT_SUCCESS)
                 {
-                    return exitCode;
+                    return error;
                 }
             }
         }
