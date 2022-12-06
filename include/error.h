@@ -10,6 +10,7 @@
  */
 
 #include "../include/lexer.h"
+
 #ifndef ERROR_H
 #define ERROR_H
 
