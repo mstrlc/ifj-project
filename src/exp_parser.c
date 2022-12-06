@@ -59,6 +59,7 @@ int exp_parser(token_list_t *tokens)
     if(PTree != NULL)
     {
         printPtree(PTree);
+        printf("POPS GF@assignedVal\n"); 
         disposePtree(PTree);
     }
     else
