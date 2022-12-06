@@ -35,7 +35,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables);
 int rule_StList(token_list_t *tokens, Symtables* symtables);
 int rule_Assign(token_list_t *tokens, Symtables* symtables);
 int rule_Term(token_list_t *tokens);
-int rule_Expr(token_list_t *tokens);
+int rule_Expr(token_list_t *tokens, Symtables* symtables);
 
  //pomocne funkce 
  char* make_random_label(){
@@ -363,14 +363,14 @@ int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack
 }
 
 // <expr> -> <term>
-int rule_Expr(token_list_t *tokens)
+int rule_Expr(token_list_t *tokens, Symtables* symtables)
 {
     int error = 0;
 
     // <expr> -> <term>
     if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_L_r_par)
     {
-        HANDLE_ERROR = exp_parser(tokens);
+        HANDLE_ERROR = exp_parser(tokens, symtables);
     }
     else
     {
@@ -439,7 +439,7 @@ int rule_Assign(token_list_t *tokens, Symtables *symtables)
     // <assign> -> <expr>
     if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_L_r_par)
     {
-        HANDLE_ERROR = exp_parser(tokens);
+        HANDLE_ERROR = exp_parser(tokens, symtables);
     }
     // <assign> -> func-id ( <args> )
     else if (ACTIVE_TYPE == T_Identifier)
@@ -652,7 +652,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // (
         HANDLE_ERROR = parseTerminal(tokens, T_L_r_par);
         // <expr>
-        HANDLE_ERROR = rule_Expr(tokens);
+        HANDLE_ERROR = rule_Expr(tokens, symtables);
         // )
         //CODEGEN WHILE -> BEGIN
         printf("JUMPIFEQ %s GF@assignedVal bool@false\n",while_label_end);
@@ -686,7 +686,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // (
         HANDLE_ERROR = parseTerminal(tokens, T_L_r_par);
         // <expr>
-        HANDLE_ERROR = rule_Expr(tokens);
+        HANDLE_ERROR = rule_Expr(tokens, symtables);
         // )
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
 
@@ -728,7 +728,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // return
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Return);
         // <expr>
-        HANDLE_ERROR = rule_Expr(tokens);
+        HANDLE_ERROR = rule_Expr(tokens, symtables);
         //presun vysledek z exp_parseru do navratove hodnoty
         printf("MOVE GF@ret GF@assignedVal\n");
         // ;
@@ -738,7 +738,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
     else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
     {
         // <expr>
-        HANDLE_ERROR = rule_Expr(tokens);
+        HANDLE_ERROR = rule_Expr(tokens, symtables);
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
@@ -995,7 +995,6 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         {
             HANDLE_ERROR = ERR_SYNTAX;
         }
-
   
 
         // {

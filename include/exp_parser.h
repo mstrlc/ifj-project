@@ -2,8 +2,9 @@
 #define EXP_PARSER_H
 
 #include "../include/parser.h"
+#include "../include/symtable.h"
 
 PTreeNode_t *parse_expression(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree);
-int exp_parser(token_list_t *tokens);
+int exp_parser(token_list_t *tokens, Symtables *symtables);
 
 #endif
