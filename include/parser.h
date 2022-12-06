@@ -53,4 +53,5 @@ int check_args(token_t *token);
 
 int check_call_args(token_t *token);
 
+void printBuiltIn();
 #endif

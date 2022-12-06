@@ -89,20 +89,21 @@ int main()
     }
 
     // PRINT VESTAVENYCH FUNKCI
-    printf("JUMP end_of_program\n");
-    FILE    *textfile;
-    char    line[1000];
+    // printf("JUMP end_of_program\n");
+    // FILE    *textfile;
+    // char    line[1000];
      
-    textfile = fopen("src/inbuilt.ifjc22", "r");
-    if(textfile == NULL)
-        return 1;
+    // textfile = fopen("src/inbuilt.ifjc22", "r");
+    // if(textfile == NULL)
+    //     return 1;
      
-    while(fgets(line, 1000, textfile)){
-        printf(line);
-    }
-    printf("LABEL end_of_program\n");
+    // while(fgets(line, 1000, textfile)){
+    //     printf(line);
+    // }
+    // printf("LABEL end_of_program\n");
      
-    fclose(textfile);
+    // fclose(textfile);
+    printBuiltIn();
 
     //ERROR HANDLE
     if (error != 0)

@@ -1,178 +1,158 @@
-# global return variable
-# reads
-LABEL reads
-READ GF@ret string
-RETURN
 
-#readi
-LABEL readi
-READ GF@ret int
-RETURN
+LABEL reads \n \
+READ GF@ret string \n \
+RETURN  \n \
 
-#readf
-LABEL readf
-READ GF@ret float
-RETURN
+LABEL readi \n \
+READ GF@ret int \n \
+RETURN \n \
 
-#write
-LABEL write
-CREATEFRAME
-PUSHFRAME
-DEFVAR LF@arg
-DEFVAR LF@count
-DEFVAR LF@i
-POPS LF@count
-MOVE LF@i int@0
-LABEL write_loop
-POPS LF@arg
-WRITE LF@arg
-ADD LF@i LF@i int@1
-JUMPIFNEQ  write_loop LF@i LF@count
-POPFRAME
-CLEARS
-RETURN
+LABEL readf \n \
+READ GF@ret float \n \
+RETURN \n \
 
-#floatval
-LABEL floatval
-CREATEFRAME
-PUSHFRAME
-DEFVAR LF@arg
-DEFVAR LF@type
-MOVE GF@ret float@0x0p+0
-POPS LF@arg
-TYPE LF@type LF@arg
-JUMPIFEQ floatval_float LF@type string@float
-JUMPIFEQ floatval_int LF@type string@int
-JUMPIFEQ floatval_end LF@type string@nil
-JUMP floatval_end
-LABEL floatval_float
-MOVE GF@ret LF@arg
-JUMP floatval_end
-LABEL floatval_int
-INT2FLOAT GF@ret LF@arg
-JUMP floatval_end
-LABEL floatval_end
-POPFRAME
-CLEARS
-RETURN
-
-#intval
-LABEL intval
-CREATEFRAME
-PUSHFRAME
-DEFVAR LF@arg
-DEFVAR LF@type
-MOVE GF@ret int@0
-POPS LF@arg
-TYPE LF@type LF@arg
-JUMPIFEQ intval_int LF@type string@int
-JUMPIFEQ intval_float LF@type string@float
-JUMPIFEQ intval_nil LF@type string@nil
-JUMP floatval_end
-LABEL intval_int
-MOVE GF@ret LF@arg
-JUMP intval_end
-LABEL intval_float
-FLOAT2INT GF@ret LF@arg
-JUMP intval_end
-LABEL intval_end
-POPFRAME
-CLEARS
-RETURN
-
-# strval
-LABEL strval
-CREATEFRAME
-PUSHFRAME
-DEFVAR LF@arg
-DEFVAR LF@type
-MOVE GF@ret string@
-POPS LF@arg
-TYPE LF@type LF@arg
-JUMPIFEQ strval_string LF@type string@string
-JUMPIFEQ strval_end LF@type string@nil
-JUMP floatval_end
-LABEL strval_string
-MOVE GF@ret LF@arg
-JUMP strval_end
-LABEL strval_end
-POPFRAME
-CLEARS
-RETURN
+LABEL write \n \
+CREATEFRAME \n \
+PUSHFRAME \n \
+DEFVAR LF@arg \n \
+DEFVAR LF@count \n \
+DEFVAR LF@i \n \
+POPS LF@count \n \
+MOVE LF@i int@0 \n \
+LABEL write_loop \n \
+POPS LF@arg \n \
+WRITE LF@arg \n \
+ADD LF@i LF@i int@1 \n \ 
+JUMPIFNEQ write_loop LF@i LF@count \n \
+POPFRAME \n \
+CLEARS \n \
+RETURN \n \
 
 
-#strlen
-LABEL strlen
-CREATEFRAME
-PUSHFRAME
-DEFVAR LF@arg
-POPS LF@arg
-STRLEN GF@ret LF@arg
-POPFRAME
-CLEARS
-RETURN
-
-# substring
-LABEL substring
-CREATEFRAME
-PUSHFRAME
-DEFVAR LF@arg
-DEFVAR LF@arg2
-DEFVAR LF@arg3
-DEFVAR LF@len
-DEFVAR LF@i
-DEFVAR LF@char
-DEFVAR LF@error
-POPS LF@arg
-POPS LF@arg2
-POPS LF@arg3
-MOVE LF@i LF@arg2
-MOVE GF@ret string@
-STRLEN LF@len LF@arg
-#error check
-LT LF@error LF@arg2 int@0
-LT LF@error LF@arg3 int@0
-GT LF@error LF@arg2 LF@arg3
-GT LF@error LF@arg2 LF@len
-EQ LF@error LF@arg2 LF@len
-GT LF@error LF@arg3 LF@len
-JUMPIFEQ substring_end LF@error bool@true
-#end error check
-# arg2 == arg3
-GETCHAR LF@char LF@arg LF@i
-CONCAT GF@ret GF@ret LF@char
-JUMPIFEQ substring_end LF@i LF@arg3
-# arg2 != arg3
-JUMP substring_loop
-LABEL substring_loop
-ADD LF@i LF@i int@1
-GETCHAR LF@char LF@arg LF@i
-CONCAT GF@ret GF@ret LF@char
-JUMPIFNEQ substring_loop LF@i LF@arg3
-JUMP substring_end
-LABEL substring_end
-POPFRAME
-CLEARS
-RETURN
-
-# ord
-LABEL ord
-CREATEFRAME
-PUSHFRAME
-DEFVAR LF@arg
-POPS LF@arg
-STRI2INT GF@ret LF@arg int@0
-POPFRAME
-CLEARS
-RETURN
-
-# chr
-LABEL chr
-CREATEFRAME
-PUSHFRAME
-DEFVAR LF@arg
-POPS LF@arg
-INT2CHAR GF@ret LF@arg
-POPFRAME
-CLEARS
-RETURN
+LABEL floatval \n \
+CREATEFRAME \n \
+PUSHFRAME \n \
+DEFVAR LF@arg \n \
+DEFVAR LF@type \n \
+MOVE GF@ret float@0x0p+0 \n \
+POPS LF@arg \n \
+TYPE LF@type LF@arg \n \
+JUMPIFEQ floatval_float LF@type string@float \n \
+JUMPIFEQ floatval_int LF@type string@int \n \
+JUMPIFEQ floatval_end LF@type string@nil \n \
+JUMP floatval_end \n \
+LABEL floatval_float \n \
+MOVE GF@ret LF@arg \n \
+JUMP floatval_end \n \
+LABEL floatval_int \n \
+INT2FLOAT GF@ret LF@arg \n \
+JUMP floatval_end \n \
+LABEL floatval_end \n \
+POPFRAME \n \
+CLEARS \n \
+RETURN \n \
+LABEL intval \n \
+CREATEFRAME \n \
+PUSHFRAME \n \
+DEFVAR LF@arg \n \
+DEFVAR LF@type \n \
+MOVE GF@ret int@0 \n \
+POPS LF@arg \n \
+TYPE LF@type LF@arg \n \
+JUMPIFEQ intval_int LF@type string@int \n \
+JUMPIFEQ intval_float LF@type string@float \n \
+JUMPIFEQ intval_nil LF@type string@nil \n \
+JUMP floatval_end \n \
+LABEL intval_int \n \
+MOVE GF@ret LF@arg \n \
+JUMP intval_end \n \
+LABEL intval_float \n \
+FLOAT2INT GF@ret LF@arg \n \
+JUMP intval_end \n \
+LABEL intval_end \n \
+POPFRAME \n \
+CLEARS \n \
+RETURN \n \
+LABEL strval \n \
+CREATEFRAME \n \
+PUSHFRAME \n \
+DEFVAR LF@arg \n \
+DEFVAR LF@type \n \
+MOVE GF@ret string@ \n \
+POPS LF@arg \n \
+TYPE LF@type LF@arg \n \
+JUMPIFEQ strval_string LF@type string@string \n \
+JUMPIFEQ strval_end LF@type string@nil \n \
+JUMP floatval_end \n \
+LABEL strval_string \n \
+MOVE GF@ret LF@arg \n \
+JUMP strval_end \n \
+LABEL strval_end \n \
+POPFRAME \n \
+CLEARS \n \
+RETURN \n \
+LABEL strlen \n \
+CREATEFRAME \n \
+PUSHFRAME \n \
+DEFVAR LF@arg \n \
+POPS LF@arg \n \
+STRLEN GF@ret LF@arg \n \
+POPFRAME \n \
+CLEARS \n \
+RETURN \n \
+LABEL substring \n \
+CREATEFRAME \n \
+PUSHFRAME \n \
+DEFVAR LF@arg \n \
+DEFVAR LF@arg2 \n \
+DEFVAR LF@arg3 \n \
+DEFVAR LF@len \n \
+DEFVAR LF@i \n \
+DEFVAR LF@char \n \
+DEFVAR LF@error \n \
+POPS LF@arg \n \
+POPS LF@arg2 \n \
+POPS LF@arg3 \n \
+MOVE LF@i LF@arg2 \n \
+MOVE GF@ret string@ \n \
+STRLEN LF@len LF@arg \n \
+LT LF@error LF@arg2 int@0 \n \
+LT LF@error LF@arg3 int@0 \n \
+GT LF@error LF@arg2 LF@arg3 \n \
+GT LF@error LF@arg2 LF@len \n \
+EQ LF@error LF@arg2 LF@len \n \
+GT LF@error LF@arg3 LF@len \n \
+JUMPIFEQ substring_end LF@error bool@true \n \
+GETCHAR LF@char LF@arg LF@i \n \
+CONCAT GF@ret GF@ret LF@char \n \
+JUMPIFEQ substring_end LF@i LF@arg3 \n \
+JUMP substring_loop \n \
+LABEL substring_loop \n \
+ADD LF@i LF@i int@1 \n \
+GETCHAR LF@char LF@arg LF@i \n \
+CONCAT GF@ret GF@ret LF@char \n \
+JUMPIFNEQ substring_loop LF@i LF@arg3 \n \
+JUMP substring_end \n \
+LABEL substring_end \n \
+POPFRAME \n \
+CLEARS \n \
+RETURN \n \
+LABEL ord \n \
+CREATEFRAME \n \
+PUSHFRAME \n \
+DEFVAR LF@arg \n \
+POPS LF@arg \n \
+STRI2INT GF@ret LF@arg int@0 \n \
+POPFRAME \n \
+CLEARS \n \
+RETURN \n \
+LABEL chr \n \
+CREATEFRAME \n \
+PUSHFRAME \n \
+DEFVAR LF@arg \n \
+POPS LF@arg \n \
+INT2CHAR GF@ret LF@arg \n \
+POPFRAME \n \
+CLEARS \n \
+RETURN \n \
+\n \
