@@ -1,5 +1,4 @@
 <?php
 declare(strict_types=1);
-$var1 = 0;
-$str = "EZ FULL BODY";
-write($str);   
+$var = 10/10;
+write($var);

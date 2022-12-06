@@ -164,6 +164,12 @@ void printPtree(PTreeNode_t *ptree)
             }
             else if(ptree->token->type == T_Div)
             {
+                // printf("INT2FLOATS\n");
+                // printf("POPS GF@op1\n");
+                // printf("INT2FLOATS\n");
+                // printf("POPS GF@op2\n");
+                // printf("DIV GF@op1 GF@op1 GF@op2\n");
+                // printf("PUSHS GF@op1\n");
                 printf("IDIVS\n");
             }
             else if(ptree->token->type == T_Equal)
