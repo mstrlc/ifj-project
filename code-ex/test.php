@@ -13,4 +13,3 @@ write("Spatne zadana posloupnost, zkuste znovu:\n");
 $str1 = reads();
 }
 } else { }
-?>
