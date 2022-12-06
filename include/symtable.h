@@ -11,6 +11,7 @@ typedef struct symbol {
     token_type_t type;
     symbol_t *next;
     symbol_t *prev;
+    token_type_t func_ret_type;
     bool func_is_defined;
     int func_param_count;
     bool var_is_initialized;

@@ -5,6 +5,7 @@
 #include "../include/parse_tree.h"
 #include "../include/exp_parser.h"
 #include "../include/error.h"
+#include "../include/symtable.h"
 
 /**
  * @brief Returns the precedence of the given operator
@@ -49,14 +50,14 @@ int precedence(token_type_t operator)
  * @param tokens list of tokens
  * @return int EXIT_SUCCESS or EXIT_FAILURE
  */
-int exp_parser(token_list_t *tokens)
+int exp_parser(token_list_t *tokens, Symtables *symtables)
 {
     int error = EXIT_SUCCESS;
     PTreeNode_t *PTree = initPtree();
     PTree = parse_expression_with_tree(tokens, 1, PTree);\
     if(PTree != NULL)
     {
-        printPtree(PTree);
+        printPtree(PTree, symtables);
         printf("POPS GF@assignedVal\n"); 
         disposePtree(PTree);
     }

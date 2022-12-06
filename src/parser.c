@@ -47,9 +47,9 @@ int rule_Val(token_list_t *tokens);
 int rule_Args(token_list_t *tokens);
 int rule_Stat(token_list_t *tokens, Symtables* symtables);
 int rule_StList(token_list_t *tokens, Symtables* symtables);
-int rule_Assign(token_list_t *tokens);
+int rule_Assign(token_list_t *tokens, Symtables* symtables);
 int rule_Term(token_list_t *tokens);
-int rule_Expr(token_list_t *tokens);
+int rule_Expr(token_list_t *tokens, Symtables* symtables);
 
  //pomocne funkce 
  char* make_random_label(){
@@ -180,6 +180,8 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
     printf("MOVE GF@assignedVal bool@true\n"); // je pro debug bez assignu
     printf("DEFVAR GF@op1\n"); // pro concat op
     printf("DEFVAR GF@op2\n"); // pro concat op
+    printf("DEFVAR GF@reType\n"); //for checking return type
+    printf("DEFVAR GF@realRetType\n");
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
 
@@ -377,14 +379,14 @@ int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack
 }
 
 // <expr> -> <term>
-int rule_Expr(token_list_t *tokens)
+int rule_Expr(token_list_t *tokens, Symtables* symtables)
 {
     int error = 0;
 
     // <expr> -> <term>
     if (ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_L_r_par)
     {
-        HANDLE_ERROR = exp_parser(tokens);
+        HANDLE_ERROR = exp_parser(tokens, symtables);
     }
     else
     {
@@ -446,19 +448,36 @@ int rule_Args(token_list_t *tokens)
 
 // <assign> -> <expr>
 // <assign> -> func-id ( <args> )
-int rule_Assign(token_list_t *tokens)
+int rule_Assign(token_list_t *tokens, Symtables *symtables)
 {
     int error = 0;
 
     // <assign> -> <expr>
     if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id || ACTIVE_TYPE == T_L_r_par)
     {
-        HANDLE_ERROR = exp_parser(tokens);
+        HANDLE_ERROR = exp_parser(tokens, symtables);
     }
     // <assign> -> func-id ( <args> )
     else if (ACTIVE_TYPE == T_Identifier)
     {
         char* functionName = ACTIVE_DATA;
+        //check if function exists
+        if (pass == 2 && symtable_lookup(symtables->function_table, functionName) == NULL
+        && strcmp(functionName, "reads") != 0
+        && strcmp(functionName, "readi") != 0
+        && strcmp(functionName, "readf") != 0
+        && strcmp(functionName, "write") != 0
+        && strcmp(functionName, "floatval") != 0
+        && strcmp(functionName, "intval") != 0
+        && strcmp(functionName, "strval") != 0
+        && strcmp(functionName, "strlen") != 0
+        && strcmp(functionName, "substring") != 0
+        && strcmp(functionName, "ord") != 0
+        && strcmp(functionName, "chr") != 0)
+        {
+            error_exit(ERR_UNDEF_REDEF_FUN, ACTIVE_TOKEN);
+            exit(ERR_UNDEF_REDEF_FUN);
+        }
         // func-id
         HANDLE_ERROR = parseTerminal(tokens, T_Identifier);
         // (
@@ -467,6 +486,16 @@ int rule_Assign(token_list_t *tokens)
         HANDLE_ERROR = rule_Args(tokens);
         // )make
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
+
+        //check if correct num of args
+        if (pass == 2 && strcmp(functionName, "write") != 0){
+            symbol *func = symtable_lookup(symtables->function_table, functionName);
+            if (func != NULL && func -> func_param_count != argCount){
+                error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
+                exit(ERR_WRONG_PARAM_RET);
+            }
+
+        }
 
         //prepsat do makra kdyz zbyde cas
         //volani vestavenych funkci, ktere maji navratovou hodnotu
@@ -531,7 +560,30 @@ int rule_Assign(token_list_t *tokens)
             printf("CALL %s\n", functionName);
             printf("MOVE GF@assignedVal GF@ret\n");
             printf("MOVE GF@ret nil@nil\n");
-            argCount = 0; 
+            argCount = 0;
+
+            //checks return type of func
+            symbol_t *function = symtable_lookup(symtables->function_table, functionName);
+            if(function -> func_ret_type == T_Keyword_Int){
+                printf("MOVE GF@retType string@int\n");
+                printf("TYPE GF@realRetType GF@assignedVal\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
+            else if(function -> func_ret_type == T_Keyword_Float){
+                printf("MOVE GF@retType string@float\n");
+                printf("TYPE GF@realRetType GF@assignedVal\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
+            else if(function -> func_ret_type == T_Keyword_String){
+                printf("MOVE GF@retType string@string\n");
+                printf("TYPE GF@realRetType GF@assignedVal\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
+            else if(function -> func_ret_type == T_Keyword_Void){
+                printf("MOVE GF@retType string@nil\n");
+                printf("TYPE GF@realRetType GF@assignedVal\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
         }
 
     }
@@ -610,7 +662,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // =
         HANDLE_ERROR = parseTerminal(tokens, T_Assign);
         // <assign>
-        HANDLE_ERROR = rule_Assign(tokens);
+        HANDLE_ERROR = rule_Assign(tokens, symtables);
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
         
@@ -639,7 +691,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // (
         HANDLE_ERROR = parseTerminal(tokens, T_L_r_par);
         // <expr>
-        HANDLE_ERROR = rule_Expr(tokens);
+        HANDLE_ERROR = rule_Expr(tokens, symtables);
         // )
         //CODEGEN WHILE -> BEGIN
         printf("JUMPIFEQ %s GF@assignedVal bool@false\n",while_label_end);
@@ -673,7 +725,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // (
         HANDLE_ERROR = parseTerminal(tokens, T_L_r_par);
         // <expr>
-        HANDLE_ERROR = rule_Expr(tokens);
+        HANDLE_ERROR = rule_Expr(tokens, symtables);
         // )
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
 
@@ -715,7 +767,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // return
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Return);
         // <expr>
-        HANDLE_ERROR = rule_Expr(tokens);
+        HANDLE_ERROR = rule_Expr(tokens, symtables);
         //presun vysledek z exp_parseru do navratove hodnoty
         printf("MOVE GF@ret GF@assignedVal\n");
         // ;
@@ -725,7 +777,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
     else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
     {
         // <expr>
-        HANDLE_ERROR = rule_Expr(tokens);
+        HANDLE_ERROR = rule_Expr(tokens, symtables);
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
@@ -735,18 +787,18 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         char* functionName = ACTIVE_DATA;
         // func-id
         // Check if exists
-        if (pass == 2 && symtable_lookup(symtables->function_table, ACTIVE_DATA) == NULL
-        && strcmp(ACTIVE_DATA, "reads") != 0
-        && strcmp(ACTIVE_DATA, "readi") != 0
-        && strcmp(ACTIVE_DATA, "readf") != 0
-        && strcmp(ACTIVE_DATA, "write") != 0
-        && strcmp(ACTIVE_DATA, "floatval") != 0
-        && strcmp(ACTIVE_DATA, "intval") != 0
-        && strcmp(ACTIVE_DATA, "strval") != 0
-        && strcmp(ACTIVE_DATA, "strlen") != 0
-        && strcmp(ACTIVE_DATA, "substring") != 0
-        && strcmp(ACTIVE_DATA, "ord") != 0
-        && strcmp(ACTIVE_DATA, "chr") != 0)
+        if (pass == 2 && symtable_lookup(symtables->function_table, functionName) == NULL
+        && strcmp(functionName, "reads") != 0
+        && strcmp(functionName, "readi") != 0
+        && strcmp(functionName, "readf") != 0
+        && strcmp(functionName, "write") != 0
+        && strcmp(functionName, "floatval") != 0
+        && strcmp(functionName, "intval") != 0
+        && strcmp(functionName, "strval") != 0
+        && strcmp(functionName, "strlen") != 0
+        && strcmp(functionName, "substring") != 0
+        && strcmp(functionName, "ord") != 0
+        && strcmp(functionName, "chr") != 0)
         {
             error_exit(ERR_UNDEF_REDEF_FUN, ACTIVE_TOKEN);
             exit(ERR_UNDEF_REDEF_FUN);
@@ -769,6 +821,14 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
             argCount = 0;
         }
         else{
+            //check if correct num of args
+            if (pass == 2){
+                symbol *func = symtable_lookup(symtables->function_table, functionName);
+                if (func != NULL && func -> func_param_count != argCount){
+                    error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
+                    exit(ERR_WRONG_PARAM_RET);
+                }
+            }
             printf("CALL %s\n", functionName);
         }
     }
@@ -954,6 +1014,11 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         // :
         HANDLE_ERROR = parseTerminal(tokens, T_Colon);
         // type
+
+        //saving function return type
+        symbol_t *function = symtable_lookup(symtables -> function_table, functionName);
+        function -> func_ret_type = ACTIVE_TYPE;
+
         if (ACTIVE_TYPE == T_Keyword_Int)
         {
             HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Int);
@@ -975,7 +1040,6 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
             HANDLE_ERROR = ERR_SYNTAX;
         }
 
-  
 
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
