@@ -81,6 +81,8 @@ static int bracket_L_counter = 0;
 PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree)
 {
     //int error = EXIT_SUCCESS;
+    int prev_prec = 4;
+    int currernt_prec = 0;
     PTreeNode_t *a = PTree;
     if(ACTIVE_TYPE == T_L_r_par){
         bracket_L_counter++;
@@ -93,10 +95,12 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
     ACTIVE_NEXT;
     if(ACTIVE_TYPE == T_Plus || ACTIVE_TYPE == T_Minus || ACTIVE_TYPE == T_Mul || ACTIVE_TYPE == T_Div || ACTIVE_TYPE == T_Concat || ACTIVE_TYPE == T_Not_equal || ACTIVE_TYPE == T_Equal || ACTIVE_TYPE == T_Larger || ACTIVE_TYPE == T_Larger_eq || ACTIVE_TYPE == T_Smaller || ACTIVE_TYPE == T_Smaller_eq){
         while (1){
-            //
+            //5 + 2 / 2 ; 
             if(ACTIVE_TYPE == T_Plus || ACTIVE_TYPE == T_Minus || ACTIVE_TYPE == T_Mul || ACTIVE_TYPE == T_Div || ACTIVE_TYPE == T_Concat || ACTIVE_TYPE == T_Not_equal || ACTIVE_TYPE == T_Equal || ACTIVE_TYPE == T_Larger || ACTIVE_TYPE == T_Larger_eq || ACTIVE_TYPE == T_Smaller || ACTIVE_TYPE == T_Smaller_eq){
                 PTreeNode_t *op = initPtree();
                 op->token = ACTIVE_TOKEN;
+                op->token->type = ACTIVE_TYPE;
+                currernt_prec = precedence(op->token->type);
                 ACTIVE_NEXT;
                 PTreeNode_t *b = initPtree();
                 if(ACTIVE_TYPE == T_Plus || ACTIVE_TYPE == T_Minus || ACTIVE_TYPE == T_Mul || ACTIVE_TYPE == T_Div || ACTIVE_TYPE == T_Concat || ACTIVE_TYPE == T_Not_equal || ACTIVE_TYPE == T_Equal || ACTIVE_TYPE == T_Larger || ACTIVE_TYPE == T_Larger_eq || ACTIVE_TYPE == T_Smaller || ACTIVE_TYPE == T_Smaller_eq){
@@ -107,10 +111,16 @@ PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence
                     bracket_L_counter++;
                     b = parse_expression_with_tree(tokens, min_precedence, b);
                 }
+                else if(currernt_prec > prev_prec){
+                    printf("%d > %d\n", precedence(op->token->type), prev_prec);
+                    b->token = ACTIVE_TOKEN;
+                    a->right = makeOpNode(a->right, b, op);
+                }
                 else{
                     b->token = ACTIVE_TOKEN;
+                    a = makeOpNode(a, b, op);
                 }
-                a = makeOpNode(a, b, op);
+                prev_prec = currernt_prec;
                 ACTIVE_NEXT;
             }
             else if(ACTIVE_TYPE == T_R_r_par){
