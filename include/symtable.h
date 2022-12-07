@@ -36,6 +36,7 @@ typedef struct symtables_type{
     symtable_t* function_table; 
     int active_table_index; // marks active table to read from
     int function_table_index; // assigns indexes to functions in funcion table
+    char* end_of_function; // nepatri to do symtables, ale potrebuju to passnout argumentama
 } Symtables;
 
 unsigned long hash(char *name);

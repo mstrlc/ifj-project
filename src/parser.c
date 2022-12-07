@@ -792,6 +792,8 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = rule_Expr(tokens, symtables);
         //presun vysledek z exp_parseru do navratove hodnoty
         printf("MOVE GF@ret GF@assignedVal\n");
+        printf("POPFRAME\n");
+        printf("RETURN\n");
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
@@ -1006,6 +1008,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         //CODEGEN function body -> start
         char* functionName = ACTIVE_DATA;
         char* end_of_function = make_random_label();
+        symtables -> end_of_function = end_of_function;
 
         //kontrola redefinice vestavene funkce
         if (

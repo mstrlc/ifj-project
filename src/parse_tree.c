@@ -305,12 +305,6 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
             {
                 printf("EQS\n");
                 printf("NOTS\n");
-                /*
-                POP op1
-                POP op2
-                EQ op1 op1 op2
-                PUSH op1
-                */
             }
             else if(ptree->token->type == T_Smaller)
             {
