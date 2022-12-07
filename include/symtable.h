@@ -49,7 +49,7 @@ typedef struct symtables_type
     int active_table_index;   // Marks active table to read from
     int function_table_index; // Assigns indexes to functions in funcion table
 
-} Symtables;
+} symtables_t;
 
 unsigned long hash(char *name);
 

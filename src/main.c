@@ -51,7 +51,7 @@ int main()
     ACTIVE_TOKEN = tokens->firstToken;
 
     // Prepare symtables for storing variables and functions in parser
-    Symtables *symtables = (Symtables *)malloc(sizeof(struct symtables_type));
+    symtables_t *symtables = (symtables_t *)malloc(sizeof(struct symtables_type));
     symtables->vars_table = symtable_init(100);
     symtables->active_table_index = 0;
     symtables->function_table_index = 0;
@@ -88,7 +88,10 @@ int main()
 
     // Print built-in functions at the end of the code
     printBuiltIn();
-
+    free_symbols(symtables->vars_table);
+    free_symbols(symtables->function_table);
+    symtable_dispose(symtables->vars_table);
+    symtable_dispose(symtables->function_table);
     freeTokenList(tokens);
     freeSymtables(symtables);
     exit(0);

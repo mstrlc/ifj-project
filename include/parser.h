@@ -46,7 +46,7 @@ void print_line_till_end(token_list_t *tokens);
 
 char *make_random_label();
 
-int parser(token_list_t *tokens, Symtables *symtables, int whichPass);
+int parser(token_list_t *tokens, symtables_t *symtables, int whichPass);
 
 void printBuiltIn();
 

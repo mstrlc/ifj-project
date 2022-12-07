@@ -10,7 +10,7 @@
  */
 
 #ifndef PARSE_TREE_H
-#define PARSER_TREE_H
+#define PARSE_TREE_H
 
 #include "../include/parser.h"
 #include "../include/symtable.h"
@@ -40,6 +40,6 @@ void deletePtreeNode(PTreeNode_t *ptree, token_t *token);
 
 void printPtreeNode(PTreeNode_t *ptree);
 
-void printPtree(PTreeNode_t *ptree, Symtables *symtables);
+void printPtree(PTreeNode_t *ptree, symtables_t *symtables);
 
 #endif

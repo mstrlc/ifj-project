@@ -146,7 +146,7 @@ void printPtreeNode(PTreeNode_t *ptree)
  *
  * @param ptree pointer to the root of the parse tree
  */
-void printPtree(PTreeNode_t *ptree, Symtables *symtables)
+void printPtree(PTreeNode_t *ptree, symtables_t *symtables)
 {
     if (ptree->left != NULL)
     {

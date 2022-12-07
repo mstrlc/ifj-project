@@ -28,17 +28,17 @@
 // Which pass is currently being executed
 int pass;
 
-int rule_Prog(token_list_t *tokens, Symtables *symtables);
-int rule_ParamsCont(token_list_t *tokens, Symtables *symtables);
-int rule_Params(token_list_t *tokens, Symtables *symtables);
+int rule_Prog(token_list_t *tokens, symtables_t *symtables);
+int rule_ParamsCont(token_list_t *tokens, symtables_t *symtables);
+int rule_Params(token_list_t *tokens, symtables_t *symtables);
 int rule_ArgsCont(token_list_t *tokens, token_t *arg_value, stack *arg_stack);
 int rule_Val(token_list_t *tokens);
 int rule_Args(token_list_t *tokens);
-int rule_Stat(token_list_t *tokens, Symtables *symtables);
-int rule_StList(token_list_t *tokens, Symtables *symtables);
-int rule_Assign(token_list_t *tokens, Symtables *symtables);
+int rule_Stat(token_list_t *tokens, symtables_t *symtables);
+int rule_StList(token_list_t *tokens, symtables_t *symtables);
+int rule_Assign(token_list_t *tokens, symtables_t *symtables);
 int rule_Term(token_list_t *tokens);
-int rule_Expr(token_list_t *tokens, Symtables *symtables);
+int rule_Expr(token_list_t *tokens, symtables_t *symtables);
 int argCount = 0;
 int paramCount = 0;
 char *functionName = NULL; // Saves function name for sharing between rules
@@ -141,8 +141,7 @@ int parseEpsilon(token_list_t *tokens)
  * @param tokens Pointer to list of tokens where prolog is going to be checked
  * @return int Error code (0 = OK, others = error)
  */
-int checkProlog(token_list_t *tokens, Symtables *symtables)
-{
+int checkProlog(token_list_t *tokens, symtables_t* symtables){
     int error = 0;
 
     // <?
@@ -211,7 +210,8 @@ int checkProlog(token_list_t *tokens, Symtables *symtables)
 
 // <params-cont> -> , type $id <params-cont>
 // <params-cont> ->
-int rule_ParamsCont(token_list_t *tokens, Symtables *symtables)
+ 
+int rule_ParamsCont(token_list_t *tokens, symtables_t* symtables)
 {
     int error = 0;
 
@@ -276,7 +276,7 @@ int rule_ParamsCont(token_list_t *tokens, Symtables *symtables)
 
 // <params> -> type $id <params-cont>
 // <params> ->
-int rule_Params(token_list_t *tokens, Symtables *symtables)
+int rule_Params(token_list_t *tokens, symtables_t* symtables)
 {
     int error = 0;
 
@@ -399,7 +399,7 @@ int rule_ArgsCont(token_list_t *tokens, token_t *arg_value, stack *arg_stack)
 }
 
 // <expr> -> <term>
-int rule_Expr(token_list_t *tokens, Symtables *symtables)
+int rule_Expr(token_list_t *tokens, symtables_t* symtables)
 {
     int error = 0;
 
@@ -466,7 +466,7 @@ int rule_Args(token_list_t *tokens)
 
 // <assign> -> <expr>
 // <assign> -> func-id ( <args> )
-int rule_Assign(token_list_t *tokens, Symtables *symtables)
+int rule_Assign(token_list_t *tokens, symtables_t *symtables)
 {
     int error = 0;
 
@@ -597,7 +597,7 @@ int rule_Assign(token_list_t *tokens, Symtables *symtables)
 
 // <st-list> -> <stat> <st-list>
 // <st-list> ->
-int rule_StList(token_list_t *tokens, Symtables *symtables)
+int rule_StList(token_list_t *tokens, symtables_t* symtables)
 {
     int error = 0;
 
@@ -642,7 +642,7 @@ int rule_StList(token_list_t *tokens, Symtables *symtables)
 // <stat> -> return <expr> ;
 // <stat> -> <expr> ;
 // <stat> -> func-id ( <args> ) ;
-int rule_Stat(token_list_t *tokens, Symtables *symtables)
+int rule_Stat(token_list_t *tokens, symtables_t* symtables)
 {
     int error = 0;
 
@@ -1115,7 +1115,7 @@ int rule_EOF(token_list_t *tokens)
 // <prog> -> <stat> <prog>
 // <prog> -> function func-id ( <params> ) : type { <st-list> } <prog>
 // <prog> -> <eof>
-int rule_Prog(token_list_t *tokens, Symtables *symtables)
+int rule_Prog(token_list_t *tokens, symtables_t* symtables)
 {
     // printf("BEGIN PROG\n");
     int error = 0;
@@ -1291,7 +1291,7 @@ int rule_Prog(token_list_t *tokens, Symtables *symtables)
  * @param tokens Pointer to list of tokens containing input
  * @return int Error code - success (0) or failure (1 = ERR_LEXEME or 2 = ERR_SYNTAX)
  */
-int parser(token_list_t *tokens, Symtables *symtables, int whichPass)
+int parser(token_list_t *tokens, symtables_t* symtables, int whichPass)
 {
     int error = 0;
     pass = whichPass;
