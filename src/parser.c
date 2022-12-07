@@ -804,7 +804,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
             exit(ERR_MISS_EXCESS_RET);
         }
         hasReturn = true;
-        
+
         // return
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Return);
         // <expr>
@@ -1012,7 +1012,8 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         // function
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Function);
         // func-id
-
+        bool hasReturnSave = hasReturn;
+        hasReturn = false;
         // Check for function redefinition
         if(pass == 1 && symtable_lookup(symtables->function_table, ACTIVE_DATA) != NULL)
         {
@@ -1121,7 +1122,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         
         //reset of control variables
         functionName = NULL;
-        hasReturn = false;
+        hasReturn = hasReturnSave;
 
         //CODEGEN function body -> end
         printf("POPFRAME\n");
