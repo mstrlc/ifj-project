@@ -51,6 +51,8 @@ int rule_Term(token_list_t *tokens);
 int rule_Expr(token_list_t *tokens, Symtables* symtables);
 int argCount = 0;
 int paramCount =0;
+char* functionName = NULL; //saves function name for sharing between rules
+bool hasReturn = false; //saves if function has return statement
 
  //pomocne funkce 
  char* make_random_label(){
@@ -475,7 +477,7 @@ int rule_Assign(token_list_t *tokens, Symtables *symtables)
     // <assign> -> func-id ( <args> )
     else if (ACTIVE_TYPE == T_Identifier)
     {
-        char* functionName = ACTIVE_DATA;
+        functionName = ACTIVE_DATA;
         //check if function exists
         if (pass == 2 && symtable_lookup(symtables->function_table, functionName) == NULL
         && strcmp(functionName, "reads") != 0
@@ -789,6 +791,20 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
     // <stat> -> return <expr> ;
     else if (ACTIVE_TYPE == T_Keyword_Return)
     {
+        //controling excess/insuficient return statements
+        if(symtables -> active_table_index != 0){
+            symbol_t* curr_func = symtable_lookup(symtables -> function_table, functionName);
+            if(curr_func -> func_ret_type != T_Keyword_Void){
+                error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
+                exit(ERR_MISS_EXCESS_RET);
+            }
+        }
+        if(hasReturn == true){
+            error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
+            exit(ERR_MISS_EXCESS_RET);
+        }
+        hasReturn = true;
+        
         // return
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Return);
         // <expr>
@@ -811,7 +827,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
     // <stat> -> func-id ( <args> ) ;
     else if (ACTIVE_TYPE == T_Identifier)
     {
-        char* functionName = ACTIVE_DATA;
+        functionName = ACTIVE_DATA;
         // func-id
         // Check if exists
         if (pass == 2 && symtable_lookup(symtables->function_table, functionName) == NULL
@@ -1009,7 +1025,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
 
 
         //CODEGEN function body -> start
-        char* functionName = ACTIVE_DATA;
+        functionName = ACTIVE_DATA;
         char* end_of_function = make_random_label();
         symtables -> end_of_function = end_of_function;
 
@@ -1062,8 +1078,8 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = rule_Params(tokens, symtables);
 
         // Saves num of params into symtable
-        symbol_t * functionParams = symtable_lookup(symtables -> function_table, functionName);
-        functionParams -> func_param_count = paramCount;
+        symbol_t * current_function = symtable_lookup(symtables -> function_table, functionName);
+        current_function -> func_param_count = paramCount;
         paramCount = 0;
         // )
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
@@ -1072,8 +1088,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         // type
 
         //saving function return type
-        symbol_t *function = symtable_lookup(symtables -> function_table, functionName);
-        function -> func_ret_type = ACTIVE_TYPE;
+        current_function -> func_ret_type = ACTIVE_TYPE;
 
         if (ACTIVE_TYPE == T_Keyword_Int)
         {
@@ -1103,6 +1118,10 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = rule_StList(tokens, symtables);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
+        
+        //reset of control variables
+        functionName = NULL;
+        hasReturn = false;
 
         //CODEGEN function body -> end
         printf("POPFRAME\n");
