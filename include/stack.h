@@ -49,6 +49,4 @@ bool stack_is_empty(stack *s);
 
 void print_and_pop(stack *s);
 
-stack *stack_reverse(stack *s);
-
 #endif
