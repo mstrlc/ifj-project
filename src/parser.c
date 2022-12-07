@@ -792,11 +792,17 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
     // <stat> -> return <expr> ;
     else if (ACTIVE_TYPE == T_Keyword_Return)
     {
-        
+        hasReturn = true;
         // return
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Return);
         // <expr> or ;
         if(ACTIVE_TYPE != T_Semicolon){
+            //controls additional expression with return in void function
+            symbol_t* curr_func = symtable_lookup(symtables -> function_table, functionName);
+                if(curr_func -> func_ret_type == T_Keyword_Void){
+                    error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
+                    exit(ERR_MISS_EXCESS_RET);
+                }
             // <expr>
             HANDLE_ERROR = rule_Expr(tokens, symtables);
             //presun vysledek z exp_parseru do navratove hodnoty
@@ -819,15 +825,6 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
             HANDLE_ERROR = ERR_SYNTAX;
         }
 
-        //controling excess/insuficient return statements
-        // if(symtables -> active_table_index != 0){
-        //     symbol_t* curr_func = symtable_lookup(symtables -> function_table, functionName);
-        //     if(curr_func -> func_ret_type != T_Keyword_Void){
-        //         error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
-        //         exit(ERR_MISS_EXCESS_RET);
-        //     }
-        // }
-        // hasReturn = true;
     }
     // <stat> -> <expr> ;
     else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null)
@@ -1124,11 +1121,11 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
             HANDLE_ERROR = ERR_SYNTAX;
         }
         //checks for missing return
-        // if(hasReturn == false && ACTIVE_TYPE != T_Keyword_Void)
-        // {
-        //     error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
-        //     exit(ERR_MISS_EXCESS_RET);
-        // }
+        if(hasReturn == false && current_function -> func_ret_type != T_Keyword_Void)
+        {
+            error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
+            exit(ERR_WRONG_PARAM_RET);
+        }
         //saves return state of main
         hasReturnSave = hasReturn;
         hasReturn = false;
