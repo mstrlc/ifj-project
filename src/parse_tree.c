@@ -636,10 +636,27 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
             }
             else if(ptree->token->type == T_Concat)
             {
+                char* err_label = make_random_label();
+                char* err_skip = make_random_label();
+
                 printf("POPS GF@op1\n");
+                printf("TYPE GF@op3 GF@op1\n");
+                printf("JUMPIFNEQ %s GF@op3 string@string\n", err_label);
+
                 printf("POPS GF@op2\n");
+                printf("TYPE GF@op4 GF@op2\n");
+                printf("JUMPIFNEQ %s GF@op4 string@string\n", err_label);
+
+                printf("JUMP %s\n", err_skip);
+                printf("LABEL %s\n", err_label);
+                printf("EXIT int@7\n");
+                printf("LABEL %s\n", err_skip);
+
                 printf("CONCAT GF@op1 GF@op2 GF@op1\n");
                 printf("PUSHS GF@op1\n");
+                
+                free(err_label);
+                free(err_skip);
             }
         }
     }
