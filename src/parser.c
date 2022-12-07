@@ -1246,7 +1246,8 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         }
         else
         {
-            HANDLE_ERROR = ERR_SYNTAX;
+            error_exit(ERR_SYNTAX, ACTIVE_TOKEN);
+            exit(ERR_SYNTAX);
         }
         
         hasReturn = false;
