@@ -708,8 +708,12 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         char* while_label_begin = make_random_label();
         char* label_int = make_random_label();
         char* label_string = make_random_label();
+        char* str_0 = make_random_label();
         char* skip_str = make_random_label();
         char* skip_int = make_random_label();
+        char* skip_float = make_random_label();
+        char* label_float = make_random_label();
+        char* skip_not_boolean_vals = make_random_label();
 
         printf("LABEL %s\n", while_label_begin);
         //END CODEGEN labels init
@@ -721,24 +725,43 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // <expr>
         HANDLE_ERROR = rule_Expr(tokens, symtables);
         // )
+
         //CODEGEN WHILE -> BEGIN
+         printf("MOVE GF@op4 bool@true\n");
         printf("TYPE GF@op1 GF@assignedVal\n");
+
+        //handle of non boolean vars
         printf("JUMPIFEQ %s GF@op1 string@int\n", label_int);
         printf("JUMPIFEQ %s GF@op1 string@string\n", label_string);
+        printf("JUMPIFEQ %s GF@op1 string@float\n", label_float);
+        printf("JUMPIFEQ %s GF@op1 string@bool\n", skip_not_boolean_vals);
 
-        // 0 in while -> false
+        // 0 in while -> false, otherwise true
         printf("JUMP %s\n", skip_int);
         printf("LABEL %s\n", label_int);
         printf("JUMPIFNEQ %s GF@assignedVal int@0\n", skip_int);
-        printf("MOVE GF@assignedVal bool@false\n");
+        printf("MOVE GF@op4 bool@false\n");
         printf("LABEL %s\n", skip_int);
 
-        // empty string in while -> false
+        // empty string in while -> false, otherwise true
         printf("JUMP %s\n", skip_str);
         printf("LABEL %s\n", label_string);
+        printf("JUMPIFEQ %s GF@assignedVal string@0\n", str_0);
         printf("JUMPIFNEQ %s GF@assignedVal string@\n", skip_str);
-        printf("MOVE GF@assignedVal bool@false\n");
+        printf("LABEL %s\n", str_0);
+        printf("MOVE GF@op4 bool@false\n");
         printf("LABEL %s\n", skip_str);
+
+        // 0.0 float in while -> false, otherwise true
+        printf("JUMP %s\n", skip_float);
+        printf("LABEL %s\n", label_float);
+        printf("JUMPIFNEQ %s GF@assignedVal float@0x0p+0\n", skip_float);
+        printf("MOVE GF@op4 bool@false\n");
+        printf("LABEL %s\n", skip_float);
+
+        // priradime spravnou value do assign
+        printf("MOVE GF@assignedVal GF@op4\n");
+        printf("LABEL %s\n", skip_not_boolean_vals);
 
         // null in while -> false
         printf("JUMPIFEQ %s GF@op1 string@nil\n", while_label_end);
@@ -756,12 +779,17 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         //CODEGEN WHILE -> END
         printf("JUMP %s\n", while_label_begin);
         printf("LABEL %s\n", while_label_end);
+
         free(while_label_begin);
         free(while_label_end); 
         free(skip_int);
         free(skip_str);
         free(label_int);
         free(label_string);
+        free(label_float);
+        free(skip_float);
+        free(skip_not_boolean_vals);
+        free(str_0);
         //END CODEGEN WHILE -> END
 
     }
@@ -773,8 +801,12 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         char* else_label = make_random_label();
         char* label_int = make_random_label();
         char* label_string = make_random_label();
+        char* str_0 = make_random_label();
+        char* label_float = make_random_label();
         char* skip_str = make_random_label();
         char* skip_int = make_random_label();
+        char* skip_float = make_random_label();
+        char* skip_not_boolean_vals = make_random_label();
 
         //END CODEGEN
 
@@ -788,23 +820,41 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
 
         //CODEGEN IF -> BEGIN
+        printf("MOVE GF@op4 bool@true\n");
         printf("TYPE GF@op1 GF@assignedVal\n");
+
+        //handle of non boolean vars
         printf("JUMPIFEQ %s GF@op1 string@int\n", label_int);
         printf("JUMPIFEQ %s GF@op1 string@string\n", label_string);
+        printf("JUMPIFEQ %s GF@op1 string@bool\n", skip_not_boolean_vals);
+        printf("JUMPIFEQ %s GF@op1 string@float\n", label_float);
 
-        // 0 in if -> false
+        // 0 in if -> false, otherwise true
         printf("JUMP %s\n", skip_int);
         printf("LABEL %s\n", label_int);
         printf("JUMPIFNEQ %s GF@assignedVal int@0\n", skip_int);
-        printf("MOVE GF@assignedVal bool@false\n");
+        printf("MOVE GF@op4 bool@false\n");
         printf("LABEL %s\n", skip_int);
 
-        // empty string in if -> false
+        // empty string in if -> false, otherwise true
         printf("JUMP %s\n", skip_str);
         printf("LABEL %s\n", label_string);
+        printf("JUMPIFEQ %s GF@assignedVal string@0\n", str_0);
         printf("JUMPIFNEQ %s GF@assignedVal string@\n", skip_str);
-        printf("MOVE GF@assignedVal bool@false\n");
+        printf("LABEL %s\n", str_0);
+        printf("MOVE GF@op4 bool@false\n");
         printf("LABEL %s\n", skip_str);
+
+        // 0.0 float in while -> false, otherwise true
+        printf("JUMP %s\n", skip_float);
+        printf("LABEL %s\n", label_float);
+        printf("JUMPIFNEQ %s GF@assignedVal float@0x0p+0\n", skip_float);
+        printf("MOVE GF@op4 bool@false\n");
+        printf("LABEL %s\n", skip_float);
+
+        // priradime spravnou value do assign
+        printf("MOVE GF@assignedVal GF@op4\n");
+        printf("LABEL %s\n", skip_not_boolean_vals);
         
         // null in if -> false
         printf("JUMPIFEQ %s GF@op1 string@nil\n", if_label);
@@ -834,12 +884,17 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
 
         //CODEGEN ELSE -> END
         printf("LABEL %s\n", else_label);
+
         free(else_label);
         free(if_label);
         free(skip_int);
         free(skip_str);
+        free(skip_float);
         free(label_int);
         free(label_string);
+        free(label_float);
+        free(skip_not_boolean_vals);
+        free(str_0);
         //END CODEGEN ELSE -> END
         
     }
