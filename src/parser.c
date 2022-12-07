@@ -1249,7 +1249,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
             HANDLE_ERROR = ERR_SYNTAX;
         }
         
-        
+        hasReturn = false;
 
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
@@ -1259,11 +1259,11 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
 
         //checks for missing return
-        // if(hasReturn == false && current_function -> func_ret_type != T_Keyword_Void && symtables -> active_table_index != 0)
-        // {
-        //     error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
-        //     exit(ERR_WRONG_PARAM_RET);
-        // }
+        if(hasReturn == false && current_function -> func_ret_type != T_Keyword_Void)
+        {
+            error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
+            exit(ERR_WRONG_PARAM_RET);
+        }
 
         //resets control variable
         functionName = NULL;
