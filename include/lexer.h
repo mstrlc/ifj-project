@@ -9,10 +9,10 @@
  *
  */
 
-#include <stdlib.h>
-
 #ifndef LEXER_H
 #define LEXER_H
+
+#include <stdlib.h>
 
 /**
  * @brief States of FSM

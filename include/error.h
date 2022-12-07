@@ -9,10 +9,10 @@
  *
  */
 
-#include "../include/lexer.h"
-
 #ifndef ERROR_H
 #define ERROR_H
+
+#include "../include/lexer.h"
 
 // Do not overwrite error code if it is already set
 #define HANDLE_ERROR                     \
