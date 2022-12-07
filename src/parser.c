@@ -793,17 +793,31 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
     else if (ACTIVE_TYPE == T_Keyword_Return)
     {
         
-
         // return
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Return);
-        // <expr>
-        HANDLE_ERROR = rule_Expr(tokens, symtables);
-        //presun vysledek z exp_parseru do navratove hodnoty
-        printf("MOVE GF@ret GF@assignedVal\n");
-        printf("POPFRAME\n");
-        printf("RETURN\n");
-        // ;
-        HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
+        // <expr> or ;
+        if(ACTIVE_TYPE != T_Semicolon){
+            // <expr>
+            HANDLE_ERROR = rule_Expr(tokens, symtables);
+            //presun vysledek z exp_parseru do navratove hodnoty
+            printf("MOVE GF@ret GF@assignedVal\n");
+            printf("POPFRAME\n");
+            printf("RETURN\n");
+            // ;
+            HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
+        }
+        else if (ACTIVE_TYPE == T_Semicolon){
+            // ;
+            HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
+            //presun nil do navratove hodnoty
+            printf("MOVE GF@ret nil@nil\n");
+            printf("POPFRAME\n");
+            printf("RETURN\n");
+        }
+        else
+        {
+            HANDLE_ERROR = ERR_SYNTAX;
+        }
 
         //controling excess/insuficient return statements
         // if(symtables -> active_table_index != 0){
