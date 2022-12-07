@@ -791,17 +791,17 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
     // <stat> -> return <expr> ;
     else if (ACTIVE_TYPE == T_Keyword_Return)
     {
-        hasReturn = true;
+        // hasReturn = true;
         // return
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Return);
         // <expr> or ;
         if(ACTIVE_TYPE != T_Semicolon){
             //controls additional expression with return in void function
-            symbol_t* curr_func = symtable_lookup(symtables -> function_table, functionName);
-                if(curr_func -> func_ret_type == T_Keyword_Void){
-                    error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
-                    exit(ERR_MISS_EXCESS_RET);
-                }
+            // symbol_t* curr_func = symtable_lookup(symtables -> function_table, functionName);
+            //     if(curr_func -> func_ret_type == T_Keyword_Void){
+            //         error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
+            //         exit(ERR_MISS_EXCESS_RET);
+            //     }
             // <expr>
             HANDLE_ERROR = rule_Expr(tokens, symtables);
             //presun vysledek z exp_parseru do navratove hodnoty
@@ -813,11 +813,11 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         }
         else if (ACTIVE_TYPE == T_Semicolon){
             //controls insufficient expression with return in void function
-            symbol_t* curr_func = symtable_lookup(symtables -> function_table, functionName);
-                if(curr_func -> func_ret_type != T_Keyword_Void){
-                    error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
-                    exit(ERR_MISS_EXCESS_RET);
-                }
+            // symbol_t* curr_func = symtable_lookup(symtables -> function_table, functionName);
+            //     if(curr_func -> func_ret_type != T_Keyword_Void){
+            //         error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
+            //         exit(ERR_MISS_EXCESS_RET);
+            //     }
             // ;
             HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
             //presun nil do navratove hodnoty
@@ -1126,11 +1126,11 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
             HANDLE_ERROR = ERR_SYNTAX;
         }
         //checks for missing return
-        if(hasReturn == false && current_function -> func_ret_type != T_Keyword_Void)
-        {
-            error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
-            exit(ERR_WRONG_PARAM_RET);
-        }
+        // if(hasReturn == false && current_function -> func_ret_type != T_Keyword_Void)
+        // {
+        //     error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
+        //     exit(ERR_WRONG_PARAM_RET);
+        // }
 
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
