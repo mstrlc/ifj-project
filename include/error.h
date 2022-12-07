@@ -14,6 +14,16 @@
 #ifndef ERROR_H
 #define ERROR_H
 
+// Do not overwrite error code if it is already set
+#define HANDLE_ERROR                     \
+    if (error != 0)                      \
+    {                                    \
+        error_exit(error, ACTIVE_TOKEN); \
+        exit(error);                     \
+    }                                    \
+    else                                 \
+        error
+
 // Chyba v programu v ramci lexikalni analyzy
 // (chybna struktura aktualniho lexemu)
 #define ERR_LEXEME 1
