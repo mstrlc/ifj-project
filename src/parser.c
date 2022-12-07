@@ -1007,6 +1007,24 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         char* functionName = ACTIVE_DATA;
         char* end_of_function = make_random_label();
 
+        //kontrola redefinice vestavene funkce
+        if (
+           strcmp(functionName, "reads") == 0
+        || strcmp(functionName, "readi") == 0
+        || strcmp(functionName, "readf") == 0
+        || strcmp(functionName, "write") == 0
+        || strcmp(functionName, "floatval") == 0
+        || strcmp(functionName, "intval") == 0
+        || strcmp(functionName, "strval") == 0
+        || strcmp(functionName, "strlen") == 0
+        || strcmp(functionName, "substring") == 0
+        || strcmp(functionName, "ord") == 0
+        || strcmp(functionName, "chr") == 0)
+        {
+            error_exit(ERR_UNDEF_REDEF_FUN, ACTIVE_TOKEN);
+            exit(ERR_UNDEF_REDEF_FUN);
+        }
+
         // funkci musime preskocit pokud ji nevolame
         printf("JUMP %s\n", end_of_function);
         
