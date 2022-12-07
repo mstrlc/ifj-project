@@ -670,23 +670,30 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // $id
         token_t* var = ACTIVE_TOKEN;
         HANDLE_ERROR = parseTerminal(tokens, T_Var_id);
-        // =
-        HANDLE_ERROR = parseTerminal(tokens, T_Assign);
-        // <assign>
-        HANDLE_ERROR = rule_Assign(tokens, symtables);
-        // ;
-        HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
-        
-        //CODEGEN var init and assign
-        // do aktivni tabulky indexu vloz variable
-        if(symtable_lookup(symtables -> vars_table_array[symtables->active_table_index], var->data) == NULL){
-            symtable_insert(symtables -> vars_table_array[symtables->active_table_index], token_to_symbol(var));
+        //;
+        if (ACTIVE_TYPE == T_Semicolon)
+        {
+            HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
         }
+        // =
+        else
+        {
+            HANDLE_ERROR = parseTerminal(tokens, T_Assign);
+            // <assign>
+            HANDLE_ERROR = rule_Assign(tokens, symtables);
+            // ;
+            HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
+            
+            //CODEGEN var init and assign
+            // do aktivni tabulky indexu vloz variable
+            if(symtable_lookup(symtables -> vars_table_array[symtables->active_table_index], var->data) == NULL){
+                symtable_insert(symtables -> vars_table_array[symtables->active_table_index], token_to_symbol(var));
+            }
 
-        // presun vysledek z exp_parseru do promenne
-        printf("MOVE LF@%s GF@assignedVal\n", var->data);
-        //END CODEGEN var init and assign
-        
+            // presun vysledek z exp_parseru do promenne
+            printf("MOVE LF@%s GF@assignedVal\n", var->data);
+            //END CODEGEN var init and assign
+        }
     }
     // <stat> -> while ( <expr> ) { <st-list> }
     else if (ACTIVE_TYPE == T_Keyword_While)
@@ -785,10 +792,10 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
     // <stat> -> <expr> ;
-    else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
+    else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null)
     {
         // <expr>
-        HANDLE_ERROR = rule_Expr(tokens, symtables);
+        HANDLE_ERROR = parseTerminal(tokens, ACTIVE_TYPE);
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
@@ -964,7 +971,10 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         ACTIVE_TYPE == T_Keyword_Int ||
         ACTIVE_TYPE == T_Keyword_Float ||
         ACTIVE_TYPE == T_Keyword_String ||
-        ACTIVE_TYPE == T_Keyword_Null)
+        ACTIVE_TYPE == T_Keyword_Null ||
+        ACTIVE_TYPE == T_Int ||
+        ACTIVE_TYPE == T_Float ||
+        ACTIVE_TYPE == T_String)
     {
         // <stat>
         HANDLE_ERROR = rule_Stat(tokens, symtables);
