@@ -618,6 +618,8 @@ int getNextToken(token_t *token)
         token->type = T_Keyword_If;
     else if (strcmp(token->data, "null") == 0)
         token->type = T_Keyword_Null;
+    else if (strcmp(token->data, "NULL") == 0) // podpora pro upper case
+        token->type = T_Keyword_Null;
     else if (strcmp(token->data, "return") == 0)
         token->type = T_Keyword_Return;
     else if (strcmp(token->data, "int") == 0)
@@ -722,6 +724,15 @@ int getNextToken(token_t *token)
                 string[j] = '3';
                 j++;
                 string[j] = '6';
+                j++;
+            }
+            else if (token->data[i] == '#' && token->data[i - 1] == '\\')
+            {
+                string[j] = '0';
+                j++;
+                string[j] = '3';
+                j++;
+                string[j] = '5';
                 j++;
             }
             else
