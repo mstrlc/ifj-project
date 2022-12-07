@@ -82,7 +82,6 @@ typedef enum token_type_t
     T_String,
     T_Int,
     T_Float,
-    T_Exp,
     T_Block_comment,
     T_Line_comment,
     T_Var_prefix,

@@ -155,8 +155,6 @@ char *typeToString(token_type_t type)
         return "T_Int";
     case T_Float:
         return "T_Float";
-    case T_Exp:
-        return "T_Exp";
     case T_Block_comment:
         return "T_Block_comment";
     case T_Line_comment:
