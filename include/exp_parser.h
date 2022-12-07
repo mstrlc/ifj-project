@@ -1,8 +1,12 @@
 /**
  * @file exp_parser.h
- * @author Ondřej Seidl xseidl06
- * @brief Interface of expression parser
+ *
+ * Interface of expression parser
+ *
  * IFJ project 2022
+ *
+ * @author <xseidl06> Ondřej Seidl
+ *
  */
 
 #ifndef EXP_PARSER_H
@@ -12,7 +16,7 @@
 #include "../include/symtable.h"
 
 PTreeNode_t *parse_expression_with_tree(token_list_t *tokens, int min_precedence, PTreeNode_t *PTree);
-int exp_parser(token_list_t *tokens, Symtables *symtables);
 
+int exp_parser(token_list_t *tokens, Symtables *symtables);
 
 #endif
