@@ -59,10 +59,9 @@ symbol_t *token_to_symbol(token_t *token)
 }
 
 /**
- * @brief Initializes symbol table
- * 
- * Allocates memory for symbol table of given size
- * sets all pointers to NULL
+ * @brief Initializes symbol table.
+ * Allocates memory for symbol table of given size.
+ * sets all pointers to NULL.
  * 
  * @param size of table
  * 
