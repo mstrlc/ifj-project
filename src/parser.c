@@ -707,6 +707,11 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         //CODEGEN labels init
         char* while_label_end = make_random_label();
         char* while_label_begin = make_random_label();
+        char* label_int = make_random_label();
+        char* label_string = make_random_label();
+        char* skip_str = make_random_label();
+        char* skip_int = make_random_label();
+
         printf("LABEL %s\n", while_label_begin);
         //END CODEGEN labels init
     
@@ -719,8 +724,27 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // )
         //CODEGEN WHILE -> BEGIN
         printf("TYPE GF@op1 GF@assignedVal\n");
+        printf("JUMPIFEQ %s GF@op1 string@int\n", label_int);
+        printf("JUMPIFEQ %s GF@op1 string@string\n", label_string);
+
+        // 0 in while -> false
+        printf("JUMP %s\n", skip_int);
+        printf("LABEL %s\n", label_int);
+        printf("JUMPIFNEQ %s GF@assignedVal int@0\n", skip_int);
+        printf("MOVE GF@assignedVal bool@false\n");
+        printf("LABEL %s\n", skip_int);
+
+        // empty string in while -> false
+        printf("JUMP %s\n", skip_str);
+        printf("LABEL %s\n", label_string);
+        printf("JUMPIFNEQ %s GF@assignedVal string@\n", skip_str);
+        printf("MOVE GF@assignedVal bool@false\n");
+        printf("LABEL %s\n", skip_str);
+
+        // null in while -> false
         printf("JUMPIFEQ %s GF@op1 string@nil\n", while_label_end);
         printf("JUMPIFEQ %s GF@assignedVal bool@false\n",while_label_end);
+
         //END CODEGEN WHILE -> BEGIN
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
         // {
@@ -735,6 +759,10 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         printf("LABEL %s\n", while_label_end);
         free(while_label_begin);
         free(while_label_end); 
+        free(skip_int);
+        free(skip_str);
+        free(label_int);
+        free(label_string);
         //END CODEGEN WHILE -> END
 
     }
@@ -744,6 +772,11 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         //CODEGEN labels init
         char* if_label = make_random_label();
         char* else_label = make_random_label();
+        char* label_int = make_random_label();
+        char* label_string = make_random_label();
+        char* skip_str = make_random_label();
+        char* skip_int = make_random_label();
+
         //END CODEGEN
 
         // if
@@ -757,6 +790,24 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
 
         //CODEGEN IF -> BEGIN
         printf("TYPE GF@op1 GF@assignedVal\n");
+        printf("JUMPIFEQ %s GF@op1 string@int\n", label_int);
+        printf("JUMPIFEQ %s GF@op1 string@string\n", label_string);
+
+        // 0 in if -> false
+        printf("JUMP %s\n", skip_int);
+        printf("LABEL %s\n", label_int);
+        printf("JUMPIFNEQ %s GF@assignedVal int@0\n", skip_int);
+        printf("MOVE GF@assignedVal bool@false\n");
+        printf("LABEL %s\n", skip_int);
+
+        // empty string in if -> false
+        printf("JUMP %s\n", skip_str);
+        printf("LABEL %s\n", label_string);
+        printf("JUMPIFNEQ %s GF@assignedVal string@\n", skip_str);
+        printf("MOVE GF@assignedVal bool@false\n");
+        printf("LABEL %s\n", skip_str);
+        
+        // null in if -> false
         printf("JUMPIFEQ %s GF@op1 string@nil\n", if_label);
         printf("JUMPIFEQ %s GF@assignedVal bool@false\n", if_label); 
         //END CODEGEN IF -> BEGIN
@@ -786,12 +837,22 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         printf("LABEL %s\n", else_label);
         free(else_label);
         free(if_label);
+        free(skip_int);
+        free(skip_str);
+        free(label_int);
+        free(label_string);
         //END CODEGEN ELSE -> END
         
     }
     // <stat> -> return <expr> ;
     else if (ACTIVE_TYPE == T_Keyword_Return)
     {
+        //return v mainu ukoncuje program a vraci 0
+        if(symtables -> active_table_index == 0){ 
+                printf("EXIT int@0\n");
+        }
+        
+        
         hasReturn = true;
         // return
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Return);
@@ -805,6 +866,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
                 }
             // <expr>
             HANDLE_ERROR = rule_Expr(tokens, symtables);
+
             //presun vysledek z exp_parseru do navratove hodnoty
             printf("MOVE GF@ret GF@assignedVal\n");
             printf("POPFRAME\n");
