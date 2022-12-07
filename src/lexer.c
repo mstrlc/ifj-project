@@ -737,6 +737,12 @@ int getNextToken(token_t *token)
                 string[j] = '5';
                 j++;
             }
+            // Unescaped $
+            else if (token->data[i] == '$' && token->data[i - 1] != '\\')
+            {
+                token->type == T_Error;
+                break;
+            }
             // Hexadecimal escape sequence
             else if ((token->data[i] == 'x' ||  token->data[i] == 'X') && token->data[i - 1] == '\\')
             {
