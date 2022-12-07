@@ -541,7 +541,7 @@ int getNextToken(token_t *token)
             if (isdigit(c))
                 nextState = Exp_in;
             else
-                token->type = T_Exp;
+                token->type = T_Float;
             break;
         case Whitespace:
             if (isspace(c))
