@@ -242,6 +242,7 @@ int rule_ParamsCont(token_list_t *tokens, Symtables* symtables)
 
         //priradime defvary parametru do vars_table funkce
         if(symtable_lookup(symtables -> vars_table_array[symtables->active_table_index], ACTIVE_DATA) == NULL){
+            symtable_check_size(symtables -> vars_table_array[symtables->active_table_index]);
             symtable_insert(symtables -> vars_table_array[symtables->active_table_index], token_to_symbol(ACTIVE_TOKEN));
         }
 
@@ -306,6 +307,7 @@ int rule_Params(token_list_t *tokens, Symtables* symtables)
 
         //priradime defvary parametru do vars_table funkce
         if(symtable_lookup(symtables -> vars_table_array[symtables->active_table_index], ACTIVE_DATA) == NULL){
+            symtable_check_size(symtables -> vars_table_array[symtables->active_table_index]);
             symtable_insert(symtables -> vars_table_array[symtables->active_table_index], token_to_symbol(ACTIVE_TOKEN));
         }
 
@@ -667,6 +669,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
             //CODEGEN var init and assign
             // do aktivni tabulky indexu vloz variable
             if(symtable_lookup(symtables -> vars_table_array[symtables->active_table_index], var->data) == NULL){
+                symtable_check_size(symtables -> vars_table_array[symtables->active_table_index]);
                 symtable_insert(symtables -> vars_table_array[symtables->active_table_index], token_to_symbol(var));
             }
 
@@ -1156,6 +1159,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
             exit(error);
         }
         else{
+            symtable_check_size(symtables->function_table);
             symtable_insert(symtables->function_table, token_to_symbol(ACTIVE_TOKEN));
         }
 
@@ -1200,7 +1204,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         
         //pokud symtable s timto indexem neexistuje tak ji vytvor (osetreni druheho pruchodu)
         if(!symtables -> vars_table_array[symtables->active_table_index])
-            symtables -> vars_table_array[symtables->active_table_index] = symtable_init(100);
+            symtables -> vars_table_array[symtables->active_table_index] = symtable_init(101);
 
         //vyprintuj vsechny defvary z daneho indexu, tzn pri druhem pruchodu bude na zacatku kazde funkce print vsech jejich defvaru
         symtable_defvar_print(symtables->vars_table_array[symtables->active_table_index]);
