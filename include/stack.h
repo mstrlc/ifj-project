@@ -20,10 +20,6 @@
 
 #define BRACKET_STACK_MAX 1000
 
-// zasobnik na spravne checkovani uzaviracim slozenych zavorek .. pokud neni nic v zasobniku
-// znameno to ze pred tim nebyla zadna oteviraci zavorka a tudiz zpusobi chybi
-// pozdej v nem bude asi vic informaci nebo tu bude i vic zasobniku na vic druhu informaci treba scopy prommenych funkci atd
-
 typedef struct stack_elem
 {
     char *stack_str;
