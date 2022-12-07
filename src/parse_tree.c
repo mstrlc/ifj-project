@@ -284,7 +284,7 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
                 printf("INT2FLOAT GF@op2 GF@op2\n");
                 printf("LABEL %s\n", label2);
                
-                printf("DIV GF@op1 GF@op1 GF@op2\n");
+                printf("DIV GF@op1 GF@op2 GF@op1\n");
                 printf("PUSHS GF@op1\n");
                 printf("JUMP %s\n", label4);
                 printf("LABEL %s\n", label3);
@@ -304,12 +304,6 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
             {
                 printf("EQS\n");
                 printf("NOTS\n");
-                /*
-                POP op1
-                POP op2
-                EQ op1 op1 op2
-                PUSH op1
-                */
             }
             else if(ptree->token->type == T_Smaller)
             {

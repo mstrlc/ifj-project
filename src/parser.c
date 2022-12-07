@@ -792,6 +792,8 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = rule_Expr(tokens, symtables);
         //presun vysledek z exp_parseru do navratove hodnoty
         printf("MOVE GF@ret GF@assignedVal\n");
+        printf("POPFRAME\n");
+        printf("RETURN\n");
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
@@ -1006,6 +1008,25 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         //CODEGEN function body -> start
         char* functionName = ACTIVE_DATA;
         char* end_of_function = make_random_label();
+        symtables -> end_of_function = end_of_function;
+
+        //kontrola redefinice vestavene funkce
+        if (
+           strcmp(functionName, "reads") == 0
+        || strcmp(functionName, "readi") == 0
+        || strcmp(functionName, "readf") == 0
+        || strcmp(functionName, "write") == 0
+        || strcmp(functionName, "floatval") == 0
+        || strcmp(functionName, "intval") == 0
+        || strcmp(functionName, "strval") == 0
+        || strcmp(functionName, "strlen") == 0
+        || strcmp(functionName, "substring") == 0
+        || strcmp(functionName, "ord") == 0
+        || strcmp(functionName, "chr") == 0)
+        {
+            error_exit(ERR_UNDEF_REDEF_FUN, ACTIVE_TOKEN);
+            exit(ERR_UNDEF_REDEF_FUN);
+        }
 
         // funkci musime preskocit pokud ji nevolame
         printf("JUMP %s\n", end_of_function);
