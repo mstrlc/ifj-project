@@ -1030,7 +1030,6 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         //CODEGEN function body -> start
         functionName = ACTIVE_DATA;
         char* end_of_function = make_random_label();
-        symtables -> end_of_function = end_of_function;
 
         //kontrola redefinice vestavene funkce
         if (
