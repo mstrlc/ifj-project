@@ -766,7 +766,6 @@ int getNextToken(token_t *token)
                 i++;
                 octal[2] = token->data[i];
                 octal[3] = '\0';
-                fprintf(stderr, "%s", octal);
                 char character = strtol(octal, 0, 8);
 
                 j--;
