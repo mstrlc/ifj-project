@@ -733,6 +733,47 @@ int getNextToken(token_t *token)
                 string[j] = '5';
                 j++;
             }
+            // Hexadecimal escape sequence
+            else if ((token->data[i] == 'x' ||  token->data[i] == 'X') && token->data[i - 1] == '\\')
+            {
+                char hexa[3];
+                i++;
+                hexa[0] = token->data[i];
+                i++;
+                hexa[1] = token->data[i];
+                hexa[2] = '\0';
+                
+                if(hexa[0] >= 'A' && hexa[0] <= 'F')
+                    hexa[0] = hexa[0] - ('A' - 'a');
+                if(hexa[1] >= 'A' && hexa[1] <= 'F')
+                    hexa[1] = hexa[1] - ('A' - 'a');
+
+                char character = strtol(hexa, 0, 16);
+                j--;
+                string[j] = character;
+                j++;
+            }
+            // Octal escape sequence
+            else if (token->data[i] >= '0' && token->data[i] <= '3' &&
+                     token->data[i+1] >= '0' && token->data[i+1] <= '7' &&
+                     token->data[i+2] >= '1' && token->data[i+2] <= '7' &&
+                     token->data[i-1] == '\\')
+            {
+                char octal[4];
+                octal[0] = token->data[i];
+                i++;
+                octal[1] = token->data[i];
+                i++;
+                octal[2] = token->data[i];
+                octal[3] = '\0';
+                fprintf(stderr, "%s", octal);
+                char character = strtol(octal, 0, 8);
+
+                j--;
+                string[j] = character;
+                j++;
+            }
+
             else
             {
                 string[j] = token->data[i];
