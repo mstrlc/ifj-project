@@ -576,30 +576,7 @@ int rule_Assign(token_list_t *tokens, Symtables *symtables)
             printf("CALL %s\n", functionName);
             printf("MOVE GF@assignedVal GF@ret\n");
             printf("MOVE GF@ret nil@nil\n");
-            argCount = 0;
-
-            //checks return type of func
-            symbol_t *function = symtable_lookup(symtables->function_table, functionName);
-            if(function -> func_ret_type == T_Keyword_Int){
-                printf("MOVE GF@retType string@int\n");
-                printf("TYPE GF@realRetType GF@assignedVal\n");
-                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
-            }
-            else if(function -> func_ret_type == T_Keyword_Float){
-                printf("MOVE GF@retType string@float\n");
-                printf("TYPE GF@realRetType GF@assignedVal\n");
-                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
-            }
-            else if(function -> func_ret_type == T_Keyword_String){
-                printf("MOVE GF@retType string@string\n");
-                printf("TYPE GF@realRetType GF@assignedVal\n");
-                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
-            }
-            else if(function -> func_ret_type == T_Keyword_Void){
-                printf("MOVE GF@retType string@nil\n");
-                printf("TYPE GF@realRetType GF@assignedVal\n");
-                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
-            }
+            argCount = 0;   
         }
 
     }
@@ -918,6 +895,28 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
 
             //presun vysledek z exp_parseru do navratove hodnoty
             printf("MOVE GF@ret GF@assignedVal\n");
+            //checks return type of func
+            symbol_t *function = symtable_lookup(symtables->function_table, functionName);
+            if(function -> func_ret_type == T_Keyword_Int){
+                printf("MOVE GF@retType string@int\n");
+                printf("TYPE GF@realRetType GF@ret\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
+            else if(function -> func_ret_type == T_Keyword_Float){
+                printf("MOVE GF@retType string@float\n");
+                printf("TYPE GF@realRetType GF@ret\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
+            else if(function -> func_ret_type == T_Keyword_String){
+                printf("MOVE GF@retType string@string\n");
+                printf("TYPE GF@realRetType GF@ret\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
+            else if(function -> func_ret_type == T_Keyword_Void){
+                printf("MOVE GF@retType string@nil\n");
+                printf("TYPE GF@realRetType GF@ret\n");
+                printf("JUMPIFNEQ wrongParamReturn GF@retType GF@realRetType\n");
+            }
             printf("POPFRAME\n");
             printf("RETURN\n");
             // ;
