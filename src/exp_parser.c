@@ -12,6 +12,7 @@
 #include "../include/exp_parser.h"
 #include "../include/error.h"
 #include "../include/symtable.h"
+#include "../include/parser.h"
 
 /**
  * @brief Returns the precedence of the given operator
@@ -65,7 +66,7 @@ int exp_parser(token_list_t *tokens, Symtables *symtables)
     if(PTree != NULL)
     {
         printPtree(PTree, symtables);
-        printf("POPS GF@assignedVal\n"); 
+        printf("POPS GF@assignedVal\n");
         disposePtree(PTree);
     }
     else
