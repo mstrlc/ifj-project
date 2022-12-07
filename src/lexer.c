@@ -676,7 +676,6 @@ int getNextToken(token_t *token)
             }
             else if (token->data[i] == '\\' && token->data[i - 1] == '\\')
             {
-                j--;
                 string[j] = '0';
                 j++;
                 string[j] = '9';
