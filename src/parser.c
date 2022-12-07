@@ -150,7 +150,10 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
     {
         HANDLE_ERROR = parseProlog(tokens, T_Identifier);
     }
-    HANDLE_ERROR = parseProlog(tokens, T_Whitespace);
+    if (ACTIVE_TYPE == T_Line_comment || ACTIVE_TYPE == T_Block_comment || ACTIVE_TYPE == T_Whitespace)
+    {
+        HANDLE_ERROR = parseProlog(tokens, ACTIVE_TYPE);
+    }
     // declare
     if (strcmp(ACTIVE_DATA, "declare") == 0)
     {
