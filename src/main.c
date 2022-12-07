@@ -90,5 +90,6 @@ int main()
     printBuiltIn();
 
     freeTokenList(tokens);
+    freeSymtables(symtables);
     exit(0);
 }

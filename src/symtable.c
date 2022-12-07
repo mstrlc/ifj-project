@@ -1,9 +1,14 @@
 /**
- * @file symtable.h
- * @author Ondřej Seidl xseidl06
- * @brief Implementation of symbol table
+ * @file symtable.c
+ *
+ * Implementation of symbol table as hash table
+ *
  * IFJ project 2022
+ *
+ * @author <xseidl06> Ondřej Seidl
+ *
  */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
