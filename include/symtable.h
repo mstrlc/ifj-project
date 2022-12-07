@@ -1,20 +1,27 @@
 /**
  * @file symtable.h
- * @author Ondřej Seidl xseidl06
- * @brief Interface of symbol table
+ *
+ * Interface of symbol table
+ *
  * IFJ project 2022
+ *
+ * @author <xseidl06> Ondřej Seidl
+ *
  */
-#include <stdbool.h>
-#include "lexer.h"
+
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 
-//preparing types
+#include <stdbool.h>
+#include "lexer.h"
+
+// Preparing types
 typedef struct symbol symbol_t;
 typedef struct symtable symtable_t;
 
 // Symbol
-typedef struct symbol {
+typedef struct symbol
+{
     int line;
     char *name;
     token_type_t type;
@@ -24,22 +31,24 @@ typedef struct symbol {
     bool func_is_defined;
     int func_param_count;
     bool var_is_initialized;
-}symbol;
+} symbol;
 
 // Symbol table
-struct symtable {
+struct symtable
+{
     size_t size;
     size_t count;
     symbol_t **symbols;
 };
 
-typedef struct symtables_type{
-    symtable_t* vars_table;
-    symtable_t* vars_table_array[1000];
-    symtable_t* function_table; 
-    int active_table_index; // marks active table to read from
-    int function_table_index; // assigns indexes to functions in funcion table
- 
+typedef struct symtables_type
+{
+    symtable_t *vars_table;
+    symtable_t *vars_table_array[1000];
+    symtable_t *function_table;
+    int active_table_index;   // Marks active table to read from
+    int function_table_index; // Assigns indexes to functions in funcion table
+
 } Symtables;
 
 unsigned long hash(char *name);
@@ -56,7 +65,7 @@ symbol_t *symtable_lookup(symtable_t *table, char *name);
 void symtable_print(symtable_t *table);
 void symtable_defvar_print(symtable_t *table);
 
-symtable_t* symtable_check_size(symtable_t *table);
-symtable_t* resize(symtable_t *table);
+symtable_t *symtable_check_size(symtable_t *table);
+symtable_t *resize(symtable_t *table);
 
 #endif

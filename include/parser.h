@@ -1,3 +1,16 @@
+/**
+ * @file parser.h
+ *
+ * Interface for parser and code generation
+ *
+ * IFJ project 2022
+ *
+ * @author <xstrel03> Matyáš Strelec
+ * @author <xseidl06> Ondřej Seidl
+ * @author <xklond00> Dominik Klon
+ *
+ */
+
 #ifndef PARSER_H
 #define PARSER_H
 
@@ -29,27 +42,12 @@
            ACTIVE_TYPE == T_Line_comment)            \
         tokens->activeToken = tokens->activeToken->prev;
 
-
-typedef enum err_code
-{
-   parser_err,
-   lexer_err,
-   semantic_err,
-} ERR_CODE;
-
 void print_line_till_end(token_list_t *tokens);
 
-// err_type next_check(token_t* t);
+char *make_random_label();
 
-// err_type next_check_type(token_type_t* token_type, token_type_t* valid_type);
-
-char* make_random_label();
-
-int parser(token_list_t *tokens, Symtables* symtables, int whichPass);
-
-int check_args(token_t *token);
-
-int check_call_args(token_t *token);
+int parser(token_list_t *tokens, Symtables *symtables, int whichPass);
 
 void printBuiltIn();
+
 #endif

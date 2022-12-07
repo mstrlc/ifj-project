@@ -1,18 +1,25 @@
 /**
  * @file parse_tree.h
- * @author Ondřej Seidl xseidl06
- * @brief Interface of parse tree used in expression parser and also code generator
+ *
+ * Interface of parse tree used in expression parser and also code generator
+ *
  * IFJ project 2022
+ *
+ * @author <xseidl06> Ondřej Seidl
+ *
  */
-#include "../include/parser.h"
-#include "../include/symtable.h"
-#include "../include/lexer.h"
+
 #ifndef PARSE_TREE_H
 #define PARSER_TREE_H
 
-typedef struct PTree PTreeNode_t; 
+#include "../include/parser.h"
+#include "../include/symtable.h"
+#include "../include/lexer.h"
 
-struct PTree {
+typedef struct PTree PTreeNode_t;
+
+struct PTree
+{
     token_t *token;
     PTreeNode_t *active;
     PTreeNode_t *left;
@@ -23,16 +30,16 @@ PTreeNode_t *initPtree();
 
 void disposePtree(PTreeNode_t *ptree);
 
-PTreeNode_t * insertLeftPtreeNode(PTreeNode_t *ptree, token_t *token);
+PTreeNode_t *insertLeftPtreeNode(PTreeNode_t *ptree, token_t *token);
 
-PTreeNode_t * insertRightPtreeNode(PTreeNode_t *ptree, token_t *token);
+PTreeNode_t *insertRightPtreeNode(PTreeNode_t *ptree, token_t *token);
 
-PTreeNode_t * makeOpNode(PTreeNode_t *left, PTreeNode_t *right, PTreeNode_t *op);
+PTreeNode_t *makeOpNode(PTreeNode_t *left, PTreeNode_t *right, PTreeNode_t *op);
 
 void deletePtreeNode(PTreeNode_t *ptree, token_t *token);
 
 void printPtreeNode(PTreeNode_t *ptree);
 
-void printPtree(PTreeNode_t *ptree,Symtables *symtables);
+void printPtree(PTreeNode_t *ptree, Symtables *symtables);
 
 #endif
