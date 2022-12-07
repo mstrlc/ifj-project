@@ -40,6 +40,6 @@ void deletePtreeNode(PTreeNode_t *ptree, token_t *token);
 
 void printPtreeNode(PTreeNode_t *ptree);
 
-void printPtree(PTreeNode_t *ptree, Symtables *symtables);
+void printPtree(PTreeNode_t *ptree, symtables_t *symtables);
 
 #endif

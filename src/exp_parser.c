@@ -58,7 +58,7 @@ int precedence(token_type_t operator)
  * @param tokens list of tokens
  * @return int EXIT_SUCCESS or EXIT_FAILURE
  */
-int exp_parser(token_list_t *tokens, Symtables *symtables)
+int exp_parser(token_list_t *tokens, symtables_t *symtables)
 {
     int error = EXIT_SUCCESS;
     PTreeNode_t *PTree = initPtree();
