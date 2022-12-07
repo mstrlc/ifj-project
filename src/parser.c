@@ -52,7 +52,6 @@ int rule_Expr(token_list_t *tokens, Symtables* symtables);
 int argCount = 0;
 int paramCount =0;
 char* functionName = NULL; //saves function name for sharing between rules
-bool hasReturnSave = false; //saves state of has return for main
 bool hasReturn = false; //saves if function has return statement
 
  //pomocne funkce 
@@ -813,6 +812,12 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
             HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
         }
         else if (ACTIVE_TYPE == T_Semicolon){
+            //controls insufficient expression with return in void function
+            symbol_t* curr_func = symtable_lookup(symtables -> function_table, functionName);
+                if(curr_func -> func_ret_type != T_Keyword_Void){
+                    error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
+                    exit(ERR_MISS_EXCESS_RET);
+                }
             // ;
             HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
             //presun nil do navratove hodnoty
@@ -1126,19 +1131,17 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
             error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
             exit(ERR_WRONG_PARAM_RET);
         }
-        //saves return state of main
-        hasReturnSave = hasReturn;
-        hasReturn = false;
+
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
         HANDLE_ERROR = rule_StList(tokens, symtables);
         // }
         HANDLE_ERROR = parseTerminal(tokens, T_R_c_par);
-        
-        //reset of control variables
+
+        //resets control variable
         functionName = NULL;
-        hasReturn = hasReturnSave;
+        hasReturn = false;
 
         //CODEGEN function body -> end
         printf("POPFRAME\n");
