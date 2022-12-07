@@ -14,13 +14,13 @@ OBJ := $(SRC:.c=.o)
 all: $(EXE)
 
 $(EXE): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ -lm
+	$(CC) $(CFLAGS) -o $@ $^
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-#debug
+# debug target
 debug: $(OBJ)
-	$(CC) $(DBFLAGS) -o $(EXE) $^ -lm -g
+	$(CC) $(DBFLAGS) -o $(EXE) $^ -g
 # latex documentation generate
 doc:
 	cd doc && xelatex dokumentace.tex && rm -f *.aux *.log *.out *.toc *.fls *.fdb_latexmk

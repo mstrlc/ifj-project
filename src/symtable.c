@@ -274,7 +274,6 @@ void symtable_print(symtable_t *table)
                 }
                 symbol = symbol->next;
             }
-            // printf(" -> NULL \n");
             printf("\n");
         }
     }

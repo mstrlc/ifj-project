@@ -9,7 +9,11 @@
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 
+//preparing types
 typedef struct symbol symbol_t;
+typedef struct symtable symtable_t;
+
+// Symbol
 typedef struct symbol {
     int line;
     char *name;
@@ -23,7 +27,6 @@ typedef struct symbol {
 }symbol;
 
 // Symbol table
-typedef struct symtable symtable_t;
 struct symtable {
     size_t size;
     size_t count;
