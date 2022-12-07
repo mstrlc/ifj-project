@@ -43,6 +43,7 @@ int precedence(token_type_t operator)
     case T_Int:
     case T_Float:
     case T_String:
+    case T_Keyword_Null:
     case T_Var_id:
         return 0;
     default:

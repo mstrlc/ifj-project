@@ -712,6 +712,8 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = rule_Expr(tokens, symtables);
         // )
         //CODEGEN WHILE -> BEGIN
+        printf("TYPE GF@op1 GF@assignedVal\n");
+        printf("JUMPIFEQ %s GF@op1 string@nil\n", while_label_end);
         printf("JUMPIFEQ %s GF@assignedVal bool@false\n",while_label_end);
         //END CODEGEN WHILE -> BEGIN
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
@@ -748,6 +750,8 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = parseTerminal(tokens, T_R_r_par);
 
         //CODEGEN IF -> BEGIN
+        printf("TYPE GF@op1 GF@assignedVal\n");
+        printf("JUMPIFEQ %s GF@op1 string@nil\n", if_label);
         printf("JUMPIFEQ %s GF@assignedVal bool@false\n", if_label); 
         //END CODEGEN IF -> BEGIN
 
