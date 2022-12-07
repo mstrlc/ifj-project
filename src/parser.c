@@ -54,7 +54,14 @@ int paramCount =0;
 char* functionName = NULL; //saves function name for sharing between rules
 bool hasReturn = false; //saves if function has return statement
 
- //pomocne funkce 
+ /**
+ * @brief Generate a random label
+ *
+ * Create a 8 chars long random string
+ * 
+ * @return char* random string
+ *
+ */
  char* make_random_label(){
     char const abeceda[]= "abcdefghijklmnopqrstuvwxyz0123456789";
     char* output = malloc(sizeof(char)*8);
@@ -1318,7 +1325,12 @@ int parser(token_list_t *tokens, Symtables* symtables, int whichPass)
     return error;
 }
 
-
+/**
+ * @brief Print builtin functions
+ *
+ * This function is used in the main function to print all the builtin functions.
+ *
+ */
 void printBuiltIn(){
 
     printf(" \

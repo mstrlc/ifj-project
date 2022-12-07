@@ -278,6 +278,14 @@ void symtable_print(symtable_t *table)
     }
 }
 
+ /**
+ * @brief Print all symtable values as DEFVARs
+ * 
+ * 
+ * @param symtable_t* Pointer to a symtable structure.
+ *
+ */
+
 void symtable_defvar_print(symtable_t *table){
     for (unsigned long i = 0; i < table->size; i++)
     {
