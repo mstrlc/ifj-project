@@ -669,7 +669,7 @@ int rule_StList(token_list_t *tokens, Symtables* symtables)
 int rule_Stat(token_list_t *tokens, Symtables* symtables)
 {
     int error = 0;
-
+ 
     // <stat> -> $id = <assign> ;
     if (ACTIVE_TYPE == T_Var_id)
     {
@@ -826,10 +826,6 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         //         error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
         //         exit(ERR_MISS_EXCESS_RET);
         //     }
-        // }
-        // if(hasReturn == true){
-        //     error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
-        //     exit(ERR_MISS_EXCESS_RET);
         // }
         // hasReturn = true;
     }
@@ -1127,7 +1123,12 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         {
             HANDLE_ERROR = ERR_SYNTAX;
         }
-
+        //checks for missing return
+        // if(hasReturn == false && ACTIVE_TYPE != T_Keyword_Void)
+        // {
+        //     error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
+        //     exit(ERR_MISS_EXCESS_RET);
+        // }
         //saves return state of main
         hasReturnSave = hasReturn;
         hasReturn = false;
