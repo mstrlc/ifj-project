@@ -25,7 +25,6 @@
  *
  * @return int Error code
  */
-
 int error_exit(int code, token_t *token)
 {
     fprintf(stderr, "Error %d (%s) on line %d near '%s'\n", code, errorToString(code), token->line, token->data);

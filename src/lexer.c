@@ -744,7 +744,7 @@ int getNextToken(token_t *token)
                 break;
             }
             // Hexadecimal escape sequence
-            else if ((token->data[i] == 'x' ||  token->data[i] == 'X') && token->data[i - 1] == '\\')
+            else if ((token->data[i] == 'x' || token->data[i] == 'X') && token->data[i - 1] == '\\')
             {
                 char hexa[3];
                 i++;
@@ -752,10 +752,10 @@ int getNextToken(token_t *token)
                 i++;
                 hexa[1] = token->data[i];
                 hexa[2] = '\0';
-                
-                if(hexa[0] >= 'A' && hexa[0] <= 'F')
+
+                if (hexa[0] >= 'A' && hexa[0] <= 'F')
                     hexa[0] = hexa[0] - ('A' - 'a');
-                if(hexa[1] >= 'A' && hexa[1] <= 'F')
+                if (hexa[1] >= 'A' && hexa[1] <= 'F')
                     hexa[1] = hexa[1] - ('A' - 'a');
 
                 char character = strtol(hexa, 0, 16);
@@ -765,9 +765,9 @@ int getNextToken(token_t *token)
             }
             // Octal escape sequence
             else if (token->data[i] >= '0' && token->data[i] <= '3' &&
-                     token->data[i+1] >= '0' && token->data[i+1] <= '7' &&
-                     token->data[i+2] >= '1' && token->data[i+2] <= '7' &&
-                     token->data[i-1] == '\\')
+                     token->data[i + 1] >= '0' && token->data[i + 1] <= '7' &&
+                     token->data[i + 2] >= '1' && token->data[i + 2] <= '7' &&
+                     token->data[i - 1] == '\\')
             {
                 char octal[4];
                 octal[0] = token->data[i];
@@ -910,9 +910,9 @@ void freeTokenList(token_list_t *list)
 
 /**
  * @brief Initialize token list
+ *
  * @param list Pointer to list to be initialized
  */
-
 void initTokenList(token_list_t *list)
 {
     list->firstToken = NULL;
@@ -926,7 +926,6 @@ void initTokenList(token_list_t *list)
  * @param list Pointer to list of tokens
  * @return token_t* Pointer to top token
  */
-
 token_t *TopToken(token_list_t *list)
 {
     return list->lastToken;
@@ -938,7 +937,6 @@ token_t *TopToken(token_list_t *list)
  * @param list Pointer to list of tokens
  * @return int Error code
  */
-
 int PopToken(token_list_t *list)
 {
     if (TopToken(list) != NULL)
@@ -959,7 +957,6 @@ int PopToken(token_list_t *list)
  * @param token Pointer to token to be pushed
  * @return int Error code
  */
-
 int PushToken(token_list_t *list, token_t *token)
 {
     if (TopToken(list) == NULL)
