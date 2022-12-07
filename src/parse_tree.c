@@ -406,7 +406,7 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
 
                 printf("JUMP %s\n", label1);
                 printf("LABEL %s\n", error_label);
-                printf("PUSHS bool@false\n");
+                printf("PUSHS bool@true\n");
                 printf("JUMP %s\n", end_label);
                 printf("LABEL %s\n", label1);
 
