@@ -193,8 +193,8 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
 
                 printf("POPS GF@op2\n");
                 printf("TYPE GF@op4 GF@op2\n");
-                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
-                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+                printf("JUMPIFEQ %s GF@op4 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op4 string@string\n", label3);
 
                 printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);   // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
 
@@ -244,8 +244,8 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
 
                 printf("POPS GF@op2\n");
                 printf("TYPE GF@op4 GF@op2\n");
-                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
-                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+                printf("JUMPIFEQ %s GF@op4 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op4 string@string\n", label3);
 
                 printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);   // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
 
@@ -295,8 +295,8 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
 
                 printf("POPS GF@op2\n");
                 printf("TYPE GF@op4 GF@op2\n");
-                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
-                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+                printf("JUMPIFEQ %s GF@op4 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op4 string@string\n", label3);
 
                 printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);   // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
 
@@ -544,8 +544,8 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
 
                 printf("POPS GF@op2\n");
                 printf("TYPE GF@op4 GF@op2\n");
-                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
-                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+                printf("JUMPIFEQ %s GF@op4 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op4 string@string\n", label3);
 
                 printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);   // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
 
@@ -596,8 +596,8 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
 
                 printf("POPS GF@op2\n");
                 printf("TYPE GF@op4 GF@op2\n");
-                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
-                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+                printf("JUMPIFEQ %s GF@op4 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op4 string@string\n", label3);
 
                 printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);   // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
 
