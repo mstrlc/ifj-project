@@ -708,6 +708,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         char* while_label_begin = make_random_label();
         char* label_int = make_random_label();
         char* label_string = make_random_label();
+        char* str_0 = make_random_label();
         char* skip_str = make_random_label();
         char* skip_int = make_random_label();
         char* skip_float = make_random_label();
@@ -745,7 +746,9 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // empty string in while -> false, otherwise true
         printf("JUMP %s\n", skip_str);
         printf("LABEL %s\n", label_string);
+        printf("JUMPIFEQ %s GF@assignedVal string@0\n", str_0);
         printf("JUMPIFNEQ %s GF@assignedVal string@\n", skip_str);
+        printf("LABEL %s\n", str_0);
         printf("MOVE GF@op4 bool@false\n");
         printf("LABEL %s\n", skip_str);
 
@@ -786,6 +789,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         free(label_float);
         free(skip_float);
         free(skip_not_boolean_vals);
+        free(str_0);
         //END CODEGEN WHILE -> END
 
     }
@@ -797,6 +801,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         char* else_label = make_random_label();
         char* label_int = make_random_label();
         char* label_string = make_random_label();
+        char* str_0 = make_random_label();
         char* label_float = make_random_label();
         char* skip_str = make_random_label();
         char* skip_int = make_random_label();
@@ -834,7 +839,9 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // empty string in if -> false, otherwise true
         printf("JUMP %s\n", skip_str);
         printf("LABEL %s\n", label_string);
+        printf("JUMPIFEQ %s GF@assignedVal string@0\n", str_0);
         printf("JUMPIFNEQ %s GF@assignedVal string@\n", skip_str);
+        printf("LABEL %s\n", str_0);
         printf("MOVE GF@op4 bool@false\n");
         printf("LABEL %s\n", skip_str);
 
@@ -887,6 +894,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         free(label_string);
         free(label_float);
         free(skip_not_boolean_vals);
+        free(str_0);
         //END CODEGEN ELSE -> END
         
     }
