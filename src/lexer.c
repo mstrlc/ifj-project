@@ -715,7 +715,15 @@ int getNextToken(token_t *token)
                 string[j] = '2';
                 j++;
             }
-
+            else if (token->data[i] == '$' && token->data[i - 1] == '\\')
+            {
+                string[j] = '0';
+                j++;
+                string[j] = '3';
+                j++;
+                string[j] = '6';
+                j++;
+            }
             else
             {
                 string[j] = token->data[i];

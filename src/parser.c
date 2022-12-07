@@ -41,7 +41,7 @@ int next = 0;
 int rule_Prog(token_list_t *tokens, Symtables* symtables);
 int rule_ParamsCont(token_list_t *tokens, Symtables* symtables);
 int rule_Params(token_list_t *tokens, Symtables* symtables);
-int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack* arg_stack );
+int rule_ArgsCont(token_list_t *tokens, token_t* arg_value, stack* arg_stack );
 int rule_Val(token_list_t *tokens);
 int rule_Args(token_list_t *tokens);
 int rule_Stat(token_list_t *tokens, Symtables* symtables);
@@ -182,9 +182,13 @@ int checkProlog(token_list_t *tokens, Symtables* symtables){
     printf("DEFVAR GF@assignedVal\n"); // univerzalni promenna pro predavani hodnoty
     printf("DEFVAR GF@ret\n"); // return val pro funkce
     printf("MOVE GF@assignedVal bool@true\n"); // je pro debug bez assignu
-    printf("DEFVAR GF@op1\n"); // pro concat op
-    printf("DEFVAR GF@op2\n"); // pro concat op
+
+    printf("DEFVAR GF@op1\n"); // pro operace v expressionu
+    printf("DEFVAR GF@op2\n"); // pro operace v expressionu
+    printf("DEFVAR GF@op3\n"); // pro operace v expressionu
+    printf("DEFVAR GF@op4\n"); // pro operace v expressionu
     printf("DEFVAR GF@retType\n"); //for checking return type
+
     printf("DEFVAR GF@realRetType\n");
     printf("CREATEFRAME\n");
     printf("PUSHFRAME\n");
@@ -331,12 +335,12 @@ int rule_Params(token_list_t *tokens, Symtables* symtables)
 
 // <args> -> <term> <args-cont>
 // <args> -> 
-int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack* arg_stack )
+int rule_ArgsCont(token_list_t *tokens, token_t* arg_value, stack* arg_stack )
 {
     int error = 0;
 
     // pushujeme argumenty pred volanim funkce ve spravnem formatu
-    *argCount = *argCount + 1;
+    argCount++;
     char* push_arg_command = malloc(sizeof(char)*100);
     if(push_arg_command == NULL){
         error_exit(ERR_INTERNAL, ACTIVE_TOKEN);
@@ -366,7 +370,7 @@ int rule_ArgsCont(token_list_t *tokens, int* argCount, token_t* arg_value, stack
         HANDLE_ERROR = rule_Term(tokens);
         
        
-        HANDLE_ERROR = rule_ArgsCont(tokens, argCount, arg_value, arg_stack );
+        HANDLE_ERROR = rule_ArgsCont(tokens, arg_value, arg_stack );
     }
     // <args-cont> ->
     else if (ACTIVE_TYPE == T_R_r_par)
@@ -427,7 +431,7 @@ int rule_Args(token_list_t *tokens)
         // <val>
         HANDLE_ERROR = rule_Term(tokens);
         // <args-cont>
-        HANDLE_ERROR = rule_ArgsCont(tokens, &argCount, arg_value, arg_stack);
+        HANDLE_ERROR = rule_ArgsCont(tokens, arg_value, arg_stack);
     }
     // <args> ->
     else if (ACTIVE_TYPE == T_R_r_par)
@@ -502,12 +506,8 @@ int rule_Assign(token_list_t *tokens, Symtables *symtables)
                 error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
                 exit(ERR_WRONG_PARAM_RET);
             }
-            else{
-                func -> func_param_count = argCount;
-            }
-
         }
-
+        argCount = 0;
         //prepsat do makra kdyz zbyde cas
         //volani vestavenych funkci, ktere maji navratovou hodnotu
         if(strcmp(functionName, "reads") == 0){
@@ -670,23 +670,30 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         // $id
         token_t* var = ACTIVE_TOKEN;
         HANDLE_ERROR = parseTerminal(tokens, T_Var_id);
-        // =
-        HANDLE_ERROR = parseTerminal(tokens, T_Assign);
-        // <assign>
-        HANDLE_ERROR = rule_Assign(tokens, symtables);
-        // ;
-        HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
-        
-        //CODEGEN var init and assign
-        // do aktivni tabulky indexu vloz variable
-        if(symtable_lookup(symtables -> vars_table_array[symtables->active_table_index], var->data) == NULL){
-            symtable_insert(symtables -> vars_table_array[symtables->active_table_index], token_to_symbol(var));
+        //;
+        if (ACTIVE_TYPE == T_Semicolon)
+        {
+            HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
         }
+        // =
+        else
+        {
+            HANDLE_ERROR = parseTerminal(tokens, T_Assign);
+            // <assign>
+            HANDLE_ERROR = rule_Assign(tokens, symtables);
+            // ;
+            HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
+            
+            //CODEGEN var init and assign
+            // do aktivni tabulky indexu vloz variable
+            if(symtable_lookup(symtables -> vars_table_array[symtables->active_table_index], var->data) == NULL){
+                symtable_insert(symtables -> vars_table_array[symtables->active_table_index], token_to_symbol(var));
+            }
 
-        // presun vysledek z exp_parseru do promenne
-        printf("MOVE LF@%s GF@assignedVal\n", var->data);
-        //END CODEGEN var init and assign
-        
+            // presun vysledek z exp_parseru do promenne
+            printf("MOVE LF@%s GF@assignedVal\n", var->data);
+            //END CODEGEN var init and assign
+        }
     }
     // <stat> -> while ( <expr> ) { <st-list> }
     else if (ACTIVE_TYPE == T_Keyword_While)
@@ -785,10 +792,10 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
     // <stat> -> <expr> ;
-    else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null || ACTIVE_TYPE == T_Var_id)
+    else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null)
     {
         // <expr>
-        HANDLE_ERROR = rule_Expr(tokens, symtables);
+        HANDLE_ERROR = parseTerminal(tokens, ACTIVE_TYPE);
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
     }
@@ -839,12 +846,11 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
                     error_exit(ERR_WRONG_PARAM_RET, ACTIVE_TOKEN);
                     exit(ERR_WRONG_PARAM_RET);
                 }
-                else{
-                    func -> func_param_count = argCount;
-                }
             }
+            argCount = 0;
             printf("CALL %s\n", functionName);
         }
+
     }
     else
     {
@@ -965,7 +971,10 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         ACTIVE_TYPE == T_Keyword_Int ||
         ACTIVE_TYPE == T_Keyword_Float ||
         ACTIVE_TYPE == T_Keyword_String ||
-        ACTIVE_TYPE == T_Keyword_Null)
+        ACTIVE_TYPE == T_Keyword_Null ||
+        ACTIVE_TYPE == T_Int ||
+        ACTIVE_TYPE == T_Float ||
+        ACTIVE_TYPE == T_String)
     {
         // <stat>
         HANDLE_ERROR = rule_Stat(tokens, symtables);
