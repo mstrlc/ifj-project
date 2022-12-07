@@ -799,11 +799,11 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         //         exit(ERR_MISS_EXCESS_RET);
         //     }
         // }
-        if(hasReturn == true){
-            error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
-            exit(ERR_MISS_EXCESS_RET);
-        }
-        hasReturn = true;
+        // if(hasReturn == true){
+        //     error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
+        //     exit(ERR_MISS_EXCESS_RET);
+        // }
+        // hasReturn = true;
 
         // return
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Return);
