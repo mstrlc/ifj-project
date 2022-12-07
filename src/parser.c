@@ -792,13 +792,13 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
     else if (ACTIVE_TYPE == T_Keyword_Return)
     {
         //controling excess/insuficient return statements
-        if(symtables -> active_table_index != 0){
-            symbol_t* curr_func = symtable_lookup(symtables -> function_table, functionName);
-            if(curr_func -> func_ret_type != T_Keyword_Void){
-                error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
-                exit(ERR_MISS_EXCESS_RET);
-            }
-        }
+        // if(symtables -> active_table_index != 0){
+        //     symbol_t* curr_func = symtable_lookup(symtables -> function_table, functionName);
+        //     if(curr_func -> func_ret_type != T_Keyword_Void){
+        //         error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
+        //         exit(ERR_MISS_EXCESS_RET);
+        //     }
+        // }
         if(hasReturn == true){
             error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
             exit(ERR_MISS_EXCESS_RET);
