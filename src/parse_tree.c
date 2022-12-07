@@ -1,11 +1,10 @@
 /**
- * @file parse_tree.c
+ * @file parse_tree.c`
  * @author Ondřej Seidl xseidl06
  * @author Dominik Klon xklond00
  * @brief Implementation of parse tree used in expression parser and also code generator
  * IFJ project 2022
  */
-
 #include <stdio.h>
 #include <stdlib.h>
 
