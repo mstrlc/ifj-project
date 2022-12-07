@@ -52,6 +52,7 @@ int rule_Expr(token_list_t *tokens, Symtables* symtables);
 int argCount = 0;
 int paramCount =0;
 char* functionName = NULL; //saves function name for sharing between rules
+bool hasReturnSave = false; //saves state of has return for main
 bool hasReturn = false; //saves if function has return statement
 
  //pomocne funkce 
@@ -799,11 +800,11 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         //         exit(ERR_MISS_EXCESS_RET);
         //     }
         // }
-        // if(hasReturn == true){
-        //     error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
-        //     exit(ERR_MISS_EXCESS_RET);
-        // }
-        // hasReturn = true;
+        if(hasReturn == true){
+            error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
+            exit(ERR_MISS_EXCESS_RET);
+        }
+        hasReturn = true;
 
         // return
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Return);
@@ -1012,8 +1013,7 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
         // function
         HANDLE_ERROR = parseTerminal(tokens, T_Keyword_Function);
         // func-id
-        bool hasReturnSave = hasReturn;
-        hasReturn = false;
+        
         // Check for function redefinition
         if(pass == 1 && symtable_lookup(symtables->function_table, ACTIVE_DATA) != NULL)
         {
@@ -1112,7 +1112,9 @@ int rule_Prog(token_list_t *tokens, Symtables* symtables)
             HANDLE_ERROR = ERR_SYNTAX;
         }
 
-
+        //saves return state of main
+        hasReturnSave = hasReturn;
+        hasReturn = false;
         // {
         HANDLE_ERROR = parseTerminal(tokens, T_L_c_par);
         // <st-list>
