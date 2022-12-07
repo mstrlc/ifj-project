@@ -93,6 +93,5 @@ int main()
     symtable_dispose(symtables->vars_table);
     symtable_dispose(symtables->function_table);
     freeTokenList(tokens);
-    freeSymtables(symtables);
     exit(0);
 }
