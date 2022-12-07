@@ -204,7 +204,7 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
                 printf("JUMP %s\n", label1);
                 printf("LABEL %s\n", label5);  
 
-                printf("JUMPIFEQ %s GF@op3 string@float\n", label6);
+                printf("JUMPIFEQ %s GF@op3 string@float\n", label6); 
                 printf("INT2FLOAT GF@op1 GF@op1\n");
                 printf("LABEL %s\n", label6);
 
@@ -367,30 +367,272 @@ void printPtree(PTreeNode_t *ptree, Symtables *symtables)
             }
             else if(ptree->token->type == T_Equal)
             {
-                printf("EQS\n");
+                char* error_label = make_random_label();
+                char* label1 = make_random_label();
+                char* end_label = make_random_label();
+
+                printf("POPS GF@op1\n");
+                printf("TYPE GF@op3 GF@op1\n");
+                printf("POPS GF@op2\n");
+                printf("TYPE GF@op4 GF@op2\n");
+                printf("JUMPIFNEQ %s GF@op3 GF@op4\n", error_label);
+
+                printf("JUMP %s\n", label1);
+                printf("LABEL %s\n", error_label);
+                printf("PUSHS bool@false\n");
+                printf("JUMP %s\n", end_label);
+                printf("LABEL %s\n", label1);
+
+                printf("EQ GF@op1 GF@op2 GF@op1\n");
+
+                printf("PUSHS GF@op1\n");
+                printf("LABEL %s\n",end_label);
+
+                free(error_label);
+                free(label1);
+                // printf("EQS\n");
             }
             else if(ptree->token->type == T_Not_equal)
             {
-                printf("EQS\n");
-                printf("NOTS\n");
+                char* error_label = make_random_label();
+                char* label1 = make_random_label();
+                char* end_label = make_random_label();
+
+                printf("POPS GF@op1\n");
+                printf("TYPE GF@op3 GF@op1\n");
+                printf("POPS GF@op2\n");
+                printf("TYPE GF@op4 GF@op2\n");
+                printf("JUMPIFNEQ %s GF@op3 GF@op4\n", error_label);
+
+                printf("JUMP %s\n", label1);
+                printf("LABEL %s\n", error_label);
+                printf("PUSHS bool@false\n");
+                printf("JUMP %s\n", end_label);
+                printf("LABEL %s\n", label1);
+
+                printf("EQ GF@op1 GF@op2 GF@op1\n");
+                printf("NOT GF@op1 GF@op1\n");
+                
+
+                printf("PUSHS GF@op1\n");
+                printf("LABEL %s\n",end_label);
+
+                free(error_label);
+                free(label1);
+                // printf("EQS\n");
+                // printf("NOTS");
             }
             else if(ptree->token->type == T_Smaller)
             {
-                printf("LTS\n");
+                char* label1 = make_random_label();
+                char* label3 = make_random_label();
+                char* label4 = make_random_label();
+                char* label5 = make_random_label();
+                char* label6 = make_random_label();
+                char* label7 = make_random_label();
+
+                printf("POPS GF@op1\n");
+                printf("TYPE GF@op3 GF@op1\n");
+                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+
+                printf("POPS GF@op2\n");
+                printf("TYPE GF@op4 GF@op2\n");
+                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+
+                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);   // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
+
+                printf("JUMPIFEQ %s GF@op3 string@float\n", label5);
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label5);   // skocime na dany label pokud je jeden z operandu float
+
+                printf("JUMP %s\n", label1);
+                printf("LABEL %s\n", label5);  
+
+                printf("JUMPIFEQ %s GF@op3 string@float\n", label6);
+                printf("INT2FLOAT GF@op1 GF@op1\n");
+                printf("LABEL %s\n", label6);
+
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label7);
+                printf("INT2FLOAT GF@op2 GF@op2\n");
+                printf("LABEL %s\n", label7);
+
+                printf("LABEL %s\n",label1);
+                printf("LT GF@op1 GF@op2 GF@op1\n");
+                printf("PUSHS GF@op1\n");
+
+                printf("JUMP %s\n", label4);
+                printf("LABEL %s\n", label3);
+                printf("EXIT int@7\n");
+                printf("LABEL %s\n", label4);
+
+                free(label1);
+                free(label3);
+                free(label4);
+                free(label5);
+                free(label6);
+                free(label7);
+
             }
             else if(ptree->token->type == T_Smaller_eq)
             {
-                printf("GTS\n");
-                printf("NOTS\n");
+                 char* label1 = make_random_label();
+                char* label3 = make_random_label();
+                char* label4 = make_random_label();
+                char* label5 = make_random_label();
+                char* label6 = make_random_label();
+                char* label7 = make_random_label();
+
+                printf("POPS GF@op1\n");
+                printf("TYPE GF@op3 GF@op1\n");
+                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+
+                printf("POPS GF@op2\n");
+                printf("TYPE GF@op4 GF@op2\n");
+                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+
+                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);   // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
+
+                printf("JUMPIFEQ %s GF@op3 string@float\n", label5);
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label5);   // skocime na dany label pokud je jeden z operandu float
+
+                printf("JUMP %s\n", label1);
+                printf("LABEL %s\n", label5);  
+
+                printf("JUMPIFEQ %s GF@op3 string@float\n", label6);
+                printf("INT2FLOAT GF@op1 GF@op1\n");
+                printf("LABEL %s\n", label6);
+
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label7);
+                printf("INT2FLOAT GF@op2 GF@op2\n");
+                printf("LABEL %s\n", label7);
+
+                printf("LABEL %s\n",label1);
+                printf("GT GF@op1 GF@op2 GF@op1\n");
+                printf("NOT GF@op1 GF@op1\n");
+                printf("PUSHS GF@op1\n");
+
+                printf("JUMP %s\n", label4);
+                printf("LABEL %s\n", label3);
+                printf("EXIT int@7\n");
+                printf("LABEL %s\n", label4);
+
+                free(label1);
+                free(label3);
+                free(label4);
+                free(label5);
+                free(label6);
+                free(label7);
+                // printf("GTS\n");
+                // printf("NOTS\n");
             }
             else if(ptree->token->type == T_Larger)
             {
-                printf("GTS\n");
+               char* label1 = make_random_label();
+                char* label3 = make_random_label();
+                char* label4 = make_random_label();
+                char* label5 = make_random_label();
+                char* label6 = make_random_label();
+                char* label7 = make_random_label();
+
+                printf("POPS GF@op1\n");
+                printf("TYPE GF@op3 GF@op1\n");
+                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+
+                printf("POPS GF@op2\n");
+                printf("TYPE GF@op4 GF@op2\n");
+                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+
+                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);   // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
+
+                printf("JUMPIFEQ %s GF@op3 string@float\n", label5);
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label5);   // skocime na dany label pokud je jeden z operandu float
+
+                printf("JUMP %s\n", label1);
+                printf("LABEL %s\n", label5);  
+
+                printf("JUMPIFEQ %s GF@op3 string@float\n", label6);
+                printf("INT2FLOAT GF@op1 GF@op1\n");
+                printf("LABEL %s\n", label6);
+
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label7);
+                printf("INT2FLOAT GF@op2 GF@op2\n");
+                printf("LABEL %s\n", label7);
+
+                printf("LABEL %s\n",label1);
+                printf("GT GF@op1 GF@op2 GF@op1\n");
+                printf("PUSHS GF@op1\n");
+
+                printf("JUMP %s\n", label4);
+                printf("LABEL %s\n", label3);
+                printf("EXIT int@7\n");
+                printf("LABEL %s\n", label4);
+
+                free(label1);
+                free(label3);
+                free(label4);
+                free(label5);
+                free(label6);
+                free(label7);
+                // printf("GTS\n");
             }
             else if(ptree->token->type == T_Larger_eq)
             {
-                printf("LTS\n");
-                printf("NOTS\n");
+                 char* label1 = make_random_label();
+                char* label3 = make_random_label();
+                char* label4 = make_random_label();
+                char* label5 = make_random_label();
+                char* label6 = make_random_label();
+                char* label7 = make_random_label();
+
+                printf("POPS GF@op1\n");
+                printf("TYPE GF@op3 GF@op1\n");
+                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+
+                printf("POPS GF@op2\n");
+                printf("TYPE GF@op4 GF@op2\n");
+                printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
+                printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
+
+                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);   // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
+
+                printf("JUMPIFEQ %s GF@op3 string@float\n", label5);
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label5);   // skocime na dany label pokud je jeden z operandu float
+
+                printf("JUMP %s\n", label1);
+                printf("LABEL %s\n", label5);  
+
+                printf("JUMPIFEQ %s GF@op3 string@float\n", label6);
+                printf("INT2FLOAT GF@op1 GF@op1\n");
+                printf("LABEL %s\n", label6);
+
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label7);
+                printf("INT2FLOAT GF@op2 GF@op2\n");
+                printf("LABEL %s\n", label7);
+
+                printf("LABEL %s\n",label1);
+                printf("LT GF@op1 GF@op2 GF@op1\n");
+                printf("NOT GF@op1 GF@op1\n");
+                printf("PUSHS GF@op1\n");
+
+                printf("JUMP %s\n", label4);
+                printf("LABEL %s\n", label3);
+                printf("EXIT int@7\n");
+                printf("LABEL %s\n", label4);
+
+                free(label1);
+                free(label3);
+                free(label4);
+                free(label5);
+                free(label6);
+                free(label7);
+                // printf("LTS\n");
+                // printf("NOTS\n");
             }
             else if(ptree->token->type == T_Concat)
             {
