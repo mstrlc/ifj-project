@@ -740,7 +740,7 @@ int getNextToken(token_t *token)
             // Unescaped $
             else if (token->data[i] == '$' && token->data[i - 1] != '\\')
             {
-                token->type == T_Error;
+                token->type = T_Error;
                 break;
             }
             // Hexadecimal escape sequence
