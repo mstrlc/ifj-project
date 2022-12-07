@@ -804,7 +804,7 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         printf("RETURN\n");
         // ;
         HANDLE_ERROR = parseTerminal(tokens, T_Semicolon);
-        
+
         //controling excess/insuficient return statements
         // if(symtables -> active_table_index != 0){
         //     symbol_t* curr_func = symtable_lookup(symtables -> function_table, functionName);
@@ -813,11 +813,11 @@ int rule_Stat(token_list_t *tokens, Symtables* symtables)
         //         exit(ERR_MISS_EXCESS_RET);
         //     }
         // }
-        if(hasReturn == true){
-            error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
-            exit(ERR_MISS_EXCESS_RET);
-        }
-        hasReturn = true;
+        // if(hasReturn == true){
+        //     error_exit(ERR_MISS_EXCESS_RET, ACTIVE_TOKEN);
+        //     exit(ERR_MISS_EXCESS_RET);
+        // }
+        // hasReturn = true;
     }
     // <stat> -> <expr> ;
     else if (ACTIVE_TYPE == T_Int || ACTIVE_TYPE == T_Float || ACTIVE_TYPE == T_String || ACTIVE_TYPE == T_Keyword_Null)
