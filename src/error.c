@@ -17,12 +17,12 @@
 
 /**
  * @brief Function for error handling
- * 
+ *
  * Prints the error code with message and data, returns the error code
- * 
+ *
  * @param code Error code
  * @param token Token which caused the error
- * 
+ *
  * @return int Error code
  */
 
