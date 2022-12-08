@@ -205,10 +205,10 @@ void printPtree(PTreeNode_t *ptree, symtables_t *symtables)
                 printf("JUMPIFEQ %s GF@op4 string@nil\n", label3);
                 printf("JUMPIFEQ %s GF@op4 string@string\n", label3);
 
-                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1); // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
+                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);
 
                 printf("JUMPIFEQ %s GF@op3 string@float\n", label5);
-                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); // skocime na dany label pokud je jeden z operandu float
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); 
 
                 printf("JUMP %s\n", label1);
                 printf("LABEL %s\n", label5);
@@ -256,10 +256,10 @@ void printPtree(PTreeNode_t *ptree, symtables_t *symtables)
                 printf("JUMPIFEQ %s GF@op4 string@nil\n", label3);
                 printf("JUMPIFEQ %s GF@op4 string@string\n", label3);
 
-                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1); // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
+                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);
 
                 printf("JUMPIFEQ %s GF@op3 string@float\n", label5);
-                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); // skocime na dany label pokud je jeden z operandu float
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); 
 
                 printf("JUMP %s\n", label1);
                 printf("LABEL %s\n", label5);
@@ -307,10 +307,10 @@ void printPtree(PTreeNode_t *ptree, symtables_t *symtables)
                 printf("JUMPIFEQ %s GF@op4 string@nil\n", label3);
                 printf("JUMPIFEQ %s GF@op4 string@string\n", label3);
 
-                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1); // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
+                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);
 
                 printf("JUMPIFEQ %s GF@op3 string@float\n", label5);
-                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); // skocime na dany label pokud je jeden z operandu float
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); 
 
                 printf("JUMP %s\n", label1);
                 printf("LABEL %s\n", label5);
@@ -448,10 +448,10 @@ void printPtree(PTreeNode_t *ptree, symtables_t *symtables)
                 printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
                 printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
 
-                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1); // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
+                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);
 
                 printf("JUMPIFEQ %s GF@op3 string@float\n", label5);
-                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); // skocime na dany label pokud je jeden z operandu float
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); 
 
                 printf("JUMP %s\n", label1);
                 printf("LABEL %s\n", label5);
@@ -499,10 +499,10 @@ void printPtree(PTreeNode_t *ptree, symtables_t *symtables)
                 printf("JUMPIFEQ %s GF@op3 string@nil\n", label3);
                 printf("JUMPIFEQ %s GF@op3 string@string\n", label3);
 
-                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1); // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
+                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);
 
                 printf("JUMPIFEQ %s GF@op3 string@float\n", label5);
-                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); // skocime na dany label pokud je jeden z operandu float
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); 
 
                 printf("JUMP %s\n", label1);
                 printf("LABEL %s\n", label5);
@@ -553,10 +553,10 @@ void printPtree(PTreeNode_t *ptree, symtables_t *symtables)
                 printf("JUMPIFEQ %s GF@op4 string@nil\n", label3);
                 printf("JUMPIFEQ %s GF@op4 string@string\n", label3);
 
-                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1); // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
+                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);
 
                 printf("JUMPIFEQ %s GF@op3 string@float\n", label5);
-                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); // skocime na dany label pokud je jeden z operandu float
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); 
 
                 printf("JUMP %s\n", label1);
                 printf("LABEL %s\n", label5);
@@ -605,10 +605,10 @@ void printPtree(PTreeNode_t *ptree, symtables_t *symtables)
                 printf("JUMPIFEQ %s GF@op4 string@nil\n", label3);
                 printf("JUMPIFEQ %s GF@op4 string@string\n", label3);
 
-                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1); // za touhle podminkou vime ze op3 a op4 nejsou stejneho typu
+                printf("JUMPIFEQ %s GF@op3 GF@op4\n", label1);
 
                 printf("JUMPIFEQ %s GF@op3 string@float\n", label5);
-                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); // skocime na dany label pokud je jeden z operandu float
+                printf("JUMPIFEQ %s GF@op4 string@float\n", label5); 
 
                 printf("JUMP %s\n", label1);
                 printf("LABEL %s\n", label5);

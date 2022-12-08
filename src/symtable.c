@@ -18,15 +18,14 @@
 #include "../include/symtable.h"
 #include "../include/lexer.h"
 
-
 /**
  * @brief Hashing function
- * 
+ *
  * uses sdbm algorithm to calculate hash for given name
  * picked out from IJC project
- * 
+ *
  * @param name to be hashed
- * @return hash as unsigned long 
+ * @return hash as unsigned long
  */
 unsigned long hash(char *name)
 {
@@ -39,7 +38,7 @@ unsigned long hash(char *name)
 
 /**
  * @brief Converts token to symbol
- * 
+ *
  * @param token to be converted
  * @return symbol_t* pointer to symbol
  */
@@ -67,9 +66,9 @@ symbol_t *token_to_symbol(token_t *token)
  * @brief Initializes symbol table.
  * Allocates memory for symbol table of given size.
  * sets all pointers to NULL.
- * 
+ *
  * @param size of table
- * 
+ *
  * @return symbol_table_t* pointer to symbol table
  */
 symtable_t *symtable_init(int size)
@@ -93,14 +92,13 @@ symtable_t *symtable_init(int size)
     return table;
 }
 
-
 /**
  * @brief Disposes symbol table
- * 
+ *
  * Frees symbol table and symbols structure
  * Not the individiual symbols
- * 
- * @param table 
+ *
+ * @param table
  */
 void symtable_dispose(symtable_t *table)
 {
@@ -108,13 +106,12 @@ void symtable_dispose(symtable_t *table)
     free(table);
 }
 
-
 /**
  * @brief Frees all the symbols in the table
- * 
+ *
  * Individiual symbols are freed
- * 
- * @param table 
+ *
+ * @param table
  */
 void free_symbols(symtable_t *table)
 {
@@ -136,14 +133,13 @@ void free_symbols(symtable_t *table)
     }
 }
 
-
 /**
  * @brief Resizes symbol table
- * 
+ *
  * Creates new symbol table with double the size of the old one
  * Copies all the symbols from the old table to the new one
  * Frees the old table
- * 
+ *
  * @param table old table
  * @return symtable_t* new table
  */
@@ -170,9 +166,9 @@ symtable_t *resize(symtable_t *table)
 
 /**
  * @brief Inserts symbol into symbol table
- * 
+ *
  * @param symbol to be inserted
- * @param table to be inserted into 
+ * @param table to be inserted into
  */
 void symtable_insert(symtable_t *table, symbol_t *symbol)
 {
@@ -200,12 +196,12 @@ void symtable_insert(symtable_t *table, symbol_t *symbol)
 
 /**
  * @brief Checks the size of the table
- * 
+ *
  * If the table is more than 75% full, it is resized
  * to avoid collisions
- * 
- * @param table 
- * @return symtable_t* 
+ *
+ * @param table
+ * @return symtable_t*
  */
 symtable_t *symtable_check_size(symtable_t *table)
 {
@@ -217,10 +213,9 @@ symtable_t *symtable_check_size(symtable_t *table)
     return table;
 }
 
-
 /**
  * @brief Finds symbol in the symbol table
- * 
+ *
  * @param table to search in
  * @param name as the key
  * @return symbol_t* or NULL if not found
@@ -243,8 +238,8 @@ symbol_t *symtable_lookup(symtable_t *table, char *name)
 
 /**
  * @brief Prints symbol table
- * 
- * @param table 
+ *
+ * @param table
  */
 void symtable_print(symtable_t *table)
 {
@@ -283,14 +278,15 @@ void symtable_print(symtable_t *table)
     }
 }
 
- /**
+/**
  * @brief Print all symtable values as DEFVARs
- * 
- * 
+ *
+ *
  * @param symtable_t* Pointer to a symtable structure.
  *
  */
-void symtable_defvar_print(symtable_t *table){
+void symtable_defvar_print(symtable_t *table)
+{
     for (unsigned long i = 0; i < table->size; i++)
     {
         symbol_t *symbol = table->symbols[i];
@@ -301,7 +297,7 @@ void symtable_defvar_print(symtable_t *table){
             symbol = symbol->next;
             while (symbol != NULL)
             {
-                 printf("DEFVAR LF@%s\n", symbol->name);
+                printf("DEFVAR LF@%s\n", symbol->name);
                 symbol = symbol->next;
             }
         }
